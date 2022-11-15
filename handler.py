@@ -53,30 +53,27 @@ def PINGPONG_shell(conn, addr, ip, port):
         elif command == "upload" or command == "UPLOAD":
             file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
             to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
-            file_names = os.listdir(file_dir)
             if App_send("UPLOAD_APP"):
                 print("PINGPONG>[*]Sending dir......")
                 conn.send(bytes(to_dir, "utf8"))
-                print("PINGPONG>[*]Making temp folders......")
                 path = "temp"
                 if os.path.exists(path):
                     shutil.rmtree(path)
                 if not os.path.exists(path):
                     os.makedirs(path)
+
                 print("PINGPONG>[*]Copy to file to " + path + "......")
                 if not os.path.isfile(file_dir):
+                    file_names = os.listdir(file_dir)
                     for fi in os.listdir(file_dir):
                         full_file_name = os.path.join(file_dir, fi)
                         if os.path.isfile(full_file_name):
                             shutil.copy(full_file_name, path)
-                else:
-                    shutil.copy(file_dir, path)
-                print("PINGPONG>[*]Turning to .txt......")
+                print("PINGPONG>[*]Sending file(s)......")
                 for file in file_names:
                     old_n = os.path.join(path, file)
                     new_name = file + ".txt"
                     os.rename(old_n, new_name)
-                    print("PINGPONG>[*]Sending......")
                     with open(new_name, "r") as f:
                         se_data = f.read()
                         conn.send(bytes(new_name, "utf8"))
@@ -90,7 +87,7 @@ def PINGPONG_shell(conn, addr, ip, port):
                         while True:
                             time.sleep(1)
                             if upload_data:
-                                print(ip + ">[*]upload_data: " + old_n + "......")
+                                print(ip + ">[*]File Upload Succeed: " + old_n + " >>> " + to_dir + "/" + file)
                                 break
                         f.close()
                         try:
