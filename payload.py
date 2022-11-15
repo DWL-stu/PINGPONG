@@ -13,7 +13,6 @@ def PINGPONG_client(ip, port):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((ip, port))
     except socket.error as msg:
-        print(msg)
         sys.exit(1)
     while True:
         data = s.recv(1024)
@@ -23,9 +22,10 @@ def PINGPONG_client(ip, port):
         if data.decode() == "UPLOAD_APP":
             s.send(bytes("OK", 'utf8'))
             dir_data = s.recv(1024).decode()
-            print(dir_data)
             while True:
                 name_data = s.recv(1024).decode()
+                if name_data == "END":
+                    break
                 s.send(bytes("OK", "UTF8"))
                 while True:
                     upload_data = ""
@@ -33,15 +33,13 @@ def PINGPONG_client(ip, port):
                     upload_data += u_data
                     if len(u_data) < 1024:
                         break 
-                if upload_data != "END":
+                if upload_data:
                     s.send(bytes(ip + ">" + "Sending", "utf8"))
                     if os.path.exists(dir_data + "/" + name_data):
                         shutil.rmtree(dir_data)
                     if not os.path.exists(dir_data):
                         os.mkdir(dir_data)
-                    print(dir_data + "/" + name_data)
                     f = open(dir_data + "/" + name_data[:-4], "w")
-                    print(name_data)
                     f.write(upload_data)
                     f.close()
                     # os.rename(dir_data + "/" + name_data, name_data[:-4])
@@ -58,7 +56,6 @@ def CMD_client(ip, port):
         cmd_c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         cmd_c.connect((ip, port))
     except socket.error as msg:
-        print(msg)
         sys.exit(1)
     while True:
         cmd_command = cmd_c.recv(1024)

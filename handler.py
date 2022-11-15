@@ -61,7 +61,6 @@ def PINGPONG_shell(conn, addr, ip, port):
                     shutil.rmtree(path)
                 if not os.path.exists(path):
                     os.makedirs(path)
-
                 print("PINGPONG>[*]Copy to file to " + path + "......")
                 if not os.path.isfile(file_dir):
                     file_names = os.listdir(file_dir)
@@ -69,32 +68,60 @@ def PINGPONG_shell(conn, addr, ip, port):
                         full_file_name = os.path.join(file_dir, fi)
                         if os.path.isfile(full_file_name):
                             shutil.copy(full_file_name, path)
-                print("PINGPONG>[*]Sending file(s)......")
-                for file in file_names:
+                    for file in file_names:
+                        old_n = os.path.join(path, file)
+                        new_name = file + ".txt"
+                        os.rename(old_n, new_name)
+                        with open(new_name, "r") as f:
+                            se_data = f.read()
+                            conn.send(bytes(new_name, "utf8"))
+                            name_data = conn.recv(1024)
+                            while True:
+                                time.sleep(1)
+                                if name_data:
+                                    break
+                            conn.sendall(bytes(se_data, 'utf8'))
+                            upload_data = conn.recv(1024)
+                            while True:
+                                time.sleep(1)
+                                if upload_data:
+                                    print(ip + ">[*]File Upload Succeed: " + old_n + " >>> " + to_dir + "/" + file)
+                                    break
+                            f.close()
+                            try:
+                                os.remove(new_name)
+                            except:
+                                pass
+                    conn.send(bytes("END", 'utf8'))
+                else:
+                    file = file_dir[file_dir.rindex('/') + 1:len(file_dir)]
+                    shutil.copy(file_dir, path)
                     old_n = os.path.join(path, file)
                     new_name = file + ".txt"
                     os.rename(old_n, new_name)
-                    with open(new_name, "r") as f:
-                        se_data = f.read()
-                        conn.send(bytes(new_name, "utf8"))
-                        name_data = conn.recv(1024)
-                        while True:
-                            time.sleep(1)
-                            if name_data:
-                                break
-                        conn.sendall(bytes(se_data, 'utf8'))
-                        upload_data = conn.recv(1024)
-                        while True:
-                            time.sleep(1)
-                            if upload_data:
-                                print(ip + ">[*]File Upload Succeed: " + old_n + " >>> " + to_dir + "/" + file)
-                                break
-                        f.close()
-                        try:
-                            os.remove(new_name)
-                        except:
-                            pass
-                conn.send(bytes("END", 'utf8'))
+                    file_name = file_dir.split(".txt")[0]
+                    file_names =  file_name[file_name.rindex('/') + 1:len(file_name)]
+                    print("PINGPONG>[*]Sending file......")
+                    f = open(file_names + ".txt")
+                    se_data = f.read()
+                    conn.send(bytes(new_name, "utf8"))
+                    name_data = conn.recv(1024)
+                    while True:
+                        time.sleep(1)
+                        if name_data:
+                            break
+                    conn.sendall(bytes(se_data, 'utf8'))
+                    upload_data = conn.recv(1024)
+                    while True:
+                        time.sleep(1)
+                        if upload_data:
+                            print(ip + ">[*]File Upload Succeed: " + old_n + " >>> " + to_dir + "/" + file)
+                            break
+                    f.close()
+                    try:
+                        os.remove(new_name)
+                    except:
+                        pass
             shutil.rmtree(path)
             
         else:
