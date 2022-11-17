@@ -4,6 +4,7 @@
 # @Author    :D0WE1L1N
 import socket
 import sys
+import time
 try:
     import handler
 except:
@@ -33,8 +34,8 @@ def start(ip, port):
             cmd_SessObj.send(bytes(cmd_command, 'utf8'))
             if cmd_command == "exit":
                 print("CMD_SHELL>[*]exiting......")
+                time.sleep(2)
                 handler.startserver(ip, port, False)
-                break
             CMD_re = cmd_SessObj.recv(1024)
             try:
                 print(str(ip) + ">"+ CMD_re.decode('utf-8'))
