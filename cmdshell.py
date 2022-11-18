@@ -35,7 +35,7 @@ def start(ip, port):
             if cmd_command == "exit":
                 print("CMD_SHELL>[*]exiting......")
                 time.sleep(2)
-                handler.startserver(ip, port, False)
+                handler.startserver(ip, port, False, False)
             CMD_re = cmd_SessObj.recv(1024)
             try:
                 print(str(ip) + ">"+ CMD_re.decode('utf-8'))

