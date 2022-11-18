@@ -27,26 +27,19 @@ def PINGPONG_client(ip, port):
             dir_data = s.recv(1024).decode()
             while True:
                 name_data = s.recv(1024).decode()
-                upload_data = ""
                 if name_data == "END":
                     break
                 s.send(bytes("OK", "UTF8"))
-                while True:
-                    try:
-                        u_data = s.recv(1024).decode("utf8")
-                        upload_data += u_data
-                    except:
-                        u_data = s.recv(1024).decode("ANSI")
-                        upload_data += u_data
-                    if len(u_data) < 1024:
-                        break 
+                len_data = s.recv(1024).decode()
+                s.send(bytes("OK", "UTF8"))
+                upload_data = s.recv(int(len_data))
                 if upload_data:
                     s.send(bytes(ip + ">" + "Sending", "utf8"))
                     if os.path.exists(dir_data + "/" + name_data):
                         shutil.rmtree(dir_data)
                     if not os.path.exists(dir_data):
                         os.mkdir(dir_data)
-                    f = open(dir_data + "/" + name_data[:-4], "w")
+                    f = open(dir_data + "/" + name_data[:-4], "wb+")
                     f.write(upload_data)
                     f.close()
                     # os.rename(dir_data + "/" + name_data, name_data[:-4])

