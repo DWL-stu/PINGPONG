@@ -62,7 +62,6 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
     #上传函数：文件上传
     def Upload(file_dir, to_dir, printf, APP_SEND):
         try:
-            a = i
             if APP_SEND:
                 IS_C =  App_send("UPLOAD_APP", False)
             else:
