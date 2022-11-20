@@ -62,6 +62,7 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
     #上传函数：文件上传
     def Upload(file_dir, to_dir, printf, APP_SEND):
         try:
+            a = i
             if APP_SEND:
                 IS_C =  App_send("UPLOAD_APP", False)
             else:
@@ -172,17 +173,17 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
             #     if os.path.isdir(check_d):
             #         Upload(os.path.join(file_dir, check_d), os.path.join(to_dir, check_d), False, False)
             conn.send(bytes("END", 'utf8'))
+        except Exception as e:
+            print(e)
+            restart = input("PINGPONG>[-]Something went WRONG, restart?[y/n]")
+            if restart == "y" or restart == "yes" or restart == "YES" or restart == "Y":
+                file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
+                to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
+                Upload(file_dir, to_dir)
+            else:
+                return True
+        finally:
             shutil.rmtree(path)
-        except:
-	        print(traceback.print_exc())
-            # shutil.rmtree(path)
-            # restart = input("PINGPONG>[-]Something went WRONG, restart?[y/n]")
-            # if restart == "y" or restart == "yes" or restart == "YES" or restart == "Y":
-            #     file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
-            #     to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
-            #     Upload(file_dir, to_dir)
-            # else:
-            #     return True
     is_Auto = True
     if op_ac:
         if AUTOCOMMAND == " " or AUTOCOMMAND == "":
