@@ -50,15 +50,20 @@ def startserver(ip, port, printf, open_ac):
 def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
     #请求发送函数：检查连接
     def App_send(App, printf):
-        if printf:
-            print("PINGPONG>[*]Sending application......")
-        conn.send(bytes(App, 'utf8'))
-        while True:
-            data = conn.recv(1024)
-            if data.decode() == "OK":
-                if printf:
-                    print("PINGPONG>[*]Application done, everything is OK")
-                return True
+        try:
+            if printf:
+                print("PINGPONG>[*]Sending application......")
+            conn.send(bytes(App, 'utf8'))
+            while True:
+                data = conn.recv(1024)
+                if data.decode() == "OK":
+                    if printf:
+                        print("PINGPONG>[*]Application done, everything is OK")
+                    return True
+        except:
+            print("PINGPONG>[-]PINGPONG session Died, reason: Connection refused")
+            print("handler>[*]Back to main console......")
+            main.main()
     #上传函数：文件上传
     def Upload(file_dir, to_dir, printf, APP_SEND):
         try:
@@ -199,7 +204,7 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
             is_Auto = True
         if command == "exit" or command == "EXIT":
             App_send("EXIT_APP", False)
-            print("PINGPONG>[*]PINGPONG session died, reason: User exit")
+            print("PINGPONG>[*]PINGPONG session Died, reason: User exit")
             print("handler>[*]Back to main console......")
             main.main()
         if command == "cmd" or command == "CMD":
