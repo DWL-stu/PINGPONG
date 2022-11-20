@@ -40,6 +40,6 @@ def main():
 def startserver():
     ip = input("handler>[*]Please input the IP for the attack machine(blank for 127.0.0.1)>")
     port = input("handler>[*]Please input the PORT(blank for 624)>")
-    handler.startserver(ip, port, True)
+    handler.startserver(ip, port, True, False)
 if __name__ == "__main__":
     main()
