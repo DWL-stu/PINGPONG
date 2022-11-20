@@ -22,6 +22,8 @@ def PINGPONG_client(ip, port):
             s.close()
             CMD_client(ip, cmd_port, port)
             break
+        if data.decode() == "CHECK_APP":
+            s.send(bytes("OK", "utf8"))
         if data.decode() == "UPLOAD_APP":
             s.send(bytes("OK", 'utf8'))
             dir_data = s.recv(1024).decode()

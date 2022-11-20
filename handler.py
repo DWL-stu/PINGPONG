@@ -10,6 +10,9 @@ import sys
 import shutil
 import cmdshell
 import time
+import traceback
+#开启监听
+#函数中printf参数决定时候进行不必要的输出
 def startserver(ip, port, printf, open_ac):
     if printf and False:
         AUTORUNSCRIPT = input("handler>[*]Any AUTORUN COMMAND?(blank for no)>")
@@ -43,7 +46,9 @@ def startserver(ip, port, printf, open_ac):
             print('handler>[+]PINGPONG session Created: ' + ip + ":" + str(port) + " >>> " + _ip + ":" + str(_port))
         t = threading.Thread(target=PINGPONG_shell, args=(conn, addr, _ip, str(_port), True, AUTORUNSCRIPT, open_ac))
         t.start()
+#连接程序
 def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
+    #请求发送函数：检查连接
     def App_send(App, printf):
         if printf:
             print("PINGPONG>[*]Sending application......")
@@ -54,6 +59,7 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
                 if printf:
                     print("PINGPONG>[*]Application done, everything is OK")
                 return True
+    #上传函数：文件上传
     def Upload(file_dir, to_dir, printf, APP_SEND):
         try:
             if APP_SEND:
@@ -71,6 +77,7 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
                     os.makedirs(path)
                 if printf:
                     print("PINGPONG>[*]Copy to file to " + path + "......")
+                #判断是否为文件/文件夹
                 if not os.path.isfile(file_dir):
                     try:
                         file_names = os.listdir(file_dir)
@@ -117,7 +124,6 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
                                 os.remove(new_name)
                             except:
                                 pass
-                    conn.send(bytes("END", 'utf8'))
                 else:
                     file = file_dir[file_dir.rindex('/') + 1:len(file_dir)]
                     try:
@@ -135,7 +141,7 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
                     file_names =  file_name[file_name.rindex('/') + 1:len(file_name)]
                     if printf:
                         print("PINGPONG>[*]Sending file......")
-                    f = open(file_names + ".txt")
+                    f = open(file_names + ".txt", "rb")    
                     se_data = f.read()
                     conn.send(bytes(new_name, "utf8"))
                     name_data = conn.recv(1024)
@@ -143,7 +149,14 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
                         time.sleep(1)
                         if name_data:
                             break
-                    conn.sendall(bytes(se_data, 'utf8'))
+                    len_data = len(se_data)
+                    conn.send(bytes(str(len_data), "utf8"))
+                    len_recv = conn.recv(1024)
+                    while True:
+                        time.sleep(1)
+                        if len_recv:
+                            break
+                    conn.sendall(se_data)
                     upload_data = conn.recv(1024)
                     while True:
                         time.sleep(1)
@@ -157,16 +170,19 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
                         pass
             # for check_d in file_names:
             #     if os.path.isdir(check_d):
-            #         Upload(os.path.join(file_dir + check_d), os.path.join(to_dir + check_d))
+            #         Upload(os.path.join(file_dir, check_d), os.path.join(to_dir, check_d), False, False)
+            conn.send(bytes("END", 'utf8'))
             shutil.rmtree(path)
         except:
-            restart = input("PINGPONG>[-]Something went WRONG, restart?[y/n]")
-            if restart == "y" or restart == "yes" or restart == "YES" or restart == "Y":
-                file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
-                to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
-                Upload(file_dir, to_dir)
-            else:
-                return True
+	        print(traceback.print_exc())
+            # shutil.rmtree(path)
+            # restart = input("PINGPONG>[-]Something went WRONG, restart?[y/n]")
+            # if restart == "y" or restart == "yes" or restart == "YES" or restart == "Y":
+            #     file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
+            #     to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
+            #     Upload(file_dir, to_dir)
+            # else:
+            #     return True
     is_Auto = True
     if op_ac:
         if AUTOCOMMAND == " " or AUTOCOMMAND == "":
@@ -174,6 +190,7 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
         else:
             is_Auto = False
     while True:
+        #主循环
         if is_Auto:
             command = input("PINGPONG>")
         else:
@@ -190,7 +207,9 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
             file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
             to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
             Upload(file_dir, to_dir, True, True)
-            
+        elif command == "ping" or command == "PING":
+            if App_send("CHECK_APP", False):
+                print("PINGPONG>[*]PONG")
         else:
             print("PINGPONG>[-]Command " + command + " not found")                 
 if __name__ == "__main__":
