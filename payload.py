@@ -65,8 +65,8 @@ def CMD_client(ip, port, main_port):
     while True:
         cmd_command = cmd_c.recv(1024)
         if cmd_command.decode("utf8") == "exit" or cmd_command.decode("utf8") == "EXIT":
-            time.sleep(2)
-            PINGPONG_client(ip, main_port)
+            main_port = cmd_c.recv(1024).decode("utf8")
+            PINGPONG_client(ip, int(main_port))
             break
         elif cmd_command.decode("utf8") == "PING":
             cmd_c.send(bytes("PONG", "utf8"))

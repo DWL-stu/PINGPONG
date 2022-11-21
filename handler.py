@@ -44,10 +44,10 @@ def startserver(ip, port, printf, open_ac):
         _port = addr[1]
         if printf:
             print('handler>[+]PINGPONG session Created: ' + ip + ":" + str(port) + " >>> " + _ip + ":" + str(_port))
-        t = threading.Thread(target=PINGPONG_shell, args=(conn, addr, _ip, str(_port), True, AUTORUNSCRIPT, open_ac))
+        t = threading.Thread(target=PINGPONG_shell, args=(conn, ip, port, _ip, str(_port), True, AUTORUNSCRIPT, open_ac))
         t.start()
 #连接程序
-def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
+def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, AUTOCOMMAND, op_ac):
     #请求发送函数：检查连接
     def App_send(App, printf):
         try:
@@ -217,6 +217,8 @@ def PINGPONG_shell(conn, addr, ip, port, printf, AUTOCOMMAND, op_ac):
             file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
             to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
             Upload(file_dir, to_dir, True, True)
+        elif command == "info" or command == "INFO":
+            print("PINGPONG>[*]Connection: " + my_ip + ":" + str(my_port) + " >>> " + ip + ":" + port)
         elif command == "ping" or command == "PING":
             if App_send("CHECK_APP", False):
                 print("PINGPONG>[*]PONG")
