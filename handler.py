@@ -30,8 +30,13 @@ def startserver(ip, port, printf, open_ac):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        s.bind((ip, port))
-        s.listen(10)
+        try:
+            s.bind((ip, port))
+            s.listen(10)
+        except:
+            print("handler[-]Failed to bind on " + ip + ":" + port)
+            print("handler[-]Bind on 127.0.0.1:624")
+            startserver("127.0.0.1", 624, True, False)
     except socket.error as msg:
         print("handler>[-]something went WRONG, print out the wrong msg: " + str(msg))
         sys.exit(1)
@@ -212,7 +217,7 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, AUTOCOMMAND, op_ac):
                 print("PINGPONG>[+]GOT IT")
                 cmd_port = random.randint(5000, 8000)
                 conn.send(bytes(str(cmd_port), "utf8"))
-                cmdshell.start(ip, cmd_port)
+                cmdshell.start(my_ip, cmd_port)
         elif command == "upload" or command == "UPLOAD":
             file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
             to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")

@@ -81,4 +81,4 @@ def CMD_client(ip, port, main_port):
 
 
 if __name__ == '__main__':
-    PINGPONG_client("192.168.140.1", 624)
+    PINGPONG_client("192.168.140.128", 624)

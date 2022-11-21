@@ -56,6 +56,3 @@ def start(ip, port):
         cmd_SessObj.close()
         break
     cmd_session.close()
-    
-if __name__ == "__main__":
-    start("192.168.140.1", 8625)
