@@ -182,6 +182,7 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, AUTOCOMMAND, op_ac):
             #     if os.path.isdir(check_d):
             #         Upload(os.path.join(file_dir, check_d), os.path.join(to_dir, check_d), False, False)
             conn.send(bytes("END", 'utf8'))
+            print("PINGPONG>[+]FILE UPLOAD DONE")
         except Exception as e:
             print(e)
             restart = input("PINGPONG>[-]Something went WRONG, restart?[y/n]")
