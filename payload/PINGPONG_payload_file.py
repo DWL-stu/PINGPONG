@@ -79,5 +79,3 @@ def CMD_client(ip, port, main_port):
                 cmd_print_out = cmd.stderr.read()
             cmd_c.send(cmd_print_out)
     cmd_c.close()
-if __name__ == '__main__':
-    PINGPONG_client("192.168.140.1", 624)
