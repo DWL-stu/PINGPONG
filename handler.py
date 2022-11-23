@@ -209,7 +209,7 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, AUTOCOMMAND, op_ac):
             command = AUTOCOMMAND
             is_Auto = True
         if command == "exit" or command == "EXIT":
-            App_send("EXIT_APP", False)
+            conn.send(bytes("EXIT_APP", 'utf8'))
             print("PINGPONG>[*]PINGPONG session Died, reason: User exit")
             print("handler>[*]Back to main console......")
             main.main()
