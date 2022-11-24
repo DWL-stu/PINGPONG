@@ -7,7 +7,6 @@ import payload.payload_packer
 def print_main():
     print(
         '''
-
 (    (        )             (        )      )            ____ 
 )\ ) )\ )  ( /(  (          )\ )  ( /(   ( /(  (        |   / 
 (()/((()/(  )\()) )\ )      (()/(  )\())  )\()) )\ )     |  /  
@@ -55,7 +54,8 @@ def sub_main():
 def main():
     print("Active choice:")
     print("1) Start a PINGPONG handler")
-    print("2) Make a Trojan(payload)")
+    print("2) Make payload(s)")
+    # print("3) Settings")
     sub_main()
 def startserver():
     ip = input("handler>[*]Please input the IP for the attack machine(blank for 127.0.0.1)>")
