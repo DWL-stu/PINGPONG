@@ -8,6 +8,7 @@ import sys
 sys.path.append("..")
 import handler
 import random
+from main import print_good, print_normal, print_error
 try:
     import handler
     import main
@@ -22,20 +23,20 @@ def start(ip, port):
         try:
             port = int(port)
         except:
-            print("handler>[-]port input error")
+            print_error("handler>[-]port input error")
     try:
         cmd_session = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         cmd_session.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         cmd_session.bind((ip, port))
         cmd_session.listen(10)
     except socket.error as msg:
-        print("handler>[-]something went WRONG, print out the wrong msg: " + str(msg))
+        print_error("handler>[-]something went WRONG, print out the wrong msg: " + str(msg))
         sys.exit(1)
     while True:
         cmd_SessObj,addr = cmd_session.accept()
         _ip = addr[0]
         _port = addr[1]
-        print("CMD_SHELL>[+]CMD session Created:" + ip + ":" + str(port) + " >>> " + _ip + ":" + str(_port))
+        print_normal("CMD_SHELL>[*]CMD session Created:" + ip + ":" + str(port) + " >>> " + _ip + ":" + str(_port))
         while True:
             try:
                 cmd_command = input("CMD_SHELL>")
@@ -51,8 +52,8 @@ def start(ip, port):
                 except:
                     print(str(ip) + ">" + CMD_re.decode('gbk'))
             except:
-                print("CMD_SHELL>[-]CMD session Died, reason: Connection refused")
-                print("handler>[*]Back to main console......")
+                print_error("CMD_SHELL>[-]CMD session Died, reason: Connection refused")
+                print_normal("handler>[*]Back to main console......")
                 main.main()
         cmd_SessObj.close()
         break
