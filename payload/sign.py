@@ -214,7 +214,7 @@ def signfile(exe, sigfile, output):
  
 if __name__ == "__main__":
     usage = 'usage: %prog [options]'
-    print("\n\n!! Happy hacking!\n\n")
+    print("\nSigning file...\n")
     parser = OptionParser()
     parser.add_option("-i", "--file", dest="inputfile", 
                   help="input file", metavar="FILE")

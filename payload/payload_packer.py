@@ -9,7 +9,7 @@ import sys
 from random import randint
 sys.path.append("..")
 import main
-key = randint(1000000, 9000000)
+key = randint(10000000000000, 90000000000000)
 current_path = abspath(__file__)
 father_path = abspath(dirname(current_path) + sep + ".")
 def pack(payload, ip, port, printf, upx_command):
@@ -74,6 +74,9 @@ if __name__ == '__main__':
 	system(command_sign_2)
 	remove(f"{father_path}/upload_payload/PINGPONG_payload_sign.exe")
 	remove(f"{father_path}/upload_payload/PINGPONG_payload.exe")
+	f_father_path = abspath(dirname(father_path) + sep + ".")
+	move(f"{father_path}/upload_payload/PINGPONG_payload_sign_twice.exe", f"{f_father_path}")
+	rename(f"{f_father_path}/PINGPONG_payload_sign_twice.exe", f"{f_father_path}/payload.exe")
 	if printf:
-		main.print_good("payload>[+]Done Successfully")
+		main.print_good(f"payload>[+]Done Successfully, the payload is in {f_father_path}/payload.exe")
 
