@@ -1,0 +1,10 @@
+{
+    "payload_maker" : [
+        {"sign" : "True", "description" : "capture the sign from Anti-virus file"},
+        {"sign_dir" : "./payload/sign_sample", "description" : "The dir of the input file", "father": "sign"},
+        {"key" : "random"}
+    ],
+    "handler" : [
+      {"AutoRunCommand" : " ", "description" : "This command runs when you get a session"}  
+    ]
+}
