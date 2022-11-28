@@ -5,14 +5,22 @@
 from os import system, remove, mkdir, rename
 from os.path import isfile, isdir, abspath, dirname, sep
 from shutil import move, rmtree
-import sys
+from sys import path
 from random import randint
-sys.path.append("..")
+path.append("..")
 import main
-key = randint(10000000000000, 90000000000000)
-current_path = abspath(__file__)
-father_path = abspath(dirname(current_path) + sep + ".")
+def generate_random_str(randomlength=16):
+	random_str =''
+	base_str ='ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghigklmnopqrstuvwxyz0123456789'
+	length =len(base_str) -1
+	for i in range(randomlength):
+		random_str +=base_str[randint(0, length)]
+		return random_str
 def pack(payload, ip, port, printf, upx_command):
+	key = generate_random_str()
+	main.print_normal(f"The key is: {key}")
+	current_path = abspath(__file__)
+	father_path = abspath(dirname(current_path) + sep + ".")
 	if upx_command != " " and upx_command != "":
 		upx_command = "--upx-dir " + upx_command
 	else:
