@@ -7,6 +7,10 @@ import socket
 import subprocess
 import sys
 import shutil
+import win32api
+import win32con
+import win32gui
+import win32ui
 def PINGPONG_client(ip, port):
     try:
         try:

