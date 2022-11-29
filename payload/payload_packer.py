@@ -16,9 +16,9 @@ def generate_random_str(randomlength=16):
 	length =len(base_str) -1
 	for i in range(randomlength):
 		random_str +=base_str[randint(0, length)]
-		return random_str
+	return random_str
 def pack(payload, ip, port, printf, upx_command):
-	key = generate_random_str()
+	key = generate_random_str(randomlength=16)
 	main.print_normal(f"The key is: {key}")
 	current_path = abspath(__file__)
 	father_path = abspath(dirname(current_path) + sep + ".")
