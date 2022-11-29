@@ -10,6 +10,7 @@ from random import randint
 install_path = path[4]
 path.append("..")
 import main
+#随机生成密钥
 def generate_random_str(randomlength=16):
 	random_str =''
 	base_str ='ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghigklmnopqrstuvwxyz0123456789'
@@ -17,6 +18,7 @@ def generate_random_str(randomlength=16):
 	for i in range(randomlength):
 		random_str +=base_str[randint(0, length)]
 	return random_str
+#打包
 def pack(payload, ip, port, printf, upx_command):
 	key = generate_random_str(randomlength=16)
 	main.print_normal(f"The key is: {key}")
