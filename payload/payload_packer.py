@@ -90,5 +90,5 @@ if __name__ == '__main__':
 	move(f"{father_path}/upload_payload/PINGPONG_payload_sign_twice.exe", f"{f_father_path}")
 	rename(f"{f_father_path}/PINGPONG_payload_sign_twice.exe", f"{f_father_path}/payload.exe")
 	if printf:
-		main.print_good(f"payload>[+]Done Successfully, the payload is in {f_father_path}/payload.exe")
+		main.print_good(f"payload>[+]Done Successfully, the payload is in {f_father_path}\payload.exe")
 

