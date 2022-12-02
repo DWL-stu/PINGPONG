@@ -6,6 +6,7 @@ import handler
 import payload.payload_packer
 import json
 #print的基本函数
+#PINPONG 攻击载荷文件夹：payload/PINGPONG_payload_file
 def print_error(str):
     print('\033[0;31m'+ str + '\033[0m')
 def print_good(str):

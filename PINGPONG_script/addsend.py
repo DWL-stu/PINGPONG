@@ -1,6 +1,6 @@
 import sys
 sys.path.append("..")
-from main import print_good, print_normal, print_error, main
+from main import print_normal, print_error, main
 def App_send(App, printf, conn):
         try:
             if printf:
