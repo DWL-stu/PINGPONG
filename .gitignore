@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+install/agreement.txt
+install/install script.iss
+install/install-text.txt
+PINGPONG v0.0.3.5 setup.exe
