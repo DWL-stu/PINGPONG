@@ -116,4 +116,3 @@ def CMD_client(ip, port, main_port):
         cmd_c.close()
     except:
         sys.exit(1)
-PINGPONG_client("127.0.0.1", 624)
