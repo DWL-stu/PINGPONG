@@ -112,6 +112,8 @@ def CMD_client(ip, port, main_port):
                 cmd_print_out = cmd.stdout.read()
                 if not cmd_print_out:
                     cmd_print_out = cmd.stderr.read()
+                if not cmd_print_out:
+                    cmd_print_out = b'OK'
                 cmd_c.send(cmd_print_out)
         cmd_c.close()
     except:

@@ -14,5 +14,5 @@ def App_send(App, printf, conn):
                     return True
         except:
             print_error("PINGPONG>[-]PINGPONG session Died, reason: Connection refused")
-            print_normal("handler>[*]Back to main console......")
-            main.main()
+            print_normal("handler>[*]Quiting......")
+            main()
