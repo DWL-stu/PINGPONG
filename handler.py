@@ -67,18 +67,18 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, AUTOCOMMAND, op_ac):
             print("PINGPONG>[*]running " + AUTOCOMMAND)
             command = AUTOCOMMAND
             is_Auto = True
-        if command == "cam_shot" or command == "CAM_SHOT":
-            import PINGPONG_script.camera
-            PINGPONG_script.camera.cam_shot(PINGPONG_script.addsend, conn)
-            try:
-                import cv2      
-                img = cv2.imread('shot.jpg',1)
-                cv2.imshow('imshow',img)
-                cv2.waitKey(0)
-                cv2.destroyAllWindows()
-            except:
-                print("PINGPONG>[*]Failed to open it, You might not installed open-cv, but it doesn't really important")
-        elif command == "exit" or command == "EXIT":
+        # if command == "cam_shot" or command == "CAM_SHOT":
+        #     import PINGPONG_script.camera
+        #     PINGPONG_script.camera.cam_shot(PINGPONG_script.addsend, conn)
+        #     try:
+        #         import cv2      
+        #         img = cv2.imread('shot.jpg',1)
+        #         cv2.imshow('imshow',img)
+        #         cv2.waitKey(0)
+        #         cv2.destroyAllWindows()
+        #     except:
+        #         print("PINGPONG>[*]Failed to open it, You might not installed open-cv, but it doesn't really important")
+        if command == "exit" or command == "EXIT":
             conn.send(bytes("EXIT_APP", 'utf8'))
             main.print_normal("PINGPONG>[*]PINGPONG session Died, reason: User exit")
             main.print_normal("handler>[*]Back to main console......")

