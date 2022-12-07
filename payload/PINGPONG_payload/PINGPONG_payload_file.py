@@ -51,6 +51,7 @@ def stop_thread(thread):
 def PINGPONG_client(ip, port):
     global t_p
     t_p = threading.Thread(target=PINGPONG_client_T, args=(ip, port))
+    t_p.start()
 def PINGPONG_client_T(ip, port):
     try:
         try:
@@ -144,6 +145,7 @@ def PINGPONG_client_T(ip, port):
                         monitor_thread = threading.Thread(target=monitor, args=(path,))
                         monitor_thread.start()
                 t_m = threading.Thread(target=moni_t)
+                t_m.start()
                 while True:
                     e_data = s.recv(1024)
                     if e_data.decode() == "EXIT":
@@ -313,4 +315,3 @@ def CMD_client(ip, port, main_port):
 #                 previous_timestamp = keypress_time
 #             elif keypress_time is not None:
 #                 previous_timestamp = keypress_time
-PINGPONG_client('127.0.0.1', 624)
