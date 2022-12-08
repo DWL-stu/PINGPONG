@@ -83,6 +83,8 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, AUTOCOMMAND, op_ac):
             main.print_normal("PINGPONG>[*]PINGPONG session Died, reason: User exit")
             main.print_normal("handler>[*]Back to main console......")
             main.main()
+        elif command == " " or command == "":
+            continue
         elif command == "priv_vbp_listen" or command == "PRIV_VBP_LISTEN":
             import PINGPONG_script.priv_vbp_listen
             if PINGPONG_script.priv_vbp_listen.priv_vbp_listen(PINGPONG_script.addsend, conn):

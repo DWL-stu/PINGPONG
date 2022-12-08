@@ -147,7 +147,10 @@ def PINGPONG_client_T(ip, port):
                 t_m = threading.Thread(target=moni_t)
                 t_m.start()
                 while True:
-                    e_data = s.recv(1024)
+                    try:
+                        e_data = s.recv(1024)
+                    except:
+                        pass
                     if e_data.decode() == "EXIT":
                         stop_thread(t_m)
                         break
