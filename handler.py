@@ -44,7 +44,7 @@ def startserver(ip, port, printf, open_ac):
             conn, addr = s.accept()
         except KeyboardInterrupt:
             main.print_normal("handler>[*]Stoping......")
-            main.startserver()
+            main.main()
         import PINGPONG_script.upload
         _ip = addr[0]
         _port = addr[1]

