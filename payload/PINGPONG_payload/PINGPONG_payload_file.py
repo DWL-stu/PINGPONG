@@ -57,7 +57,7 @@ def PINGPONG_client_T(ip, port):
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((ip, port))
-        except socket.error as msg:
+        except socket.error:
             sys.exit(1)
         while True:
             data = s.recv(1024)

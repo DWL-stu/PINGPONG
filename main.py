@@ -4,7 +4,7 @@
 # @Author    :D0WE1L1N\
 import handler
 import payload.payload_packer
-import json
+import config
 #print的基本函数
 #PINPONG 攻击载荷文件夹：payload/PINGPONG_payload_file
 def print_error(str):
@@ -64,6 +64,9 @@ def sub_main():
         sub_main()
     elif choice == "exit":
         print("exiting......")
+    elif choice == "reload":
+        config.config_load()
+        print_normal('Done')
     else:
         print("error:no such choice")
         main()
@@ -71,11 +74,21 @@ def main():
     print_normal("Active choice:")
     print_normal("1) Start a PINGPONG handler")
     print_normal("2) Make payload(s)")
+    # print_normal("type 'reload' to reload your settings!")
     # print_normal("3) Settings")
     sub_main()
 def startserver():
-    ip = input("handler>[*]Please input the IP for the attack machine(blank for 127.0.0.1)>")
-    port = input("handler>[*]Please input the PORT(blank for 624)>")
-    handler.startserver(ip, port, True, False)
+    handler.startserver(True, False, is_input=True)
+def config_load_init():
+    global _global_dict
+    _global_dict = {}
+def set_config(key, value):
+    _global_dict[key] = value
+def get_value(key, defValue=None):
+    try:
+        return _global_dict[key]
+    except KeyError:
+        return defValue
 if __name__ == "__main__":
+    config.config_load()
     print_main()
