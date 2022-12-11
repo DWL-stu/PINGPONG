@@ -46,19 +46,8 @@ def sub_main():
         type = input("choose your choice>")
         if type == "1":
             upx_dir = input("payload>[*]Please enter your upx dir(blank for u don't have it)>")
-            ip = input("payload>[*]Please input the ip of your host(blank for 127.0.0.1)>")
-            port = input("payload>[*]Please input the port(blank for 624)>")
-            if port == "":
-                port = 624
-            if ip == "":
-                ip = "127.0.0.1"
-            else:
-                try:
-                    port = int(port)
-                except:
-                    print_error("handler>[-]port input error")
             # payload.payload_packer.pack("_basic_conn.py", ip, port, False)
-            payload.payload_packer.pack("PINGPONG_payload/PINGPONG_payload", ip, port, True, upx_dir)
+            payload.payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir)
     if choice == "PING":
         print("PONG")
         sub_main()

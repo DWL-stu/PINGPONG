@@ -27,6 +27,8 @@ def config_load():
                 'Default_port' : "624",
             },
             "payload" : {
+                'Default_ip' : "127.0.0.1",
+                'Default_port' : "624",
                 'cmd' : True,
                 'upload' : True,
                 'cam_shot' : False,
