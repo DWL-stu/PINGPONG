@@ -9,13 +9,13 @@ from sys import path
 from random import randint
 install_path = path[4]
 path.append("..")
-import main, config
+import main, config_set
 config_list = ['Default_ip', 'Default_port', 'cmd', 'upload', 'cam_shot', 'priv_vbp_listen']
 #加载默认设置
-def load_config(config_list):
+def load_config(config_list, payload_d):
     local_var = globals()
     for con in config_list:
-        data = main.get_value(con)
+        data = payload_d[con]
         local_var[f'{con}'] = data
 #随机生成密钥		
 def generate_random_str(randomlength=16):
@@ -28,7 +28,8 @@ def generate_random_str(randomlength=16):
 #打包
 def pack(payload, printf, upx_command, is_ask=True):
 	main.print_normal("payload>[*]Loading settings......")
-	load_config(config_list)
+	payload_d = main.get_value('payload')
+	load_config(config_list, payload_d)
 	main.print_normal('payload>[*]Loading Done')
 	if is_ask:
 		ip = input(f"payload>[*]Please input the ip of your host(blank for {Default_ip})>")

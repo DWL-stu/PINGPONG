@@ -4,7 +4,7 @@
 # @Author    :D0WE1L1N\
 import handler
 import payload.payload_packer
-import config
+import config_set
 #print的基本函数
 #PINPONG 攻击载荷文件夹：payload/PINGPONG_payload_file
 def print_error(str):
@@ -39,7 +39,7 @@ def sub_main():
     choice = input("choose your choice>")
     if choice == "1":
        startserver()
-    if choice == "2":
+    elif choice == "2":
         print_normal("type of payload:")
         print_normal("1) PINGPONG windows x64")
         print_warn("YOU NEED TO INSTALL UPX AND PYINSTALLER, if you already install BOTH of it, ignore this")
@@ -48,23 +48,28 @@ def sub_main():
             upx_dir = input("payload>[*]Please enter your upx dir(blank for u don't have it)>")
             # payload.payload_packer.pack("_basic_conn.py", ip, port, False)
             payload.payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir)
-    if choice == "PING":
+    elif choice == '3':
+        import config.config_settings_GUI
+        config.config_settings_GUI.load_all_config()
+        config.config_settings_GUI.settings_GUI_INIT()
+    elif choice == "PING":
         print("PONG")
         sub_main()
     elif choice == "exit":
         print("exiting......")
     elif choice == "reload":
-        config.config_load()
-        print_normal('Done')
+        config_set.config_load()
+        print_normal('settings>[*]Done')
+        sub_main()
     else:
-        print("error:no such choice")
+        print_error("[-]no such choice")
         main()
 def main():
     print_normal("Active choice:")
     print_normal("1) Start a PINGPONG handler")
     print_normal("2) Make payload(s)")
     # print_normal("type 'reload' to reload your settings!")
-    # print_normal("3) Settings")
+    print_normal("3) Settings")
     sub_main()
 def startserver():
     handler.startserver(True, False, is_input=True)
@@ -78,6 +83,11 @@ def get_value(key, defValue=None):
         return _global_dict[key]
     except KeyError:
         return defValue
+def get_all_keys():
+    key_list = []
+    for key in _global_dict.keys():
+        key_list.append(key)
+    return key_list 
 if __name__ == "__main__":
-    config.config_load()
+    config_set.config_load()
     print_main()

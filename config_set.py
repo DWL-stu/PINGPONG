@@ -1,38 +1,36 @@
 import os
 import json
 import main
-def load_conf_dict(dict):
-    for key in dict.keys():
-        data = dict[f'{key}']
-        main.set_config(key, data)
 def config_load():
     main.config_load_init()
     if os.path.exists("./config/config.json"):
         # 提取信息
-        main.print_normal("settings>[*]load config......")
+        main.print_normal("settings>[*]loading config......")
         with open('./config/config.json', 'r', encoding='utf-8') as conf:
             config = json.loads(conf.read())
             handler_conf = config['handler']
             payload_conf = config['payload']
-            load_conf_dict(handler_conf)
-            load_conf_dict(payload_conf)
+            main.set_config('handler', handler_conf)
+            main.set_config('payload', payload_conf)
     else:
         #初始化
-        if not os.path.exists('./config'):
-            os.mkdir('./config')
+        # if not os.path.exists('./config'):
+        #     os.mkdir('./config')
         main.print_normal("settings>[*]Initializing......")
         init = {
             "handler" : {
-                'Default_ip' : "127.0.0.1",
-                'Default_port' : "624",
+                'listen_Default_ip' : "127.0.0.1",
+                'listen_Default_port' : "624",
             },
             "payload" : {
                 'Default_ip' : "127.0.0.1",
                 'Default_port' : "624",
+                'usage' : {
                 'cmd' : True,
                 'upload' : True,
                 'cam_shot' : False,
-                'priv_vbp_listen' : True 
+                'priv_vbp_listen' : True
+                }
             }
         }
         try:
