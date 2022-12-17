@@ -5,6 +5,7 @@
 import handler
 import payload.payload_packer
 import config_set
+import threading
 #print的基本函数
 #PINPONG 攻击载荷文件夹：payload/PINGPONG_payload_file
 def print_error(str):
@@ -51,7 +52,10 @@ def sub_main():
     elif choice == '3':
         import config.config_settings_GUI
         config.config_settings_GUI.load_all_config()
-        config.config_settings_GUI.settings_GUI_INIT()
+        t = threading.Thread(target=config.config_settings_GUI.settings_GUI_INIT())
+        t.start()
+        config_set.config_load()
+        sub_main()
     elif choice == "PING":
         print("PONG")
         sub_main()

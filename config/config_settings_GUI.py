@@ -4,6 +4,7 @@ sys.path.append('..')
 import config_set as config
 import main
 import json
+import threading
 # handler_value_list_tmp = []
 # payload_value_list_tmp = []
 # payload_usage_value_list_tmp = []
@@ -83,7 +84,7 @@ def settings_GUI_INIT():
         handler_dict['payload'] = payload_dict
         with open('./config/config.json', 'w', encoding='utf-8') as con:
             json.dump(handler_dict, con)
-        GUI_window.quit()
+        GUI_window.destroy()
     GUI_window.title("Settings GUI tool") 
     GUI_window.geometry('1068x681+10+10')
     GUI_window.iconbitmap('./config/icon/window_logo.png')

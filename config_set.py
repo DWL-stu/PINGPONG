@@ -5,7 +5,7 @@ def config_load():
     main.config_load_init()
     if os.path.exists("./config/config.json"):
         # 提取信息
-        main.print_normal("settings>[*]loading config......")
+        # main.print_normal("settings>[*]loading config......")
         with open('./config/config.json', 'r', encoding='utf-8') as conf:
             config = json.loads(conf.read())
             handler_conf = config['handler']
