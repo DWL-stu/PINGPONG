@@ -44,7 +44,7 @@ def start(ip, port):
                     print("CMD_SHELL>[*]exiting......")
                     main_port = random.randint(9000, 10000)
                     cmd_SessObj.send(bytes(str(main_port), 'utf8'))
-                    handler.startserver(False, False, ip=ip, port=main_port)
+                    handler.startserver(False, ip=ip, port=main_port, is_auto=False)
                 CMD_re = cmd_SessObj.recv(1024)
                 try:
                     print(str(ip) + ">"+ CMD_re.decode('utf-8'))

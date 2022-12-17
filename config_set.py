@@ -21,6 +21,7 @@ def config_load():
             "handler" : {
                 'listen_Default_ip' : "127.0.0.1",
                 'listen_Default_port' : "624",
+                'Autocommand' : ''
             },
             "payload" : {
                 'Default_ip' : "127.0.0.1",

