@@ -1,13 +1,13 @@
 import os
-import json
+import pickle
 import main
 def config_load():
     main.config_load_init()
-    if os.path.exists("./config/config.json"):
+    if os.path.exists("./config/config.pkl"):
         # 提取信息
         # main.print_normal("settings>[*]loading config......")
-        with open('./config/config.json', 'r', encoding='utf-8') as conf:
-            config = json.loads(conf.read())
+        with open('./config/config.pkl', 'rb') as conf:
+            config = pickle.load(conf)
             handler_conf = config['handler']
             payload_conf = config['payload']
             main.set_config('handler', handler_conf)
@@ -35,8 +35,8 @@ def config_load():
             }
         }
         try:
-            with open("./config/config.json", "w", encoding='utf-8') as fc:
-                json.dump(init, fc)
+            with open("./config/config.pkl", "wb") as fc:
+                pickle.dump(init, fc)
         except IOError as e:
             main.print_error(f"settings>[-]Something Wrong when initializing, print out: {e}")
         else:

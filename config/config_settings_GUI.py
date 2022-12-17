@@ -3,8 +3,7 @@ import sys
 sys.path.append('..')
 import config_set as config
 import main
-import json
-import threading
+import pickle
 # handler_value_list_tmp = []
 # payload_value_list_tmp = []
 # payload_usage_value_list_tmp = []
@@ -82,8 +81,8 @@ def settings_GUI_INIT():
         payload_usage_dict = turn_list_to_dict(payload_settings_usage_key, payload_settings_usage_value_new, '', False)
         payload_dict['usage'] = payload_usage_dict
         handler_dict['payload'] = payload_dict
-        with open('./config/config.json', 'w', encoding='utf-8') as con:
-            json.dump(handler_dict, con)
+        with open('./config/config.pkl', 'wb') as con:
+            pickle.dump(handler_dict, con)
         GUI_window.destroy()
     GUI_window.title("Settings GUI tool") 
     GUI_window.geometry('1068x681+10+10')
