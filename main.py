@@ -6,6 +6,7 @@ import handler
 import payload.payload_packer
 import config_set
 import threading
+import sys
 #print的基本函数
 #PINPONG 攻击载荷文件夹：payload/PINGPONG_payload_file
 def print_error(str):
@@ -107,6 +108,7 @@ for main:
         sub_main()
     elif choice == "exit":
         print("exiting......")
+        sys.exit(0)
     elif choice == "reload":
         config_set.config_load()
         print_normal('settings>[*]Done')

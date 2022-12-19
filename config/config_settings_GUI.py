@@ -51,20 +51,14 @@ def turn_list_to_dict(key_list, value_list, name, iskey=True):
             sub_dict[key] = value
         return sub_dict
 def settings_GUI_INIT():
-    global handler_settings_key
     handler_settings_key = list(handler.keys())
-    global handler_settings_value
     handler_settings_value = list(handler.values())
-    global payload_settings_key
     payload_settings_key = list(payload.keys())
     payload_settings_key.remove("usage")
     payload_settings_usage = list(payload.values()).pop(len(list(payload.values())) - 1)
-    global payload_settings_value
     payload_settings_value = list(payload.values())
     payload_settings_value.pop(len(payload_settings_value) - 1)
-    global payload_settings_usage_key
     payload_settings_usage_key = list(payload_settings_usage.keys())
-    global payload_settings_usage_value
     payload_settings_usage_value = list(payload_settings_usage.values())
     del payload_settings_usage
     GUI_window = Tk()
@@ -86,7 +80,6 @@ def settings_GUI_INIT():
         GUI_window.destroy()
     GUI_window.title("Settings GUI tool") 
     GUI_window.geometry('1068x681+10+10')
-    GUI_window.iconbitmap('./config/icon/window_logo.png')
     text=Label(GUI_window,text="PINGPONG settings GUI", font=('Times', 20))
     text.pack()
     button=Button(GUI_window,text="Generate Settings",command=generate)
