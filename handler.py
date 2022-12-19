@@ -17,7 +17,9 @@ def startserver(printf, ip='127.0.0.1', port='624', is_input=False, is_auto=True
     load_config(config_list, handler_d)
     if is_input:
         ip = input(f"handler>[*]Please input the IP for the attack machine(blank for {listen_Default_ip})>")
+        main.back_to_main(ip)
         port = input(f"handler>[*]Please input the PORT(blank for {listen_Default_port})>")
+        main.back_to_main(port)
     if port == "":
         port = listen_Default_port
     if ip == "":

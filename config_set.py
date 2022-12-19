@@ -1,6 +1,9 @@
 import os
 import pickle
 import main
+def load_config_for_main_py(key):
+    value = main.get_value(key)
+    return value
 def config_load():
     main.config_load_init()
     if os.path.exists("./config/config.pkl"):

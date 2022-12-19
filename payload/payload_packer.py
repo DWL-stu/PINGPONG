@@ -43,7 +43,9 @@ def pack(payload, printf, upx_command, is_ask=True):
 	main.print_normal('payload>[*]Loading Done')
 	if is_ask:
 		ip = input(f"payload>[*]Please input the ip of your host(blank for {Default_ip})>")
+		main.back_to_main(ip)
 		port = input(f"payload>[*]Please input the port(blank for {Default_port})>")
+		main.back_to_main(port)
 		if port == "":
 			port = Default_port
 		if ip == "":
