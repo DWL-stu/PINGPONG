@@ -52,7 +52,7 @@ def sub_main():
                 back_to_main(upx_dir)
                 # payload.payload_packer.pack("_basic_conn.py", ip, port, False)
                 payload.payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir)
-                sub_main()
+                main()
             else:
                 print_error('[-]no such choice')
                 payload_choice()

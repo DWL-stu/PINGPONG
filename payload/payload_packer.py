@@ -71,8 +71,6 @@ def pack(payload, printf, upx_command, is_ask=True):
 			usage[key] = True
 		elif usage[key] == '0':
 			usage[key] = False
-		else:
-			main.print_error(f"payload>[-]datas error, cannot read data:{key}")
 
 		glo[key] = usage[key]
 	main.print_normal('payload>[*]Loading Done')
@@ -123,8 +121,15 @@ def pack(payload, printf, upx_command, is_ask=True):
 			global init, start_list, init_location, exit_init
 			p.seek(0, 0)
 			start_list = find_mod_location(open_usage, p)
-			start_list.sort()
-			mod_max_line = start_list[-1]
+			mod_max_line = 0
+			p.seek(0, 0)
+			line_count = 1
+			for line in p.readlines():
+				for us in usage.keys():
+					end_us = f'{us}_END_location'
+					if end_us in line and line_count >= mod_max_line:
+						mod_max_line = line_count
+				line_count += 1
 			exit_init = get_mod_data(p, mod_max_line, line_number)
 			init_location = min(start_list)
 			init = get_mod_data(p, 1, init_location)
@@ -141,7 +146,7 @@ PINGPONG_client("{ip}", {port})""")
 			system(command)
 			if printf:
 				main.print_normal("payload>[*]deleting temp files......")
-			# remove("./payload/payload.py")
+			remove("./payload/payload.py")
 			if isfile("payload.exe"):
 				remove("payload.exe")
 			if isdir("./payload/upload_payload"):

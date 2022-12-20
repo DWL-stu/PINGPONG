@@ -74,7 +74,7 @@ def Upload(ip, file_dir, to_dir, printf, APP_SEND, conn, sendobj):
                             upload_data = conn.recv(1024)
                             while True:
                                 time.sleep(1)
-                                if upload_data:
+                                if upload_data.decode() != 'Unfound':
                                     print_normal(ip + ">[*]File Upload Succeed: " + old_n + " >>> " + to_dir + "/" + file)
                                     break
                             f.close()

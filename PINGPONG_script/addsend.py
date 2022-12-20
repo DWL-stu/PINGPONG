@@ -12,6 +12,9 @@ def App_send(App, printf, conn):
                     if printf:
                         print_normal("PINGPONG>[*]Application done, everything is OK")
                     return True
+                if data.decode() == 'Unfound':
+                    print_error("PINGPONG>[-]This payload Doesn't have this usage")
+                    return False
         except:
             print_error("PINGPONG>[-]PINGPONG session Died, reason: Connection refused")
             print_normal("handler>[*]Quiting......")
