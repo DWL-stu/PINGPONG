@@ -31,8 +31,19 @@ Use python to run main.py
     make a payload which can connect to a ip and port
   ### PINGPONG session:
     command:
-      CMD -- get a cmd shell
-      UPLOAD -- upload files to the target host
+         a PINGPONG payload must have those usage:
+            exit : exit the connection
+            help : for help
+            show_usage : print out the usage(s) the payload has
+            PING : check the connection. If it is good, return PONG
+            info : printout the ip and port of both the hosts
+        the below usage will be activate if u set it when u are generating the payload
+        if u have this usage, type command to use it:
+            cmd : make a cmd connection
+            upload : upload your file
+            cam_shot : take shot
+            priv_vbp_listen : when a high-priv file(.vbs .bat .psl) is created, inject code which can make your priv higher   
+        
 
 ## Maintainers
 
