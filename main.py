@@ -1,12 +1,13 @@
 # -*- coding:utf-8 -*-
 # @FileName  :main.py
 # @Time      :2022/11/07 20:27:59
-# @Author    :D0WE1L1N\
+# @Author    :D0WE1L1N
 import handler
-import payload.payload_packer
 import config_set
 import threading
 import sys
+sys.path.append('./payload')
+import payload_packer
 #print的基本函数
 #PINPONG 攻击载荷文件夹：payload/PINGPONG_payload_file
 def print_error(str):
@@ -45,13 +46,21 @@ def sub_main():
         def payload_choice():
             print_normal("type of payload:")
             print_normal("1) PINGPONG windows x64")
-            type = input("choose your payload type>")
+            type = input("payload>[*]choose your payload type>")
             back_to_main(type)
             if type == "1":
-                upx_dir = input("payload>[*]Please enter your upx dir(blank for u don't have it)>")
-                back_to_main(upx_dir)
                 # payload.payload_packer.pack("_basic_conn.py", ip, port, False)
-                payload.payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir)
+                print_normal('the format of the payload')
+                print_normal('1) .py')
+                print_normal('2) .exe')
+                _format = input('payload>[*]choose your format>')
+                if _format == '1':
+                    upx_dir = ' '
+                    payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.py')
+                elif _format == '2':
+                    upx_dir = input("payload>[*]Please enter your upx dir(blank for u don't have it)>")
+                    back_to_main(upx_dir)
+                    payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.exe')
                 main()
             else:
                 print_error('[-]no such choice')
