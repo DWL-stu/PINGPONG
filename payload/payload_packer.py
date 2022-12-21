@@ -136,6 +136,7 @@ def pack(payload, printf, upx_command, is_ask=True):
 			for _usage in open_usage:
 				exec(f"{_usage}_mod = get_mod_data(p, {_usage}_start_location, {_usage}_end_location)")
 		with open("./payload/payload.py", "w+", encoding="utf8") as a:
+			a.write(f'usage_list = {open_usage}')
 			a.write(init)
 			for _usage in open_usage:
 				exec(f"a.write({_usage}_mod)")

@@ -56,8 +56,14 @@ def PINGPONG_client_T(ip, port):
         while True:
             data = s.recv(1024)
             # usage 
-            # if data.decode() == 'SHOW_ALL_USAGE_APP':
-                
+            if data.decode() == 'SHOW_ALL_USAGE_APP':
+                s.send(bytes('OK', 'utf8'))
+                s.recv(1024)
+                s.send(bytes(str(len(usage_list)), 'utf8'))
+                s.recv(1024)
+                for usage in usage_list:
+                    s.send(bytes(usage, 'utf8'))
+                    s.recv(1024)
             if data.decode() == "EXIT_APP":
                 s.close()
                 break

@@ -96,6 +96,13 @@ for PINGPONG shell
     the PINGPONG shell is a malicious connection and it will start when you use the listener to listen the ip and port which your payload set
     usage:
         the usage of the shell is set when you generate the payload
+        a PINGPONG payload must have those usage:
+            exit : exit the connection
+            help : for help
+            show_usage : print out the usage(s) the payload has
+            PING : check the connection. If it is good, return PONG
+            info : printout the ip and port of both the hosts
+        the below usage will be activate if u set it when u are generating the payload
         if u have this usage, type command to use it:
             cmd : make a cmd connection
             upload : upload your file

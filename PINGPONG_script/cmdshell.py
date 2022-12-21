@@ -44,6 +44,8 @@ def start(ip, port):
                     print_normal("CMD_SHELL>[*]exiting......")
                     main_port = random.randint(9000, 10000)
                     cmd_SessObj.send(bytes(str(main_port), 'utf8'))
+                    cmd_SessObj.close()
+                    cmd_session.close()
                     handler.startserver(False, ip=ip, port=main_port, is_auto=False)
                     exit(0)
                 CMD_re = cmd_SessObj.recv(1024)
@@ -51,7 +53,7 @@ def start(ip, port):
                     print(str(ip) + ">"+ CMD_re.decode('utf-8'))
                 except:
                     print(str(ip) + ">" + CMD_re.decode('gbk'))
-            except:
+            except socket.error:
                 print_error("CMD_SHELL>[-]CMD session Died, reason: Connection refused")
                 print_normal("handler>[*]Back to main console......")
                 main.main()
