@@ -63,7 +63,7 @@ def cmd_shell(cmd_SessObj, ip, cmd_port, _ip, _port, main_port, conn, cmd_sessio
                 else:
                     main.main()
             elif cmd_command == 'bg' or cmd_command == 'BG':
-                main.print_normal(f"CMD_SHELL>[*]Backgrounding session {id}")
+                main.print_normal("CMD_SHELL>[*]Backgrounding session......")
                 main.set_config('connect_pool', sessions_pool)
                 if main_port != ' ':
                     conn.recv(1024)

