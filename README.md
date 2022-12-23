@@ -37,6 +37,7 @@ Use python to run main.py
             show_usage : print out the usage(s) the payload has
             PING : check the connection. If it is good, return PONG
             info : printout the ip and port of both the hosts
+            bg : background the session
         the below usage will be activate if u set it when u are generating the payload
         if u have this usage, type command to use it:
             cmd : make a cmd connection
