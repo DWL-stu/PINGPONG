@@ -5,15 +5,11 @@ If you find some bugs of this framework or you have some suggestions about it, p
 
 ## Table of Contents
 
-- [Install](#install)
 - [Dependings](#Dependings)
 - [Usage](#usage)
 - [Maintainers](#maintainers)
 - [License](#license)
 
-## Install
-
-To install PINGPONG for windows, [click there](https://github.com/DWL-stu/PINGPONG/releases)
 
 ## Dependings
   ### All the Dependings below must be installed befor using PINGPONG
