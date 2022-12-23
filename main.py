@@ -194,11 +194,15 @@ def sub_main():
                     print_normal(f'''
     {i}  {session[5]}  {session[1]} : {session[2]} ---> {session[3]} : {session[4]}         ''')
                 try:
-                    input_id = int(input("sessions>[*]type the id of the session(type 'back' for main console)>"))
+                    input_id = input("sessions>[*]type the id of the session(type 'back' for main console)>")
+                    back_to_main(input_id)
+                    int(input_id)
+                    if input_id > len(session_pool):
+                        print_error("sessions>[-]input error")
+                        back_to_sessions()
                 except:
                     print_error("sessions>[-]input error")
                     back_to_sessions()
-                back_to_main(input_id)
                 session = session_pool[input_id - 1]
                 session[0].send(bytes('OK', 'utf8'))
                 if session[5] == 'PINGPONG session':
