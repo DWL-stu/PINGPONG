@@ -77,5 +77,7 @@ def cmd_shell(cmd_SessObj, ip, cmd_port, _ip, _port, main_port, conn, cmd_sessio
                 print(str(ip) + ">" + CMD_re.decode('gbk'))
         except socket.error:
             main.print_error("CMD_SHELL>[-]CMD session Died, reason: Connection refused")
+            sessions_pool.remove([cmd_SessObj, ip, cmd_port, _ip, _port, 'CMD session'])
+            main.set_config('connect_pool', sessions_pool)
             main.print_normal("handler>[*]Back to main console......")
             main.main()

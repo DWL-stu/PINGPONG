@@ -2,12 +2,10 @@
 # @FileName  :main.py
 # @Time      :2022/11/07 20:27:59
 # @Author    :D0WE1L1N
-import handler
+import handler 
 import config_set
 import threading
-import os
 import sys
-import shutil
 #print的基本函数
 #PINPONG 攻击载荷文件夹：payload/PINGPONG_payload_file
 def print_error(str):
@@ -22,7 +20,7 @@ def print_normal(str):
 def print_main():
     print_good(
         '''\033[0;35m
-(    (        )             (        )      )            ____ 
+(    (        )             (        )      )            ____5 
 )\ ) )\ )  ( /(  (          )\ )  ( /(   ( /(  (        |   / 
 (()/((()/(  )\()) )\ )      (()/(  )\())  )\()) )\ )     |  /  
 /(_))/(_))((_)\ (()/(       /(_))((_)\  ((_)\ (()/(     | /   
@@ -42,7 +40,9 @@ def sub_main():
     session_pool = config_set.load_config_for_main_py('connect_pool')
     choice = input("choose your choice>")
     if session_pool == None or session_pool == []:
-        if choice == "1":
+        if choice == '' or choice == ' ':
+            sub_main()
+        elif choice == "1":
             startserver()
         elif choice == "2":
             sys.path.append('./payload')
@@ -59,6 +59,7 @@ def sub_main():
                     print_normal('2) .exe')
                     # print_normal('3) .html')
                     _format = input('payload>[*]choose your format>')
+                    back_to_main(_format)
                     if _format == '1':
                         upx_dir = ' '
                         payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.py')
@@ -87,8 +88,6 @@ def sub_main():
 # ''')
 #                         shutil.copy('./payload.exe', './payload_html/payload.exe') 
 #                         os.remove('./payload.exe')
-
-                    main()
                 else:
                     print_error('[-]no such choice')
                     payload_choice()
@@ -181,6 +180,7 @@ def sub_main():
                     print_normal('1) .py')
                     print_normal('2) .exe')
                     _format = input('payload>[*]choose your format>')
+                    back_to_main(_format)
                     if _format == '1':
                         upx_dir = ' '
                         payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.py')
@@ -188,6 +188,9 @@ def sub_main():
                         upx_dir = input("payload>[*]Please enter your upx dir(blank for u don't have it)>")
                         back_to_main(upx_dir)
                         payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.exe')
+                    else:
+                        print_error('[-]so such choice')
+                        payload_choice()
                     main()
                 else:
                     print_error('[-]no such choice')
@@ -325,7 +328,7 @@ def get_all_keys():
     for key in _global_dict.keys():
         key_list.append(key)
     return key_list 
-def back_to_main(var, is_print=False):
+def back_to_main(var, is_print=True):
     if var == 'back' or var =='BACK':
         if not is_print:
             sub_main()

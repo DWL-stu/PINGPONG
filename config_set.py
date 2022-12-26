@@ -36,7 +36,7 @@ def config_load():
                 'cmd' : True,
                 'upload' : True,
                 'cam_shot' : False,
-                'priv_vbp_listen' : True
+                'priv_vbp_listen' : True,
                 }
             }
         }

