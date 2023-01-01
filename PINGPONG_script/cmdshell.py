@@ -7,10 +7,9 @@ import socket
 import sys
 sys.path.append("..")
 import random
-import main, config_set
 try:
     import handler
-    import main
+    import main, config_set
 except:
     pass
 def start(ip, cmd_port, conn, main_port, _main_port=''):

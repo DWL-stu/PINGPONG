@@ -31,7 +31,7 @@ def print_main():
                                                             
 
 ========================WELCOME !!========================
-====================Wescan   V0.0.3.1 ====================
+====================PINGPONG   V0.2.4 ====================
 ====================Aurthor : D0WE1L1N====================                                                                                                                
     \033[0m''')
     main()
@@ -205,6 +205,13 @@ def sub_main():
     elif choice == "exit":
         print("exiting......")
         sys.exit(0)
+    elif choice == "restore_initial_value":
+        from os import remove
+        config_load_init()
+        remove("./config/config.pkl")
+        config_set.config_load()
+        print_normal('settings>[*]Done')
+        sub_main()
     elif choice == "reload":
         tmp = session_pool
         config_set.config_load()

@@ -37,6 +37,7 @@ def config_load():
                 'upload' : True,
                 'cam_shot' : False,
                 'priv_vbp_listen' : True,
+                'bluescreen' : True
                 }
             }
         }

