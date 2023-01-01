@@ -3,6 +3,13 @@
 The Pingpong Framework is released under apache2 license. See [Lience](https://github.com/DWL-stu/PINGPONG/edit/main/README.md) for more details.
 If you find some bugs of this framework or you have some suggestions about it, please send e-mail to : 1372449351@qq.com
 
+## What was that?
+
+Do you know metasploit? PINGPONG is a framework like this.The difference is: You will be able to use PINGPONG, if you can read English!
+PINGPONG framework is simpler to use because the only thing you need to do is to type a number in the menu to choose the usage instead of command.
+But it also has some shortcomings......because it is developed by one person, it is much weaker then metasploit
+
+
 ## Table of Contents
 
 - [Dependings](#Dependings)
