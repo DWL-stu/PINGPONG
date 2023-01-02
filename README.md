@@ -7,8 +7,8 @@ If you find some bugs of this framework or you have some suggestions about it, p
 
 Do you know metasploit? PINGPONG is a framework like this.The difference is: You will be able to use PINGPONG, if you can read English!
 PINGPONG framework is simpler to use because the only thing you need to do is to type a number in the menu to choose the usage instead of command.
-But it also has some shortcomings......because it is developed by one person, it is much weaker then metasploit
-
+But it also has some shortcomings......because it is developed by one person, it is much weaker then metasploit.
+My English sucks! there will be many Grammer mistakes in this program.If you find it, ignore it plz! XD
 
 ## Table of Contents
 
