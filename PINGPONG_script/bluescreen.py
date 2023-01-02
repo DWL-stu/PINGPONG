@@ -10,7 +10,7 @@ def start_attack(conn, my_ip, my_port, ip, port):
     def attack_done():
         main.print_good("PINGPONG>[+]Attack Done, The attacked host appears to be down")
         main.print_normal("PINGPONG>[*]Back to the main console")
-        connection_pool = main.get_value("connection_pool")
+        connection_pool = main.get_value("connect_pool")
         connection_pool.remove([conn, my_ip, my_port, ip, int(port)])
         main.main()
     import select
