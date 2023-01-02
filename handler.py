@@ -108,6 +108,7 @@ def startserver(printf, ip='127.0.0.1', port='624', is_input=False, is_auto=True
                 s.close()
                 break
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    socket.setdefaulttimeout(5)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind((ip, port))
     s.listen(10)

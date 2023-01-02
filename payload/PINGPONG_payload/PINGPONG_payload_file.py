@@ -119,7 +119,7 @@ def PINGPONG_client_T(ip, port):
                     cmd_print_out = 'NOPE'
                 else:
                     cmd_print_out = 'DONE'
-                s.send(bytes('cmd_print_out', 'utf8'))
+                s.send(bytes(cmd_print_out, 'utf8'))
     
 
 
