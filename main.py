@@ -153,7 +153,7 @@ def sub_main():
             config_set.config_load()
         else:
             print_warn("use 'reload' command to load your settings!")
-        set_config("connect_pool", tmp)
+        config_set.set_config_for_main_py('connect_pool', tmp)
         del tmp
         sub_main()
     elif choice == '4':
@@ -215,7 +215,7 @@ def sub_main():
     elif choice == "reload":
         tmp = session_pool
         config_set.config_load()
-        set_config("connect_pool", tmp)
+        config_set.set_config_for_main_py("connect_pool", tmp)
         del tmp
         print_normal('settings>[*]Done')
         sub_main()

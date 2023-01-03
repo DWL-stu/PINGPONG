@@ -7,6 +7,8 @@ def load_config_for_main_py(key):
         return value
     except:
         return None
+def set_config_for_main_py(key, value):
+    main.set_config(key, value)
 def config_load():
     main.config_load_init()
     if os.path.exists("./config/config.pkl"):
