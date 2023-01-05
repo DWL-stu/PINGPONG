@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 sys.path.append("..")
 from main import print_good, print_normal
+import PINGPONG_script.addsend as addsend
 def priv_vbp_listen(sendobj, conn):
     if sendobj.App_send("PRO_VBP_APP", False, conn):
         try:
@@ -21,3 +22,5 @@ def priv_vbp_listen(sendobj, conn):
             return False
     else:
         return False
+def run(conn, addr, my_addr):
+    priv_vbp_listen(addsend, conn)    

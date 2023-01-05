@@ -35,7 +35,7 @@ def config_load():
                 'Default_ip' : "127.0.0.1",
                 'Default_port' : "624",
                 'usage' : {
-                'cmd' : True,
+                'cmdshell' : True,
                 'upload' : True,
                 'cam_shot' : False,
                 'priv_vbp_listen' : True,

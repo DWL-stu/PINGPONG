@@ -6,6 +6,7 @@ import sys
 import traceback
 sys.path.append("..")
 from main import print_good, print_normal
+import PINGPONG_script.addsend as addsend
 #拍照功能
 def cam_shot(sendobj, conn):
     if sendobj.App_send("CAM_SHOT_APP", False, conn):
@@ -22,3 +23,5 @@ def cam_shot(sendobj, conn):
         return True
     else:
         return False
+def run(conn, addr, my_addr):
+    cam_shot(addsend, conn)

