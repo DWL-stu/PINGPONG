@@ -7,10 +7,12 @@ from pathlib import Path
 sys.path.append("..")
 from main import print_good, print_normal
 import PINGPONG_script.addsend as addsend
-def Upload(ip, file_dir, to_dir, printf, APP_SEND, conn, sendobj):
+global is_open
+is_open = True
+def Upload(ip, file_dir, to_dir, printf, APP_SEND, conn, sendobj, addr, my_addr):
     try:
         if APP_SEND:
-            IS_C =  sendobj.App_send("UPLOAD_APP", False, conn)
+            IS_C =  sendobj.App_send("UPLOAD_APP", False, conn, adder, my_addr)
         else:
             IS_C = True
         if IS_C:
@@ -144,7 +146,7 @@ def Upload(ip, file_dir, to_dir, printf, APP_SEND, conn, sendobj):
     finally:
         shutil.rmtree(path)
 def run(conn, addr, my_addr):
-    if addsend.App_send('UPLOAD_APP', False, conn):
+    if addsend.App_send('UPLOAD_APP', False, conn, addr, my_addr):
         file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
         to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
-        Upload(addr[0], file_dir, to_dir, True, True, conn, addsend)
+        Upload(addr[0], file_dir, to_dir, True, True, conn, addsend, addr, my_addr)

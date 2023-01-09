@@ -8,8 +8,10 @@ sys.path.append("..")
 from main import print_good, print_normal
 import PINGPONG_script.addsend as addsend
 #拍照功能
-def cam_shot(sendobj, conn):
-    if sendobj.App_send("CAM_SHOT_APP", False, conn):
+global is_open
+is_open = False
+def cam_shot(sendobj, conn, addr, my_addr):
+    if sendobj.App_send("CAM_SHOT_APP", False, conn, addr, my_addr):
         print_normal("PINGPONG>[*]Starting......")
         len_data = conn.recv(1024)
         conn.send(bytes("OK", 'utf8'))
@@ -24,4 +26,4 @@ def cam_shot(sendobj, conn):
     else:
         return False
 def run(conn, addr, my_addr):
-    cam_shot(addsend, conn)
+    cam_shot(addsend, conn, addr, my_addr)

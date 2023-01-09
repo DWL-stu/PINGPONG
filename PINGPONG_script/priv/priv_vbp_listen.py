@@ -3,8 +3,10 @@ from pathlib import Path
 sys.path.append("..")
 from main import print_good, print_normal
 import PINGPONG_script.addsend as addsend
-def priv_vbp_listen(sendobj, conn):
-    if sendobj.App_send("PRO_VBP_APP", False, conn):
+global is_open
+is_open = True
+def priv_vbp_listen(sendobj, conn, addr, my_addr):
+    if sendobj.App_send("PRO_VBP_APP", False, conn, addr, my_addr):
         try:
             print_normal("PINGPONG>[*]Starting......")
             dir_data_s = conn.recv(1024)
@@ -23,4 +25,4 @@ def priv_vbp_listen(sendobj, conn):
     else:
         return False
 def run(conn, addr, my_addr):
-    priv_vbp_listen(addsend, conn)    
+    priv_vbp_listen(addsend, conn, addr, my_addr)    

