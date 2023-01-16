@@ -1,3 +1,7 @@
+# -*- coding:utf-8 -*-
+# @FileName  :getinformation.py
+# @Time      :2023/01/12 16:37:53
+# @Author    :D0WE1L1N
 from sys import path as _envir_path
 _envir_path.append('..')
 from main import *

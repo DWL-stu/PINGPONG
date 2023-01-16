@@ -1,3 +1,7 @@
+# -*- coding:utf-8 -*-
+# @FileName  :upload.py
+# @Time      :2023/01/12 16:38:00
+# @Author    :D0WE1L1N
 import os
 import shutil
 import time
@@ -12,7 +16,7 @@ is_open = True
 def Upload(ip, file_dir, to_dir, printf, APP_SEND, conn, sendobj, addr, my_addr):
     try:
         if APP_SEND:
-            IS_C =  sendobj.App_send("UPLOAD_APP", False, conn, adder, my_addr)
+            IS_C =  sendobj.App_send("UPLOAD_APP", False, conn, addr, my_addr)
         else:
             IS_C = True
         if IS_C:
@@ -45,7 +49,7 @@ def Upload(ip, file_dir, to_dir, printf, APP_SEND, conn, sendobj, addr, my_addr)
                     if ch == "y" or ch == "yes" or ch == "YES" or ch == "Y":
                         file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
                         to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
-                        Upload(ip, file_dir, to_dir, printf, APP_SEND, conn, sendobj)
+                        Upload(ip, file_dir, to_dir, printf, APP_SEND, conn, sendobj, addr, my_addr)
                     else:
                         return True
                 for fi in os.listdir(file_dir):
@@ -94,7 +98,7 @@ def Upload(ip, file_dir, to_dir, printf, APP_SEND, conn, sendobj, addr, my_addr)
                     if ch == "y" or ch == "yes" or ch == "YES" or ch == "Y":
                         file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
                         to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
-                        Upload(ip, file_dir, to_dir, printf, APP_SEND, conn, sendobj)
+                        Upload(ip, file_dir, to_dir, printf, APP_SEND, conn, sendobj, addr, my_addr)
                 old_n = os.path.join(path, file)
                 new_name = file + ".txt"
                 os.rename(old_n, new_name)
@@ -140,7 +144,7 @@ def Upload(ip, file_dir, to_dir, printf, APP_SEND, conn, sendobj, addr, my_addr)
         if restart == "y" or restart == "yes" or restart == "YES" or restart == "Y":
             file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
             to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
-            Upload(ip, file_dir, to_dir, printf, APP_SEND, conn, sendobj)
+            Upload(ip, file_dir, to_dir, printf, APP_SEND, conn, sendobj, addr, my_addr)
         else:
             return True
     finally:

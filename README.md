@@ -24,6 +24,8 @@ My English sucks! there will be many Grammer mistakes in this program.If you fin
     pyinstaller 5.6.2
     upx 4.0
     wmi 1.5.1
+    pywin32 305
+    servicemanager 2.0
 
 ## Usage
 

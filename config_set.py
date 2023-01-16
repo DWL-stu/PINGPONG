@@ -1,3 +1,7 @@
+# -*- coding:utf-8 -*-
+# @FileName  :config_set.py
+# @Time      :2023/01/12 16:38:19
+# @Author    :D0WE1L1N
 import os
 import pickle
 import main
@@ -43,7 +47,8 @@ def config_load():
                 'cam_shot' : False,
                 'priv_vbp_listen' : True,
                 'bluescreen' : True,
-                'getinformation' : True
+                'getinformation' : True,
+                'persistence' : True
                 }
             }
         }

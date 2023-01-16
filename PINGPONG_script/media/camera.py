@@ -1,4 +1,7 @@
-# # 调用摄像头拍摄照片
+# -*- coding:utf-8 -*-
+# @FileName  :camera.py
+# @Time      :2023/01/12 16:38:50
+# @Author    :D0WE1L1N
 import os
 import shutil
 import time

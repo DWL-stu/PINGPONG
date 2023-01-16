@@ -11,8 +11,6 @@ install_path = path[4]
 path.append("..")
 import main, config_set
 config_list = ['Default_ip', 'Default_port', 'usage']
-#加载默认设置
-environ["TF_CPP_MIN_LOG_LEVEL"]='3'
 def get_mod_data(p, start_line, end_line):
 	count = 1
 	output = ''

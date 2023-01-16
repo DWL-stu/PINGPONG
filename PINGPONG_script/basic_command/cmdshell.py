@@ -2,7 +2,6 @@
 # @FileName  :cmdshell.py
 # @Time      :2022/11/08 18:19:18
 # @Author    :D0WE1L1N
-# CMDshell库：定义了一个开启cmd远程命令的函数
 import socket
 import sys
 sys.path.append("..")
