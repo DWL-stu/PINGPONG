@@ -42,7 +42,7 @@ def run(conn, addr, my_addr):
             print_warn("PINGPONG>[!]Generating without UPX, you'd better install one")
         elif upx == 'back' or upx == 'BACK':
             print_normal('Back to main......')
-            conn.send('BACK')
+            conn.send(b'BACK')
         else:
             print_error('PINGPONG>[-]The UPX location does NOT valuable')
             print_warn("PINGPONG>[!]Generating without UPX")

