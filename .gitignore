@@ -157,3 +157,4 @@ config/icon/window_logo.png
 config/config.pkl
 .VSCodeCounter/2022-12-20_20-49-55/details.md
 payload.py
+PINGPONG_script/basic_command/TEMP/pingpong_service.py

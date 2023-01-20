@@ -173,7 +173,7 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
 				cmd : make a cmd connection
 				getinformation : to obtain some information(priv, username, etc.) of this connection
 				upload : upload your file
-				persistence : leave a backdoor on the attacked host
+				persistence_service : leave a backdoor on the attacked host
 			media:
 				cam_shot : take shot
 			special_attacks:

