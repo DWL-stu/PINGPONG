@@ -154,3 +154,5 @@ def run(conn, addr, my_addr):
         file_dir = input("PINGPONG>[*]Please input the location of the file in your host>")
         to_dir = input("PINGPONG>[*]Please input the location of the file where you uploaded>")
         Upload(addr[0], file_dir, to_dir, True, True, conn, addsend, addr, my_addr)
+def init_is_open():
+    return True

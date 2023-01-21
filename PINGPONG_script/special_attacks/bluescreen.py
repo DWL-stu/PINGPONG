@@ -34,3 +34,5 @@ def start_attack(conn, my_ip, my_port, ip, port, addr, my_addr):
         main.print_normal("PINGPONG>[*]Back to PINGPONG console......")
 def run(conn, addr, my_addr):
     start_attack(conn, my_addr[0], my_addr[1], addr[0], addr[1], addr, my_addr)
+def init_is_open():
+    return True

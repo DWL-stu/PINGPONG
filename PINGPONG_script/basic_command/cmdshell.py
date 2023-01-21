@@ -93,3 +93,5 @@ def run(conn, addr, my_addr):
         conn.send(bytes(str(cmd_port), "utf8"))
         conn.recv(1024)
         start(addr[0], cmd_port, conn, my_addr[1], addr[1])
+def init_is_open():
+    return True

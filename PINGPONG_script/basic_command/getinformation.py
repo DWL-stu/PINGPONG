@@ -22,3 +22,5 @@ def run(conn, addr, my_addr):
 {info}
         ''')
         return True
+def init_is_open():
+    return True

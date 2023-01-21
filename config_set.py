@@ -5,6 +5,7 @@
 import os
 import pickle
 import main
+from random import randint
 def load_config_for_main_py(key):
     try:
         value = main.get_value(key)
@@ -13,6 +14,10 @@ def load_config_for_main_py(key):
         return None
 def set_config_for_main_py(key, value):
     main.set_config(key, value)
+def load_modl():
+    output = [dI for dI in os.listdir('./PINGPONG_script') if os.path.isdir(os.path.join('./PINGPONG_script',dI))]
+    output.remove('__pycache__')
+    return output
 def config_load():
     main.config_load_init()
     if os.path.exists("./config/config.pkl"):
@@ -30,8 +35,27 @@ def config_load():
         #     os.mkdir('./config')
         main.print_normal("settings>[*]Initializing......")
         init_dict = {}
-        mods = os.listdir('./PINGPONG_script').remove('__pycache__')
-
+        mods = load_modl()
+        for mod in mods:
+            scripts = os.listdir(f'PINGPONG_script/{mod}')
+            if 'TEMP' in scripts:
+                scripts.remove('TEMP')
+            if 'SOURCE_FILE' in scripts:
+                scripts.remove('SOURCE_FILE')
+            if '__pycache__' in scripts:
+                scripts.remove('__pycache__')
+            for script in scripts:
+                script = os.path.splitext(script)[0]
+                try:
+                    exec(f'import PINGPONG_script.{mod}.{script} as _script', globals())
+                    is_open = _script.init_is_open()
+                except:
+                    is_open = randint(1, 2)
+                    if is_open == 1:
+                        is_open = True
+                    else:
+                        is_open = False
+                init_dict[script] = is_open
         init = {
             "handler" : {
                 'listen_Default_ip' : "127.0.0.1",
@@ -41,15 +65,7 @@ def config_load():
             "payload" : {
                 'Default_ip' : "127.0.0.1",
                 'Default_port' : "624",
-                'usage' : {
-                'cmdshell' : True,
-                'upload' : True,
-                'cam_shot' : False,
-                'priv_vbp_listen' : True,
-                'bluescreen' : True,
-                'getinformation' : True,
-                'persistence_service' : True
-                }
+                'usage' : init_dict
             }
         }
         try:

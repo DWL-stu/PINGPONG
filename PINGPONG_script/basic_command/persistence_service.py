@@ -82,3 +82,5 @@ def run(conn, addr, my_addr):
             print_normal('PINGPONG>[*]Done')
             print_good(f'PINGPONG>[+]Backdoor service actived in {my_addr[0]}:{my_addr[1]} >>> {addr[0]}:{addr[1]}')
             return True
+def init_is_open():
+    return True

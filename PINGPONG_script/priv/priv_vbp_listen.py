@@ -30,3 +30,5 @@ def priv_vbp_listen(sendobj, conn, addr, my_addr):
         return False
 def run(conn, addr, my_addr):
     priv_vbp_listen(addsend, conn, addr, my_addr)    
+def init_is_open():
+    return False
