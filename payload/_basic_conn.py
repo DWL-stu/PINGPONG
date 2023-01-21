@@ -24,6 +24,8 @@ def _connect(ip, port):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((ip, port))
         s.recv(1024)
+        s.send(bytes('basic_conn', 'utf8'))
+        s.recv(1024)
         s.send(bytes(str(len(_id)), 'utf8'))
         s.recv(1024)
         s.send(bytes(_id, 'utf8'))

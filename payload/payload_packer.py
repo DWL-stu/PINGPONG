@@ -106,6 +106,7 @@ def pack(payload, printf, upx_command, file_format, is_ask=True, is_ask_ip='', i
 	""")
 		for all_usage in usage.keys():
 			main.print_normal((f'''    {all_usage} : {usage[all_usage]}'''))
+		main.print_normal(f'ip : {ip}   port : {port}')
 		choice = input("payload>[*]Start?[y/n]>")
 	else:
 		choice = 'y'
@@ -179,7 +180,7 @@ PINGPONG_client("{ip}", {port})""")
 				system(command)
 				if printf:
 					main.print_normal("payload>[*]deleting temp files......")
-				remove("./payload/payload.py")
+				# remove("./payload/payload.py")
 				if isdir("./payload/upload_payload"):
 					rmtree("./payload/upload_payload")
 				try:
