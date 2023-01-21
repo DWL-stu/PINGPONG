@@ -203,6 +203,13 @@ def sub_main():
     elif choice == "PING":
         print("PONG")
         sub_main()
+    elif choice == 'clear_payload' or choice == 'CLEAR_PAYLOAD':
+        from shutil import rmtree
+        from os import mkdir
+        rmtree('./payload/upload_payload')
+        mkdir('./payload/upload_payload')
+        print_normal('payload>[*]Done')
+        sub_main()
     elif choice == "exit":
         print("exiting......")
         sys.exit(0)

