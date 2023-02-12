@@ -1,6 +1,6 @@
 
 # PINGPONG
-<img src="https://img.shields.io/badge/Python-3.7-green" alt="Python" />  <img src="https://img.shields.io/badge/State-developing-blue" alt="State" />  <img src="https://img.shields.io/badge/Platform-Windows-orange" alt="Platform" />  <img src="https://img.shields.io/badge/-developing-blue" alt="State" />
+<img src="https://img.shields.io/badge/Python-3.7-green" alt="Python" />  <img src="https://img.shields.io/badge/State-developing-blue" alt="State" />  <img src="https://img.shields.io/badge/Platform-Windows-orange" alt="Platform" />  <img src="https://img.shields.io/badge/License-Apache2.0-red" alt="State" />
 
  PINGPONG is a windows attack framework under python which is very easy-to-use
 
@@ -15,14 +15,17 @@
 
 ## Introduce
 
-### Advantage of PINGPONG
-
 Do you know metasploit? PINGPONG is a framework like this.The difference is: You will be able to use PINGPONG, if you can read English!  
 PINGPONG framework is simpler to use because the only thing you need to do is to type a number in the menu to choose the usage instead of command.  
-### Shortcomings
-But it also has some shortcomings......because it is developed by one person, it is much weaker then metasploit.  
-There will be many Grammer mistakes in this program.If you find it, ignore it plz! XD 
-
+### Advantage of PINGPONG  
+· Very easy to use  
+· Simpler programming  
+### Shortcomings  
+· Only windows  
+· Huge payload  
+· Less features  
+· bugs  
+· Grammar and spelling mistakes(XD)  
 ## Dependings
   __All the Dependings below must be installed before using PINGPONG__  
     pyinstaller 5.6.2  
@@ -34,7 +37,7 @@ There will be many Grammer mistakes in this program.If you find it, ignore it pl
     (and python 3.7+)  
 
 ## Usage  
-   _1.set the payload options you want at 'settings'  
+   1.set the payload options you want at 'settings'  
    2.make payloads at 'payloads', using surrent settings  
    3.start a handler(listener)  
    4.get a PINGPONG session  
