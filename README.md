@@ -28,6 +28,11 @@ PINGPONG framework is simpler to use because the only thing you need to do is to
 · Grammar and spelling mistakes(XD)  
 ## Dependings
   __All the Dependings below must be installed before using PINGPONG__  
+
+  ```
+    pip install -u requirments.txt
+  ```
+
     pyinstaller 5.6.2  
     upx 4.0  
     wmi 1.5.1  
