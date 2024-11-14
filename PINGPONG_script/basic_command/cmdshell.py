@@ -43,6 +43,7 @@ def start(ip, cmd_port, conn, main_port, _main_port=''):
             sessions_pool.append([cmd_SessObj, ip, cmd_port, _ip, _port, 'CMD session'])
             id = len(sessions_pool)
             main.print_normal(f"CMD_SHELL>[*]CMD session {id} Created:" + ip + ":" + str(cmd_port) + " >>> " + _ip + ":" + str(_port))
+            main.print_normal(f"CMD_SHELL>[*]Use 'exit' to exit the session. Use 'bg' to background the session")
         else:
             id = sessions_pool.index([cmd_SessObj, ip, cmd_port, _ip, _port, 'CMD session']) + 1
         if not port == '':
@@ -67,7 +68,7 @@ def cmd_shell(cmd_SessObj, ip, cmd_port, _ip, _port, main_port, conn, cmd_sessio
                 else:
                     main.main()
                 return True
-            elif cmd_command == 'bg' or cmd_command == 'BG':
+            elif cmd_command == 'bg' or cmd_command == 'BG' or cmd_command == 'background' or cmd_command == 'BACKGROUND':
                 main.print_normal("CMD_SHELL>[*]Backgrounding session......")
                 main.set_config('connect_pool', sessions_pool)
                 if main_port != ' ':
@@ -75,6 +76,8 @@ def cmd_shell(cmd_SessObj, ip, cmd_port, _ip, _port, main_port, conn, cmd_sessio
                     handler.PINGPONG_shell(conn, ip, main_port, _ip, port, False, '')
                 else:
                     main.main()
+            elif not cmd_command:
+                continue
             CMD_re = cmd_SessObj.recv(1024)
             try:
                 print(str(ip) + ">"+ CMD_re.decode('utf-8'))
