@@ -43,9 +43,9 @@ PINGPONG framework is simpler to use because the only thing you need to do is to
 
 ## Usage  
    1.set the payload options you want at 'settings'  
-   2.make payloads at 'payloads', using surrent settings  
+   2.make payloads at 'payloads', using current settings  
    3.start a handler(listener)  
-   4.get a PINGPONG session  
+   4.get a PINGPONG session when the payload is executed
    5.control the host with PINGPONG!  
      
    
