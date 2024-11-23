@@ -20,7 +20,7 @@ def print_normal(str):
 def print_main():
     print_good(
         '''\033[0;35m
-(    (        )             (        )      )            ____5 
+(    (        )             (        )      )            ____ 
 )\ ) )\ )  ( /(  (          )\ )  ( /(   ( /(  (        |   / 
 (()/((()/(  )\()) )\ )      (()/(  )\())  )\()) )\ )     |  /  
 /(_))/(_))((_)\ (()/(       /(_))((_)\  ((_)\ (()/(     | /   
@@ -32,7 +32,7 @@ def print_main():
 
 ========================WELCOME !!========================
 ====================PINGPONG   V0.3.3 ====================
-====================Aurthor : D0WE1L1N====================                                                                                                                
+====================Aurthor: LamentXU=====================                                                                                                                
     \033[0m''')
     main()
 #选择
@@ -235,7 +235,7 @@ def sub_main():
 def main():
     print_normal("Active choice:")
     print_normal("1) Start a PINGPONG handler")
-    print_normal("2) Make payload(s)")
+    print_normal("2) Generate payload(s)")
     print_normal("3) Settings")
     session_pool = config_set.load_config_for_main_py('connect_pool')
     if session_pool == None or session_pool == []:

